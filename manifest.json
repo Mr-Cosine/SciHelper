@@ -12,6 +12,7 @@
   "host_permissions": [
     "https://docs.google.com/*",
     "https://*.google.com/*"
+
   ],
 
   "background": {
@@ -21,7 +22,7 @@
 
   "content_scripts": [
     {
-      "matches": ["https://docs.google.com/document/*"],
+      "matches": ["https://docs.google.com/document/d*"],
       "css": ["style.css"],
       "js": ["resources.js", "SciHelper.js"],
       "run_at": "document_end"

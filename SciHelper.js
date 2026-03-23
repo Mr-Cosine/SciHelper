@@ -143,7 +143,7 @@
             if (e.code === "KeyE") { insertIntoWindow(window.equilibium); e.preventDefault(); return; }
         }
         
-        if ((e.ctrlKey || e.altKey || e.shiftKey) === false) {
+        if ((e.ctrlKey || e.altKey) === false) {
             var symbol = null;
             var key = e.key;
             if (upperMode && window.superscripts) symbol = window.superscripts[key] || (e.code.startsWith("Digit") ? window.superscripts[e.code.replace("Digit", "")] : null);

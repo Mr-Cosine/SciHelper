@@ -42,8 +42,8 @@ if (typeof window.greek === 'undefined') {
 if (typeof window.math === 'undefined') {
     window.math = Object.freeze({
         "i": "∫", "p": "∂", "s": "∑", "r": "√", "l": "∞", "d": "∆",
-        "g": "∇", "x": "×", "o": "°", "e": "≈", "c": "∮", "*": "×",
-        "/": "÷", ".": "·"
+        "g": "∇", "o": "ₒ", "e": "≈", "c": "∮", "*": "×", "f": "ƒ",
+        "b": "≥", "s": "≤", "/": "÷", ".": "·"
     });
 }
 
