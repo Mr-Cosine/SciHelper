@@ -2,12 +2,35 @@
   "manifest_version": 3,
   "name": "SciHelper",
   "version": "1.0",
-  "description": "Scientific writing helper: subscripts, superscripts, Greek letters, chemistry tools.",
-  "permissions": ["scripting", "activeTab"],
+  "description": "Scientific writing helper for Google Docs and web forms.",
+  
+  "permissions": [
+    "scripting",
+    "activeTab"
+  ],
+
+  "host_permissions": [
+    "https://docs.google.com/*",
+    "https://*.google.com/*"
+  ],
+
+  "background": {
+    "scripts": ["background.js"],
+    "type": "module" 
+  },
+
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-    "js": ["SciHelper.js"]
+      "js": ["mappings.js", "SchiHelper.js"],
+      "all_frames": true,
+      "run_at": "document_start"
     }
-  ]
+  ],
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "scihelper@yourdomain.com"
+    }
+  }
 }

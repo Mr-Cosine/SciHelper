@@ -1,4 +1,4 @@
-export const superscripts = {
+const superscripts = {
     "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴",
     "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹",
     "a": "ᵃ", "b": "ᵇ", "c": "ᶜ", "d": "ᵈ", "e": "ᵉ",
@@ -8,7 +8,7 @@ export const superscripts = {
     "v": "ᵛ", "w": "ʷ", "x": "ˣ", "y": "ʸ", "z": "ᶻ"
 };
 
-export const subscripts = {
+const subscripts = {
     "0": "₀", "1": "₁", "2": "₂", "3": "₃", "4": "₄",
     "5": "₅", "6": "₆", "7": "₇", "8": "₈", "9": "₉",
     "a": "ₐ", "e": "ₑ", "h": "ₕ", "i": "ᵢ", "j": "ⱼ",
@@ -17,7 +17,7 @@ export const subscripts = {
     "v": "ᵥ", "x": "ₓ"
 };
 
-export const greek = {
+const greek = {
     "a": "α", "b": "β", "g": "γ", "d": "δ", "e": "ε",
     "z": "ζ", "h": "η", "q": "θ", "i": "ι", "k": "κ",
     "l": "λ", "m": "μ", "n": "ν", "x": "ξ", "o": "ο",
@@ -25,11 +25,11 @@ export const greek = {
     "f": "φ", "c": "χ", "y": "ψ", "w": "ω"
 };
 
-export const math = {
+const math = {
     "i": "∫", "p": "∂", "s": "∑", "t": "√", "l": "∞", "d": "∆",
     "g": "∇", "x": "×", "o": "°", "e": "≈", "r": "→", "c": "∮"
 };
 
-export const degree = "°";
+const degree = "°";
 
-export const equilibium = "⇌"
+const equilibium = "⇌"
