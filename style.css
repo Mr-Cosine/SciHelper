@@ -1,0 +1,95 @@
+/* --- Main Panel --- */
+#sci-mainpanel { 
+    position: fixed; 
+    top: 100px; 
+    right: 20px; 
+    width: 220px; 
+    background: white; 
+    border: 2px solid #2b668a; 
+    border-radius: 4px; 
+    z-index: 2147483647; 
+    padding: 10px; 
+    font-family: sans-serif; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+    display: flex; 
+    flex-direction: column; 
+}
+
+#sci-mainpanel-header { 
+    font-weight: bold; 
+    cursor: move; 
+    margin-bottom: 5px; 
+    color: #0c3047; 
+    text-align: center; 
+    border-bottom: 1px solid #eee; 
+    padding-bottom: 4px; 
+}
+
+#sci-mainpanel-btncontainer { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 4px; 
+    margin-bottom: 8px; 
+}
+
+.sci-mainpanel-btn { 
+    padding: 6px 2px; 
+    font-size: 14x; 
+    cursor: pointer; 
+    border: 1px solid #ccc; 
+    border-radius: 3px; 
+    font-weight: bold; 
+}
+
+.sci-mainpanel-btnsymbol { 
+    font-family: "Times New Roman", serif; 
+    font-size: 14px; 
+    font-weight:bold; 
+    margin-left: 8px; 
+}
+
+#sci-mainpanel-output { 
+    width: 100%; 
+    box-sizing: border-box; 
+    padding: 8px; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+}
+
+#sci-mainpanel-copybtn { 
+    margin-top: 8px; 
+    padding: 8px; 
+    cursor: pointer; 
+    border: 1px solid #2b668a; 
+    background: #f9f9f9; 
+    border-radius: 4px; 
+    font-weight: bold; 
+}
+
+/* --- Chemistry Panel --- */
+#sci-chempanel { 
+    position: fixed; 
+    top: 100px; 
+    right: 260px; 
+    width: 250px; 
+    min-height: 150px; 
+    background: white; 
+    border: 2px solid #4db6ac; 
+    border-radius: 4px; 
+    z-index: 2147483647; 
+    padding: 10px; 
+    font-family: sans-serif; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+    display: flex; 
+    flex-direction: column; 
+}
+
+#sci-chempanel-header { 
+    font-weight: bold; 
+    cursor: move; 
+    margin-bottom: 5px; 
+    color:#2b668a; 
+    text-align: center; 
+    border-bottom: 1px solid #eee; 
+    padding-bottom: 4px; 
+}
