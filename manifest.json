@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "SciHelper",
+  "version": "1.0",
+  "description": "Scientific writing helper: subscripts, superscripts, Greek letters, chemistry tools.",
+  "permissions": ["scripting", "activeTab"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["SciHelper.js"]
+    }
+  ]
+}
