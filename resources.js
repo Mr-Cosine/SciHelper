@@ -41,9 +41,9 @@ if (typeof window.greek === 'undefined') {
 // math symbols
 if (typeof window.math === 'undefined') {
     window.math = Object.freeze({
-        "i": "∫", "p": "∂", "s": "∑", "t": "√", "l": "∞", "d": "∆",
-        "g": "∇", "x": "×", "o": "°", "e": "≈", "r": "→", "c": "∮",
-        "*": "×", "/": "÷", ".": "·"
+        "i": "∫", "p": "∂", "s": "∑", "r": "√", "l": "∞", "d": "∆",
+        "g": "∇", "x": "×", "o": "°", "e": "≈", "c": "∮", "*": "×",
+        "/": "÷", ".": "·"
     });
 }
 
