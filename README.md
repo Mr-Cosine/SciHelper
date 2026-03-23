@@ -1,4 +1,4 @@
-A firefox extension that helps you to write formulas fast in docs!
+A firefox extension that helps you to write formulas fast in google docs!
 
 All hotkeys for special characters are triggered by clicking the button. They are sticky
      Super and subscript:
