@@ -49,7 +49,8 @@ function createToggle(label, symbol, id, color, state, callbacks) {
     btn.addEventListener('click', function() {
         if (id === 'chem') {
             state.chemMode = !state.chemMode;
-        } else {
+        } 
+        else {
             state.upperMode = (id === 'upper') ? !state.upperMode : false;
             state.lowerMode = (id === 'lower') ? !state.lowerMode : false;
             state.greekMode = (id === 'greek') ? !state.greekMode : false;

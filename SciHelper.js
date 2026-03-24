@@ -27,26 +27,35 @@
     outputBox.setAttribute('id', 'sci-mainpanel-output');
     outputBox.setAttribute('placeholder', 'Type symbols...');
 
-    // Buttons
+    // Buttons behaviour
     var btnCallbacks = {
         onUpdate: function(clickedId) {
             // Update Colors
             var allBtns = document.querySelectorAll('.sci-mainpanel-btn');
             allBtns.forEach(b => {
                 const active = state[b.id + 'Mode']; 
+                // Use the dataset fix or a color map here
                 b.style.backgroundColor = active ? b.color : '#f9f9f9';
                 b.style.color = active ? 'white' : 'black';
             });
 
-            // Handle Chem Window
+            // Chem Window
             if (clickedId === 'chem') {
                 if (state.chemMode) {
-                    state.chemWindow = openChemWindow();
-                } else if (state.chemWindow) {
-                    state.chemWindow.remove();
-                    state.chemWindow = null;
+                    if (!state.chemWindow) {
+                        state.chemWindow = openChemWindow(panel);
+                    }
+                } 
+                else {
+                    document.getElementById('sci-chempanel-elesearch')?.remove();
+                    
+                    if (state.chemWindow) {
+                        state.chemWindow.remove();
+                        state.chemWindow = null;
+                    }
                 }
             }
+
             outputBox.focus();
         }
     };

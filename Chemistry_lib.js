@@ -1,4 +1,5 @@
-function openChemWindow() {
+// --- Main Chemistry submenu ---
+function openChemWindow(parentWin) {
     if (document.getElementById('sci-chempanel')) return;
     
     var chemWindow = document.createElement('div');
@@ -8,9 +9,69 @@ function openChemWindow() {
     chemHeader.setAttribute('id', 'sci-chempanel-header');
     chemHeader.textContent = 'Chemistry Toolbox';
 
+    var fnButtonContainer = document. createElement('div');
+    fnButtonContainer.setAttribute('class', 'sci-chempanel-btncontainer');
+
+    var btncolor = '#e6e69a';
+    fnButtonContainer.appendChild(elemSearchBtn('Element Look-Up', '🔎', btncolor));
+    fnButtonContainer.appendChild(molarMassBtn('Molar Mass Calculator', '🧮', btncolor));
+
+    chemWindow.appendChild(chemHeader);
+    chemWindow.appendChild(fnButtonContainer);
+    parentWin.appendChild(chemWindow);
+
+    return chemWindow;
+}
+
+// --- Element Loop Ups ---
+function elemSearchBtn(name, symbol, color) {
+    var btn = document.createElement('button');
+    btn.setAttribute('class', 'sci-chempanel-btn');
+    btn.style.backgroundColor = '#f9f9f9'; // Default state
+
+    // Use 'name' from arguments
+    var labelSpan = document.createElement('span');
+    labelSpan.textContent = name;
+        
+    var symbolSpan = document.createElement('span');
+    symbolSpan.setAttribute('class', 'sci-chempanel-btnsymbol');
+    symbolSpan.style.color = color;
+    symbolSpan.textContent = symbol;
+
+    btn.append(labelSpan, symbolSpan);
+
+    btn.addEventListener('click', function() {
+        var existingWindow = document.getElementById('sci-chempanel-elesearch');
+        
+        if (!existingWindow) {
+            // OPEN logic
+            openElemSearchWindow();
+            btn.style.backgroundColor = color;
+            btn.style.color = 'white';
+        } else {
+            // CLOSE logic
+            existingWindow.remove();
+            btn.style.backgroundColor = '#f9f9f9';
+            btn.style.color = 'black';
+        }
+    });
+
+    return btn;
+}
+
+function openElemSearchWindow() {
+    if (document.getElementById('sci-chempanel-elesearch')) return;
+    
+    var elemSearchWindow = document.createElement('div');
+    elemSearchWindow.setAttribute('id', 'sci-chempanel-elesearch');
+    
+    var elemSearchHeader = document.createElement('div');
+    elemSearchHeader.setAttribute('id', 'sci-chempanel-subfunction-genericheader');
+    elemSearchHeader.textContent = 'Elements Loop-Up';
+
     var searchBox = document.createElement('input');
     searchBox.placeholder = 'Search element...';
-    
+
     var resultsArea = document.createElement('div');
     resultsArea.id = 'sci-chempanel-results';
 
@@ -44,10 +105,61 @@ function openChemWindow() {
         });
     });
 
-    chemWindow.append(chemHeader, searchBox, resultsArea);
-    document.body.appendChild(chemWindow);
-    makeDraggable(chemHeader, chemWindow);
-    searchBox.focus;
+    elemSearchWindow.append(elemSearchHeader, searchBox, resultsArea);
+    document.body.appendChild(elemSearchWindow);
+    makeDraggable(elemSearchHeader, elemSearchWindow);
+    searchBox.focus();
 
-    return chemWindow; // Return this so the main program can track it
+    return elemSearchWindow;
+}
+
+// --- Molar Mass Calculation ---
+
+function molarMassBtn(name, symbol, color) {
+    var btn = document.createElement('button');
+    btn.setAttribute('class', 'sci-chempanel-btn');
+    btn.style.backgroundColor = '#f9f9f9'; // Default state
+
+    // Use 'name' from arguments
+    var labelSpan = document.createElement('span');
+    labelSpan.textContent = name;
+        
+    var symbolSpan = document.createElement('span');
+    symbolSpan.setAttribute('class', 'sci-chempanel-btnsymbol');
+    symbolSpan.style.color = color;
+    symbolSpan.textContent = symbol;
+
+    btn.append(labelSpan, symbolSpan);
+
+    btn.addEventListener('click', function() {
+        var existingWindow = document.getElementById('sci-chempanel-molmcalc');
+        
+        if (!existingWindow) {
+            // OPEN logic
+            openMolarMassWindow();
+            btn.style.backgroundColor = color;
+            btn.style.color = 'white';
+        } else {
+            // CLOSE logic
+            existingWindow.remove();
+            btn.style.backgroundColor = '#f9f9f9';
+            btn.style.color = 'black';
+        }
+    });
+
+    return btn;
+}
+
+function openMolarMassWindow() {
+    if (document.getElementById('sci-chempanel-molmcalc')) return;
+    
+    var elemSearchWindow = document.createElement('div');
+    elemSearchWindow.setAttribute('id', 'sci-chempanel-molmcalc');
+    
+    var elemSearchHeader = document.createElement('div');
+    elemSearchHeader.setAttribute('id', 'sci-chempanel-subfunction-genericheader');
+    elemSearchHeader.textContent = 'Molar Mass Calculator';
+
+    var inputBox = document.createElement('input');
+    inputBox.placeholder = 'Enter the formula';
 }

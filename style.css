@@ -67,68 +67,144 @@
 }
 
 /* --- Chemistry Panel --- */
-#sci-chempanel { 
-    position: fixed; 
-    top: 100px; 
-    right: 260px; 
-    width: 250px; 
-    min-height: 150px; 
-    background: white; 
-    border: 2px solid #4db6ac; 
-    border-radius: 4px; 
-    z-index: 2147483647; 
-    padding: 10px; 
-    font-family: sans-serif; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
-    display: flex; 
-    flex-direction: column; 
+/* --- Main SciHelper Panel (The Brain) --- */
+#sci-mainpanel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 280px;
+    background: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 2147483646;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 10px;
 }
 
-#sci-chempanel-header { 
-    font-weight: bold; 
-    cursor: move; 
-    margin-bottom: 5px; 
-    color:#2b668a; 
-    text-align: center; 
-    border-bottom: 1px solid #eee; 
-    padding-bottom: 4px; 
+#sci-mainpanel-header {
+    padding: 5px;
+    cursor: move;
+    background: #f0f0f0;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 4px;
+    margin-bottom: 10px;
 }
 
-#sci-chempanel-close {
-    cursor: pointer;
+#sci-mainpanel-output {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     font-size: 16px;
-    color: #999;
-    padding: 0 5px;
-    transition: color 0.2s, transform 0.2s;
 }
 
-#sci-chempanel-close:hover {
-    color: #d93025;
-    transform: scale(1.2);
+/* --- The Chemistry Toolbox --- */
+#sci-chempanel {
+    position: absolute;
+    top: 150px;
+    right: 320px; /* Offset from main panel */
+    width: 220px;
+    background: #fff;
+    border: 1px solid #83c1bb;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 9998;
+    padding: 8px;
+}
+
+#sci-chempanel-header {
+    background: #83c1bb;
+    color: white;
+    padding: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 3px;
+    cursor: move;
+}
+
+.sci-chempanel-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.sci-chempanel-btnsymbol {
+    font-size: 24px;
+    line-height: 1;
+    display: block;
+}
+
+#sci-chempanel-subfunction-genericheader {
+    padding: 8px;
+    background: #444;
+    color: white;
+    font-size: 13px;
+    cursor: move;
+}
+
+/* --- Element Search Window --- */
+#sci-chempanel-elesearch {
+    position: fixed;
+    top: 150px;
+    right: 560px; /* Offset again so they don't overlap */
+    width: 300px;
+    max-height: 400px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 2147483647;
+    display: flex;
+    flex-direction: column;
+}
+
+#sci-chempanel-elesearch input {
+    margin: 8px;
+    padding: 6px;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+}
+
+#sci-chempanel-results {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding: 5px;
 }
 
 .sci-chempanel-elem-row {
+    display: flex;
     padding: 6px;
     border-bottom: 1px solid #eee;
+    font-size: 13px;
     cursor: pointer;
-    transition: background 0.2s;
-    gap: 15px;
-    display: flex;
 }
 
 .sci-chempanel-elem-row:hover {
-    background: #e0f2f1;
-    color: #00796b;
+    background: #f0f8f7;
 }
 
 .sci-chempanel-elem-row-symbol {
-    color: #1a73e8;
+    width: 50px;
     font-weight: bold;
-    font-size: 11px;
+    font-family: monospace;
+    color: #2c3e50;
 }
 
 .sci-chempanel-elem-row-name {
-    color: #000000;
-    font-weight: normal;
-    font-size: 11px;
+    flex-grow: 1;
+    color: #555;
 }
+
+/* --- Molar Mass Calculator --- */
