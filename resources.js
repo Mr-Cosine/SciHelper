@@ -55,7 +55,7 @@ if (typeof window.equilibium === 'undefined') { window.equilibium = "⇌"; }
 //Elements
 class element {
     constructor(name, symbol, atomicNumber, molarMass) {
-        this.name = name.toLowerCase();
+        this.name = name;
         this.symbol = symbol;
         this.atomicNumber = atomicNumber;
         this.molarMass = molarMass;
