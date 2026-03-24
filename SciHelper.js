@@ -40,33 +40,35 @@
         
         btn.addEventListener('click', function() {
             //Update modes
-            upperMode = (id === 'upper') ? !upperMode : false;
-            lowerMode = (id === 'lower') ? !lowerMode : false;
-            greekMode = (id === 'greek') ? !greekMode : false;
-            mathMode  = (id === 'math')  ? !mathMode  : false;
-            chemMode  = (id === 'chem')  ? !chemMode  : chemMode;
+            if (id !== 'chem') {
+                upperMode = (id === 'upper') ? !upperMode : false;
+                lowerMode = (id === 'lower') ? !lowerMode : false;
+                greekMode = (id === 'greek') ? !greekMode : false;
+                mathMode  = (id === 'math')  ? !mathMode  : false;
+            } else {
+                chemMode = !chemMode;
+            }
 
             // Update button looking
             var allBtns = btnContainer.getElementsByTagName('button');
             for (const thisBtn of allBtns) {
-                if (thisBtn.id === 'chem') {
-                    if (!chemMode) {
-                        thisBtn.style.backgroundColor = '#f9f9f9';
-                        thisBtn.style.color = 'black';
-                    }
-                }
+                thisBtn.style.backgroundColor = '#f9f9f9';
+                thisBtn.style.color = 'black';
+            }
 
-                else {
-                    thisBtn.style.backgroundColor = '#f9f9f9';
-                    thisBtn.style.color = 'black';
+            function highlight(targetId, targetColor) {
+                var targetBtn = document.getElementById(targetId);
+                if (targetBtn) {
+                    targetBtn.style.backgroundColor = targetColor;
+                    targetBtn.style.color = 'white';
                 }
             }
 
-            // Highlight the button of the current mode
-            if (upperMode || lowerMode || greekMode || mathMode || chemMode) {
-                btn.style.backgroundColor = color;
-                btn.style.color = 'white';
-            }
+            if (upperMode) highlight('upper', '#e57373');
+            if (lowerMode) highlight('lower', '#ffb74d');
+            if (greekMode) highlight('greek', '#81c784');
+            if (mathMode)  highlight('math',  '#64b5f6');
+            if (chemMode)  highlight('chem',  '#83c1bb');
 
             //Open chemistry panel for chem button
             if (chemMode) {
@@ -156,11 +158,11 @@
 
                 var symbol = document.createElement("div");
                 symbol.classList.add('sci-chempanel-elem-row-symbol');
-                symbol.textContent = element.symbol;
+                symbol.textContent = element.atomicNumber + '\t' + element.symbol;
                 
                 var info = document.createElement("div");
                 info.classList.add('sci-chempanel-elem-row-name');
-                info.textContent = element.name + ' (' + element.molarMass + ' u)';
+                info.textContent = element.name + '\t(' + element.molarMass + ' u)';
 
                 row.appendChild(symbol);
                 row.appendChild(info);
