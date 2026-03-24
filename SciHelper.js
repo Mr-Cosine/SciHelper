@@ -25,6 +25,7 @@
         var btn = document.createElement('button');
         btn.setAttribute('class', 'sci-mainpanel-btn');
         btn.style.backgroundColor = '#f9f9f9';
+        btn.id = id;
 
         var labelSpan = document.createElement('span');
         labelSpan.appendChild(document.createTextNode(label));
@@ -38,29 +39,44 @@
         btn.appendChild(symbolSpan);
         
         btn.addEventListener('click', function() {
+            //Update modes
             upperMode = (id === 'upper') ? !upperMode : false;
             lowerMode = (id === 'lower') ? !lowerMode : false;
             greekMode = (id === 'greek') ? !greekMode : false;
             mathMode  = (id === 'math')  ? !mathMode  : false;
-            chemMode  = (id === 'chem')  ? !chemMode  : false;
+            chemMode  = (id === 'chem')  ? !chemMode  : chemMode;
 
+            // Update button looking
             var allBtns = btnContainer.getElementsByTagName('button');
-            for (var i = 0; i < allBtns.length; i++) {
-                allBtns[i].style.backgroundColor = '#f9f9f9';
-                allBtns[i].style.color = 'black';
+            for (const thisBtn of allBtns) {
+                if (thisBtn.id === 'chem') {
+                    if (!chemMode) {
+                        thisBtn.style.backgroundColor = '#f9f9f9';
+                        thisBtn.style.color = 'black';
+                    }
+                }
+
+                else {
+                    thisBtn.style.backgroundColor = '#f9f9f9';
+                    thisBtn.style.color = 'black';
+                }
             }
 
+            // Highlight the button of the current mode
             if (upperMode || lowerMode || greekMode || mathMode || chemMode) {
                 btn.style.backgroundColor = color;
                 btn.style.color = 'white';
             }
 
+            //Open chemistry panel for chem button
             if (chemMode) {
                 openChemWindow();
-            } else if (chemWindow) {
+            } 
+            else if (chemWindow) {
                 chemWindow.remove();
                 chemWindow = null;
             }
+
             outputBox.focus();
         });
         return btn;
@@ -95,16 +111,75 @@
     function openChemWindow() {
         if (document.getElementById('sci-chempanel')) return;
         
+        // Create the Window
         chemWindow = document.createElement('div');
         chemWindow.setAttribute('id', 'sci-chempanel');
         
+        // Create the Header
         var chemHeader = document.createElement('div');
         chemHeader.setAttribute('id', 'sci-chempanel-header');
         chemHeader.appendChild(document.createTextNode('Chemistry Toolbox'));
-        
+
+        // Create the Content Container
+        var chemContent = document.createElement('div');
+        chemContent.setAttribute('id', 'sci-chempanel-content');
+
+        // Search Input
+        var searchBox = document.createElement('input');
+        searchBox.setAttribute('placeholder', 'Search element...');
+        searchBox.style.width = "100%";
+        searchBox.style.marginBottom = "10px";
+
+        // Search Results
+        var resultsArea = document.createElement('div');
+        resultsArea.setAttribute('id', 'sci-chempanel-results');
+
+        // --- Search Logic ---
+        searchBox.addEventListener('input', function() {
+            var query = searchBox.value.toLowerCase();
+            while(resultsArea.firstChild) { resultsArea.removeChild(resultsArea.firstChild); }
+
+            if (!query) return;
+
+            var found = elements.filter(el => 
+                el.name.toLowerCase().includes(query) || 
+                el.symbol.toLowerCase().includes(query)
+            );
+
+            found.forEach(element => {
+                var row = document.createElement('div');
+                row.setAttribute('class', 'sci-chempanel-elem-row');
+                
+                row.onclick = function() {
+                    insertIntoWindow(element.symbol);
+                };
+
+                var symbol = document.createElement("div");
+                symbol.classList.add('sci-chempanel-elem-row-symbol');
+                symbol.textContent = element.symbol;
+                
+                var info = document.createElement("div");
+                info.classList.add('sci-chempanel-elem-row-name');
+                info.textContent = element.name + ' (' + element.molarMass + ' u)';
+
+                row.appendChild(symbol);
+                row.appendChild(info);
+                resultsArea.appendChild(row);
+            });
+        });
+
+        // --- Assembly ---
+        chemContent.appendChild(searchBox);
+        chemContent.appendChild(resultsArea);
         chemWindow.appendChild(chemHeader);
+        chemWindow.appendChild(chemContent);
         document.body.appendChild(chemWindow);
+
+        // Make it draggable using the header
         makeDraggable(chemHeader, chemWindow);
+        
+        // Auto-focus the search box when it opens
+        searchBox.focus();
     }
 
     // --- Drag Logic ---

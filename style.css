@@ -93,3 +93,42 @@
     border-bottom: 1px solid #eee; 
     padding-bottom: 4px; 
 }
+
+#sci-chempanel-close {
+    cursor: pointer;
+    font-size: 16px;
+    color: #999;
+    padding: 0 5px;
+    transition: color 0.2s, transform 0.2s;
+}
+
+#sci-chempanel-close:hover {
+    color: #d93025;
+    transform: scale(1.2);
+}
+
+.sci-chempanel-elem-row {
+    padding: 6px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background 0.2s;
+    gap: 15px;
+    display: flex;
+}
+
+.sci-chempanel-elem-row:hover {
+    background: #e0f2f1;
+    color: #00796b;
+}
+
+.sci-chempanel-elem-row-symbol {
+    color: #1a73e8;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.sci-chempanel-elem-row-name {
+    color: #000000;
+    font-weight: normal;
+    font-size: 11px;
+}
