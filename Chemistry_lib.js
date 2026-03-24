@@ -67,7 +67,7 @@ function openElemSearchWindow() {
     
     var elemSearchHeader = document.createElement('div');
     elemSearchHeader.setAttribute('id', 'sci-chempanel-subfunction-genericheader');
-    elemSearchHeader.textContent = 'Elements Loop-Up';
+    elemSearchHeader.textContent = 'Elements Look-Up';
 
     var searchBox = document.createElement('input');
     searchBox.placeholder = 'Search element...';
@@ -80,11 +80,18 @@ function openElemSearchWindow() {
         while(resultsArea.firstChild) { resultsArea.removeChild(resultsArea.firstChild); }
 
         if (!query) return;
+        else if (query.length > 1) {
+            var found = elements.filter(el => 
+                el.name.toLowerCase().includes(query) || el.symbol.toLowerCase().includes(query));
+        }
+        else {
+            var found = elements.filter(el => 
+                el.name.toLowerCase().startsWith(query) || el.symbol.toLowerCase().startsWith(query));
+        }
 
-        var found = elements.filter(el => 
-            el.name.toLowerCase().includes(query) || 
-            el.symbol.toLowerCase().includes(query)
-        );
+        if (found.length === 0 && query.length > 0) {
+            resultsArea.textContent = "No matched result.";
+        }
 
         found.forEach(element => {
             
@@ -139,7 +146,8 @@ function molarMassBtn(name, symbol, color) {
             openMolarMassWindow();
             btn.style.backgroundColor = color;
             btn.style.color = 'white';
-        } else {
+        } 
+        else {
             // CLOSE logic
             existingWindow.remove();
             btn.style.backgroundColor = '#f9f9f9';
@@ -153,13 +161,127 @@ function molarMassBtn(name, symbol, color) {
 function openMolarMassWindow() {
     if (document.getElementById('sci-chempanel-molmcalc')) return;
     
-    var elemSearchWindow = document.createElement('div');
-    elemSearchWindow.setAttribute('id', 'sci-chempanel-molmcalc');
+    var molarMassWindow = document.createElement('div');
+    molarMassWindow.setAttribute('id', 'sci-chempanel-molmcalc');
     
-    var elemSearchHeader = document.createElement('div');
-    elemSearchHeader.setAttribute('id', 'sci-chempanel-subfunction-genericheader');
-    elemSearchHeader.textContent = 'Molar Mass Calculator';
+    var molarMassHeader = document.createElement('div');
+    molarMassHeader.setAttribute('id', 'sci-chempanel-subfunction-genericheader');
+    molarMassHeader.textContent = 'Molar Mass Calculator(no brackets)';
 
     var inputBox = document.createElement('input');
     inputBox.placeholder = 'Enter the formula';
+
+    var resultBox = document.createElement('div');
+    resultBox.setAttribute('id', 'sci-chempanel-molmcalc-result');
+    resultBox.textContent = "Molar Mass: --";
+
+    inputBox.addEventListener('input', function() {
+        let totalMass = calculate(parseInput(inputBox.value));
+
+        switch (totalMass) {
+            case -1:
+                resultBox.textContent = "Molar Mass: --";
+                break;
+            case -2:
+                resultBox.textContent = "Error: Please expand the content in bracket.";
+                break;
+            case -3:
+                resultBox.textContent = "Error: Invalid character.";
+                break;
+            case -4:
+                resultBox.textContent = "Error: Element not found.";
+                break;
+            default:
+                // This handles any positive number (the actual mass)
+                resultBox.textContent = "Molar Mass: " + totalMass.toFixed(3) + 'u';
+        }
+    });
+
+    molarMassWindow.appendChild(molarMassHeader);
+    molarMassWindow.appendChild(inputBox);
+    molarMassWindow.appendChild(resultBox);
+    document.body.appendChild(molarMassWindow);
+
+    makeDraggable(molarMassHeader, molarMassWindow);
+
+    return molarMassWindow;
+}
+
+function isLetter(token) {return /[a-zA-Z]/.test(token);}
+function islegit(token) {return (isLetter(token) || !isNaN(token));}
+function isUpper(token) {return (isLetter(token) && token === token.toUpperCase());}
+function isLower(token) {return (isLetter(token) && token === token.toLowerCase());}
+function isNum(token) {return (!isNaN(token));}
+
+class elementinformula {
+    constructor(name = "", count = 0) {
+        this.name = name;
+        this.count = count;
+    }
+}
+
+function parseInput(input) {
+    let elemList = [];
+    let i = 0;
+    while (i < input.length) {
+        let token = input[i];
+        if (isUpper(token)) {
+            let name = token;
+            i++;
+            if (i < input.length && isLower(input[i])) {
+                name += input[i];
+                i++;
+            }
+            let countStr = "";
+            while (i < input.length && isNum(input[i]) && !isLetter(input[i])) {
+                countStr += input[i];
+                i++;
+            }
+            let count = countStr === "" ? 1 : parseInt(countStr);
+            elemList.push(new elementinformula(name, count));
+        } 
+
+        else if (token === " ") {
+            i++;
+        }
+        
+        else if(token === "(" || token === ")"){
+            return ["brkt"];
+        }
+        else {
+            return ["ilgl"]
+        }
+    }
+    return elemList;
+}
+
+function lookup(elementName) {
+    for (var j = 0; j < elements.length; j++) {
+        var currentEntry = elements[j];
+
+        // 1. Safety check: make sure the array slot isn't empty/null
+        if (currentEntry && typeof currentEntry === 'object') {
+            
+            // 2. Exact match check
+            if (currentEntry.symbol.toLowerCase() === elementName.toLowerCase()) {
+                return currentEntry.molarMass;
+            }
+        }
+    }
+    return -1;
+}
+
+function calculate(elementList) {
+    // 1. Check for your custom error codes
+    if (!elementList || elementList.length === 0) return -1;
+    if (elementList[0] === "brkt") return -2; // Code for "No brackets allowed yet"
+    if (elementList[0] === "ilgl") return -3; // Code for "Illegal character"
+
+    let totalMass = 0;
+    for (let el of elementList) {
+        let unitMass = lookup(el.name);
+        if (unitMass < 0) return -4; // Code for "Element not in Periodic Table"
+        totalMass += unitMass * el.count;
+    }
+    return totalMass;
 }

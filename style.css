@@ -198,8 +198,8 @@
 .sci-chempanel-elem-row-symbol {
     width: 50px;
     font-weight: bold;
-    font-family: monospace;
-    color: #2c3e50;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #83c1bb;
 }
 
 .sci-chempanel-elem-row-name {
@@ -208,3 +208,36 @@
 }
 
 /* --- Molar Mass Calculator --- */
+#sci-chempanel-molmcalc {
+    position: fixed;
+    top: 150px;
+    right: 560px; /* Offset again so they don't overlap */
+    width: 300px;
+    max-height: 400px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 2147483647;
+    display: flex;
+    flex-direction: column;
+}
+
+#sci-chempanel-molmcalc input {
+    margin: 8px;
+    padding: 6px;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+}
+
+#sci-chempanel-molmcalc-result {
+    padding: 10px;
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    background: #f0f8f7;
+    border-radius: 4px;
+    border-left: 4px solid #83c1bb;
+    min-height: 20px;
+    color: #333;
+}

@@ -48,6 +48,7 @@
                 } 
                 else {
                     document.getElementById('sci-chempanel-elesearch')?.remove();
+                    document.getElementById('sci-chempanel-molmcalc')?.remove();
                     
                     if (state.chemWindow) {
                         state.chemWindow.remove();
