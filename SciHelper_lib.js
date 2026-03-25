@@ -65,21 +65,31 @@ function createToggle(label, symbol, id, color, state, callbacks) {
     return btn;
 }
 
-// --- Copy button ---
 function createCopyBtn(target) {
     var copyBtn = document.createElement('button');
     copyBtn.setAttribute('id', 'sci-mainpanel-copybtn');
-    copyBtn.appendChild(document.createTextNode('COPY'));
+    copyBtn.textContent = 'COPY'; // Cleaner than appendChild(createTextNode)
 
     copyBtn.addEventListener('click', function() {
-        // Use the passed-in targetInput instead of a global variable
-        if (!target || !target.value) return;
-        
-        navigator.clipboard.writeText(targetInput.value).then(() => {
-            var originalText = copyBtn.firstChild.nodeValue;
-            copyBtn.firstChild.nodeValue = 'Copied!';
-            setTimeout(() => { copyBtn.firstChild.nodeValue = originalText; }, 1000);
+        if (!target) return;
+
+        var textToCopy = (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') 
+                         ? target.value 
+                         : target.textContent;
+
+        if (!textToCopy) return;
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            var originalText = copyBtn.textContent;
+            copyBtn.textContent = 'Copied!';
+            
+            setTimeout(() => { 
+                copyBtn.textContent = originalText; 
+            }, 1000);
+        }).catch(err => {
+            console.error('Copy failed:', err);
         });
     });
+
     return copyBtn;
 }

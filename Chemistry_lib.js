@@ -187,7 +187,7 @@ function openMolarMassWindow() {
     
     var molarMassHeader = document.createElement('div');
     molarMassHeader.setAttribute('id', 'sci-chempanel-subfunction-genericheader');
-    molarMassHeader.textContent = 'Molar Mass Calculator(no brackets)';
+    molarMassHeader.textContent = 'Molar Mass Calculator (No Brackets)';
 
     var inputBox = document.createElement('input');
     inputBox.placeholder = 'Enter the formula';
@@ -265,7 +265,7 @@ function openMolarMassWindow() {
                     resultBox.appendChild(row);
                 }
 
-                result.textContent = "Molar Mass: " + totalMass.toFixed(3) + " g/mol";
+                result.textContent = "Molar Mass = " + totalMass.toFixed(3) + " g/mol";
         }
     });
 
