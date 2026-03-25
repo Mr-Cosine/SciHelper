@@ -1,81 +1,115 @@
 (function() {
-    // Wait for body to be ready
-    if (!document.body || document.getElementById('sci-mainpanel')) return;
 
     var state = {
-            greekMode: false,
-            chemMode: false,
-            upperMode: false,
-            lowerMode: false,
-            mathMode: false,
-            chemWindow: null
-        };
-
-    // --- UI Construction ---
-    var panel = document.createElement('div');
-    panel.setAttribute('id', 'sci-mainpanel');
-    
-    var header = document.createElement('div');
-    header.setAttribute('id', 'sci-mainpanel-header');
-    header.appendChild(document.createTextNode('SciHelper'));
-
-    var btnContainer = document.createElement('div');
-    btnContainer.setAttribute('id', 'sci-mainpanel-btncontainer');
-
-    var outputBox = document.createElement('input');
-    outputBox.setAttribute('type', 'text');
-    outputBox.setAttribute('id', 'sci-mainpanel-output');
-    outputBox.setAttribute('placeholder', 'Type symbols...');
-
-    // Buttons behaviour
-    var btnCallbacks = {
-        onUpdate: function(clickedId) {
-            // Update Colors
-            var allBtns = document.querySelectorAll('.sci-mainpanel-btn');
-            allBtns.forEach(b => {
-                const active = state[b.id + 'Mode']; 
-                // Use the dataset fix or a color map here
-                b.style.backgroundColor = active ? b.color : '#f9f9f9';
-                b.style.color = active ? 'white' : 'black';
-            });
-
-            // Chem Window
-            if (clickedId === 'chem') {
-                if (state.chemMode) {
-                    if (!state.chemWindow) {
-                        state.chemWindow = openChemWindow(panel);
-                    }
-                } 
-                else {
-                    document.getElementById('sci-chempanel-elesearch')?.remove();
-                    document.getElementById('sci-chempanel-molmcalc')?.remove();
-                    
-                    if (state.chemWindow) {
-                        state.chemWindow.remove();
-                        state.chemWindow = null;
-                    }
-                }
-            }
-
-            outputBox.focus();
-        }
+        greekMode: false,
+        chemMode: false,
+        upperMode: false,
+        lowerMode: false,
+        mathMode: false,
+        chemWindow: null
     };
 
-    btnContainer.appendChild(createToggle('Suprscript', 'xⁿ', 'upper', '#e57373', state, btnCallbacks));
-    btnContainer.appendChild(createToggle('Subscript', 'xₙ', 'lower', '#ffb74d', state, btnCallbacks));
-    btnContainer.appendChild(createToggle('Greek', 'αbγ', 'greek', '#81c784', state, btnCallbacks)); 
-    btnContainer.appendChild(createToggle('Math', '+-×÷', 'math', '#64b5f6', state, btnCallbacks)); 
-    btnContainer.appendChild(createToggle('Chemistry', 'H₂O', 'chem', '#83c1bb', state, btnCallbacks)); 
+    var outputLoc = null;
 
-    panel.appendChild(header);
-    panel.appendChild(btnContainer);
-    panel.appendChild(outputBox);
-    panel.appendChild(createCopyBtn(outputBox));
-    document.body.appendChild(panel);
+    if (document.getElementById('sci-restore-btn')) {document.getElementById('sci-restore-btn').remove();}
 
-    makeDraggable(header, panel);
+    function initSciHelper(initx = 100, inity = 100) {    
+        // Wait for body to be ready
+        if (!document.body || document.getElementById('sci-mainpanel')) return;
 
-    // --- Keydown Logic ---
+        state.greekMode = false;
+        state.chemMode = false;
+        state.upperMode = false;
+        state.lowerMode = false;
+        state.mathMode = false;
+        state.chemWindow = null;
+        
+        // --- UI Construction ---
+        var panel = document.createElement('div');
+        panel.setAttribute('id', 'sci-mainpanel');
+        panel.style.left = initx + 'px';
+        panel.style.top = inity + 'px';
+
+        var headerContainer = document.createElement('div');
+        headerContainer.setAttribute('id', 'sci-mainpanel-headerContainer');
+        
+        var header = document.createElement('div');
+        header.setAttribute('id', 'sci-mainpanel-header');
+        header.textContent = 'SciHelper';
+        
+        var closeBtn = document.createElement('button')
+        closeBtn.setAttribute('id', 'sci-mainpanel-closeBtn');
+        closeBtn.textContent = "🗙";
+
+        closeBtn.addEventListener('click', function() {
+            state.chemWindow = closeChemWindow();
+            restoreBtn.style.display = 'flex';
+
+            //Record current location for restoration
+            var rect = document.getElementById('sci-mainpanel').getBoundingClientRect();
+            restoreBtn.rcdx = rect.left;
+            restoreBtn.rcdy = rect.top;
+
+            panel.remove();
+        });
+
+        var btnContainer = document.createElement('div');
+        btnContainer.setAttribute('id', 'sci-mainpanel-btncontainer');
+
+        var outputBox = document.createElement('input');
+        outputBox.setAttribute('type', 'text');
+        outputBox.setAttribute('id', 'sci-mainpanel-output');
+        outputBox.setAttribute('placeholder', 'Type symbols...');
+        outputLoc = outputBox;
+
+        // Buttons behaviour
+        var btnCallbacks = {
+            onUpdate: function(clickedId) {
+                // Update Colors
+                var allBtns = document.querySelectorAll('.sci-mainpanel-btn');
+                allBtns.forEach(b => {
+                    const active = state[b.id + 'Mode']; 
+                    // Use the dataset fix or a color map here
+                    b.style.backgroundColor = active ? b.color : '#f9f9f9';
+                    b.style.color = active ? 'white' : 'black';
+                });
+
+                // Chem Window
+                if (clickedId === 'chem') {
+                    if (state.chemMode) {
+                        if (!state.chemWindow) {
+                            state.chemWindow = openChemWindow(panel);
+                        }
+                    } 
+                    else {
+                        if (state.chemWindow) {
+                            state.chemWindow = closeChemWindow();
+                        }
+                    }
+                }
+
+                outputBox.focus();
+            }
+        };
+
+        btnContainer.appendChild(createToggle('Suprscript', 'xⁿ', 'upper', '#e57373', state, btnCallbacks));
+        btnContainer.appendChild(createToggle('Subscript', 'xₙ', 'lower', '#ffb74d', state, btnCallbacks));
+        btnContainer.appendChild(createToggle('Greek', 'αbγ', 'greek', '#81c784', state, btnCallbacks)); 
+        btnContainer.appendChild(createToggle('Math', '+-×÷', 'math', '#64b5f6', state, btnCallbacks)); 
+        btnContainer.appendChild(createToggle('Chem', 'H₂O', 'chem', '#83c1bb', state, btnCallbacks)); 
+
+        headerContainer.appendChild(header);
+        headerContainer.appendChild(closeBtn);
+        panel.appendChild(headerContainer);        
+        panel.appendChild(btnContainer);
+        panel.appendChild(outputBox);
+        panel.appendChild(createCopyBtn(outputBox));
+        document.body.appendChild(panel);
+
+        makeDraggable(header, panel);
+    }
+
+            // --- Keydown Logic ---
     document.addEventListener("keydown", function(e) {
         // Detect focus conflict
         if (document.activeElement.tagName === 'INPUT' && 
@@ -84,10 +118,10 @@
         }
 
         if (e.ctrlKey && e.altKey) {
-            if (e.code === "KeyD") { insertIntoWindow(outputBox, window.degree); e.preventDefault(); return; }
-            if (e.code === "KeyE") { insertIntoWindow(outputBox, window.equilibium); e.preventDefault(); return; }
+            if (e.code === "KeyD") { insertIntoWindow(outputLoc, window.degree); e.preventDefault(); return; }
+            if (e.code === "KeyE") { insertIntoWindow(outputLoc, window.equilibium); e.preventDefault(); return; }
         }
-        
+            
         if ((e.ctrlKey || e.altKey) === false) {
             var symbol = null;
             var key = e.key;
@@ -101,10 +135,22 @@
             } else if (state.mathMode && window.math) {
                 symbol = window.math[key.toLowerCase()];
             }
-                
-            if (symbol) { e.preventDefault(); insertIntoWindow(outputBox, symbol); }
+                    
+            if (symbol) { e.preventDefault(); insertIntoWindow(outputLoc, symbol); }
         }
     }, true);
+
+    var restoreBtn = document.createElement('div');
+    restoreBtn.id = 'sci-restore-btn';
+    restoreBtn.textContent = '⌬';
+    restoreBtn.style.display = 'flex'; 
+    this.rcdx = 100; this.rcdy = 100;
+
+    restoreBtn.addEventListener('click', function() {
+        initSciHelper(this.rcdx, this.rcdy);
+        this.style.display = 'none';
+    });
+
+    document.body.appendChild(restoreBtn);
 }
 )();
-

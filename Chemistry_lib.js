@@ -59,6 +59,14 @@ function elemSearchBtn(name, symbol, color) {
     return btn;
 }
 
+function closeChemWindow() {
+    document.getElementById('sci-chempanel-elesearch')?.remove();
+    document.getElementById('sci-chempanel-molmcalc')?.remove();
+    document.getElementById('sci-chempanel')?.remove();
+
+    return null;
+}
+
 function openElemSearchWindow() {
     if (document.getElementById('sci-chempanel-elesearch')) return;
     
@@ -67,7 +75,7 @@ function openElemSearchWindow() {
     
     var elemSearchHeader = document.createElement('div');
     elemSearchHeader.setAttribute('id', 'sci-chempanel-subfunction-genericheader');
-    elemSearchHeader.textContent = 'Elements Look-Up';
+    elemSearchHeader.textContent = 'Elements Look-Up  ';
 
     var searchBox = document.createElement('input');
     searchBox.placeholder = 'Search element...';

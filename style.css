@@ -1,29 +1,77 @@
 /* --- Main Panel --- */
 #sci-mainpanel { 
     position: fixed; 
-    top: 100px; 
-    right: 20px; 
     width: 220px; 
     background: white; 
-    border: 2px solid #2b668a; 
-    border-radius: 4px; 
-    z-index: 2147483647; 
+    border: 2px solid #4a90e2; 
+    border-radius: 8px; 
+    z-index: 2147483646; 
     padding: 10px; 
     font-family: sans-serif; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+    box-shadow: 0 4px 8px black; 
     display: flex; 
     flex-direction: column; 
 }
 
-#sci-mainpanel-header { 
-    font-weight: bold; 
-    cursor: move; 
-    margin-bottom: 5px; 
-    color: #0c3047; 
-    text-align: center; 
-    border-bottom: 1px solid #eee; 
-    padding-bottom: 4px; 
+#sci-mainpanel-headerContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Pushes text to left, button to right */
+    background: none;
+    padding: 5px 10px;
+    border-radius: 4px 4px 0 0;
+    cursor: move;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #bcbcbc;
+}
+
+#sci-mainpanel-header {
+    cursor: move;
     font-size: 24px;
+    font-weight: bold;
+    color: #4a90e2;
+    text-align: left;
+} 
+
+#sci-mainpanel-closeBtn {
+    background: none;
+    border: none;
+    color: #888; /* Gray by default */
+    cursor: pointer;
+    font-size: 24px;
+    font-weight: heavy;
+    line-height: 1;
+    padding-bottom: 10px;
+    margin-left: 10px;
+}
+
+#sci-mainpanel-closeBtn:hover {
+    color: #ff4242; /* Red on hover */
+}
+
+#sci-restore-btn {
+    position: fixed;
+    bottom: 40px;
+    right: 64px;
+    width: 50px;
+    height: 50px;
+    background-color: #4a90e2;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 8px black;
+    z-index: 2147483645;
+    transition: transform 0.2s;
+}
+
+#sci-restore-btn:hover {
+    transform: scale(1.1);
+    background-color: #357abd;
 }
 
 #sci-mainpanel-btncontainer { 
@@ -49,58 +97,24 @@
     margin-left: 8px; 
 }
 
-#sci-mainpanel-output { 
-    width: 100%; 
-    box-sizing: border-box; 
-    padding: 8px; 
-    border: 1px solid #ccc; 
-    border-radius: 4px; 
+#sci-mainpanel-output {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
 }
 
 #sci-mainpanel-copybtn { 
     margin-top: 8px; 
     padding: 8px; 
     cursor: pointer; 
-    border: 1px solid #2b668a; 
+    border: 1px solid #4a90e2; 
     background: #f9f9f9; 
     border-radius: 4px; 
     font-weight: bold; 
-}
-
-/* --- Chemistry Panel --- */
-/* --- Main SciHelper Panel (The Brain) --- */
-#sci-mainpanel {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 280px;
-    background: #ffffff;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 2147483646;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding: 10px;
-}
-
-#sci-mainpanel-header {
-    padding: 5px;
-    cursor: move;
-    background: #f0f0f0;
-    font-weight: bold;
-    text-align: center;
-    border-radius: 4px;
-    margin-bottom: 10px;
-}
-
-#sci-mainpanel-output {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 8px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
 }
 
 /* --- The Chemistry Toolbox --- */
@@ -112,7 +126,7 @@
     background: #fff;
     border: 1px solid #83c1bb;
     border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px black;
     z-index: 9998;
     padding: 8px;
 }
@@ -167,7 +181,7 @@
     background: white;
     border: 1px solid #ccc;
     border-radius: 6px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px black;
     z-index: 2147483647;
     display: flex;
     flex-direction: column;
@@ -234,7 +248,7 @@
     background: white;
     border: 1px solid #ccc;
     border-radius: 6px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px black;
     z-index: 2147483647;
     display: flex;
     flex-direction: column;
