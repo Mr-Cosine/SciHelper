@@ -65,7 +65,7 @@
     btnContainer.appendChild(createToggle('Subscript', 'xₙ', 'lower', '#ffb74d', state, btnCallbacks));
     btnContainer.appendChild(createToggle('Greek', 'αbγ', 'greek', '#81c784', state, btnCallbacks)); 
     btnContainer.appendChild(createToggle('Math', '+-×÷', 'math', '#64b5f6', state, btnCallbacks)); 
-    btnContainer.appendChild(createToggle('Chem', 'H₂O', 'chem', '#83c1bb', state, btnCallbacks)); 
+    btnContainer.appendChild(createToggle('Chemistry', 'H₂O', 'chem', '#83c1bb', state, btnCallbacks)); 
 
     panel.appendChild(header);
     panel.appendChild(btnContainer);

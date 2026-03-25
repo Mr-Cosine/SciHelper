@@ -124,7 +124,6 @@
     font-weight: bold;
     text-align: center;
     border-radius: 3px;
-    cursor: move;
 }
 
 .sci-chempanel-btn {
@@ -138,6 +137,8 @@
     justify-content: space-between;
     align-items: center;
     transition: background 0.2s;
+    font-weight: bold;
+    font-size: 14px;
 }
 
 .sci-chempanel-btnsymbol {
@@ -151,6 +152,7 @@
     background: #444;
     color: white;
     font-size: 13px;
+    font-weight: bold;
     cursor: move;
 }
 
@@ -185,34 +187,48 @@
 
 .sci-chempanel-elem-row {
     display: flex;
-    padding: 6px;
+    align-items: center;
+    padding: 8px 12px;
     border-bottom: 1px solid #eee;
-    font-size: 13px;
-    cursor: pointer;
+    gap: 10px;
+    text-align: left;
 }
 
 .sci-chempanel-elem-row:hover {
     background: #f0f8f7;
 }
 
-.sci-chempanel-elem-row-symbol {
-    width: 50px;
+.sci-chempanel-elem-row-symbol, 
+.molm-col-sym {
+    width: 33.4%; 
+    flex-shrink: 0;
     font-weight: bold;
-    font-family: Arial, Helvetica, sans-serif;
     color: #83c1bb;
 }
 
-.sci-chempanel-elem-row-name {
-    flex-grow: 1;
-    color: #555;
+
+.sci-chempanel-elem-row-name, 
+.molm-col-data {
+    flex: 1;
+    width: 33.3%; 
+    text-align: left;
+    white-space: nowrap;
+}
+
+.sci-chempanel-elem-row.legend {
+    background-color: #f8f9fa;
+    font-size: 0.9em;
+    color: #666;
+    border-bottom: 2px solid #ddd;
 }
 
 /* --- Molar Mass Calculator --- */
 #sci-chempanel-molmcalc {
     position: fixed;
     top: 150px;
-    right: 560px; /* Offset again so they don't overlap */
+    right: 560px;
     width: 300px;
+    max-width: 500px;
     max-height: 400px;
     background: white;
     border: 1px solid #ccc;
@@ -240,4 +256,41 @@
     border-left: 4px solid #83c1bb;
     min-height: 20px;
     color: #333;
+}
+
+.sci-chempanel-molm-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+    gap: 10px;
+    text-align: left;
+}
+
+.sci-chempanel-molm-row:hover {
+    background: #f0f8f7;
+}
+
+.sci-chempanel-molm-row-symbol, 
+.molm-col-sym {
+    width: 25%; 
+    flex-shrink: 0;
+    font-weight: bold;
+    color: #83c1bb;
+}
+
+
+.sci-chempanel-molm-row-name, 
+.molm-col-data {
+    flex: 1;
+    width: 25%; 
+    text-align: left;
+    white-space: nowrap;
+}
+
+.sci-chempanel-molm-row.legend {
+    background-color: #f8f9fa;
+    font-size: 0.9em;
+    color: #666;
+    border-bottom: 2px solid #ddd;
 }
