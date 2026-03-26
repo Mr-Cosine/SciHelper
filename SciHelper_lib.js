@@ -81,10 +81,14 @@ function createCopyBtn(target) {
 
         navigator.clipboard.writeText(textToCopy).then(() => {
             var originalText = copyBtn.textContent;
-            copyBtn.textContent = 'Copied!';
+            copyBtn.textContent = 'COPIED!';
+            copyBtn.style.backgroundColor = '#72c972';
+            copyBtn.style.color = '#fff';
             
             setTimeout(() => { 
                 copyBtn.textContent = originalText; 
+                copyBtn.style.backgroundColor = '#fff';
+                copyBtn.style.color = '#000';
             }, 1000);
         }).catch(err => {
             console.error('Copy failed:', err);

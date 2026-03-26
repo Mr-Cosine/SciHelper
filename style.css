@@ -10,7 +10,6 @@
     width: 240px; 
     background: white; 
     border: 2px solid #4a90e2; 
-    border-radius: 8px; 
     z-index: 2147483646; 
     padding: 10px; 
     font-family: sans-serif; 
@@ -25,7 +24,6 @@
     justify-content: space-between; /* Pushes text to left, button to right */
     background: none;
     padding: 5px 10px;
-    border-radius: 4px 4px 0 0;
     cursor: move;
     margin-bottom: 25px;
     border-bottom: 1px solid #bcbcbc;
@@ -92,14 +90,11 @@
     font-size: 14x; 
     cursor: pointer; 
     border: 1px solid #ccc; 
-    border-radius: 3px; 
-    font-weight: bold; 
 }
 
 .sci-mainpanel-btnsymbol { 
     font-family: "Times New Roman", serif; 
     font-size: 14px; 
-    font-weight:bold; 
     margin-left: 8px; 
 }
 
@@ -112,13 +107,26 @@
 }
 
 #sci-mainpanel-output {
+    display: block;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
-    padding: 8px;
+    
     margin: 10px 0;
+    padding: 8px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    font-family: "Times New Roman", Times, serif;
     font-size: 16px;
+    
+    min-height: 50px;
+    max-height: 250px; 
+    overflow-y: auto;
+    overflow-x: hidden; 
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    
+    resize: vertical;
 }
 
 #sci-mainpanel-copybtn { 
@@ -127,7 +135,6 @@
     cursor: pointer; 
     border: 1px solid #4a90e2; 
     background: #f9f9f9; 
-    border-radius: 4px; 
     font-weight: bold; 
 }
 
@@ -136,10 +143,9 @@
     position: absolute;
     right: 260px;
     top: 150px;
-    width: 240px;
+    width: 180px;
     background: #fff;
     border: 1px solid #83c1bb;
-    border-radius: 6px;
     box-shadow: 0 2px 8px black;
     z-index: 9998;
     padding: 8px;
@@ -152,7 +158,6 @@
     font-size: 16px;
     font-weight: bold;
     text-align: center;
-    border-radius: 3px;
     cursor: move;
 }
 
@@ -161,13 +166,11 @@
     margin-top: 8px;
     padding: 8px;
     border: 1px solid #ddd;
-    border-radius: 4px;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
     transition: background 0.2s;
-    font-weight: bold;
     font-size: 14px;
 }
 
@@ -195,7 +198,6 @@
     max-height: 400px;
     background: white;
     border: 1px solid #ccc;
-    border-radius: 6px;
     box-shadow: 0 4px 8px black;
     z-index: 2147483647;
     display: flex;
@@ -206,7 +208,6 @@
     margin: 8px;
     padding: 6px;
     border: 1px solid #bbb;
-    border-radius: 3px;
 }
 
 #sci-chempanel-results {
@@ -233,7 +234,7 @@
     flex-shrink: 0;
     font-weight: bold;
     color: #83c1bb;
-    
+    text-align: center;
 }
 
 .sci-chempanel-elem-row-symbol:hover {
@@ -242,15 +243,16 @@
 }
 
 
-.sci-chempanel-elem-row-name {
+.sci-chempanel-elem-row-text {
     flex: 1;
     width: 33.3%; 
     text-align: left;
     white-space: nowrap;
     margin-left: 8px;
+    text-align: center;
 }
 
-.sci-chempanel-elem-row-name:hover {
+.sci-chempanel-elem-row-text:hover {
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
 }
@@ -272,7 +274,6 @@
     max-height: 400px;
     background: white;
     border: 1px solid #ccc;
-    border-radius: 6px;
     box-shadow: 0 4px 8px black;
     z-index: 2147483647;
     display: flex;
@@ -283,21 +284,6 @@
     margin: 8px;
     padding: 6px;
     border: 1px solid #bbb;
-    border-radius: 3px;
-}
-
-#sci-chempanel-molmcalc-result {
-    padding: 10px;
-    font-size: 14px;
-    font-weight: bold;
-    background: #f0f8f7;
-    border-left: 4px solid #83c1bb;
-    min-height: 20px;
-    color: #333;
-}
-
-#sci-chempanel-molmcalc-result:hover {
-    background: #e4fffa;
 }
 
 .sci-chempanel-molm-row {
@@ -312,12 +298,12 @@
     background: #f0f8f7;
 }
 
-.sci-chempanel-molm-row-symbol, 
-.molm-col-sym {
+.sci-chempanel-molm-row-symbol {
     width: 25%; 
     flex-shrink: 0;
     font-weight: bold;
     color: #83c1bb;
+    text-align: center;
 }
 
 .sci-chempanel-molm-row-symbol:hover {
@@ -326,15 +312,16 @@
 }
 
 
-.sci-chempanel-molm-row-name {
+.sci-chempanel-molm-row-text {
     flex: 1;
     width: 25%; 
     text-align: left;
     white-space: nowrap;
     margin-left: 8px;
+    text-align: center;
 }
 
-.sci-chempanel-molm-row-name:hover {
+.sci-chempanel-molm-row-text:hover {
     border-left: 1px solid #ababab;
     border-right: 1px solid #ccc;
 }
@@ -344,6 +331,20 @@
     font-size: 0.9em;
     color: #666;
     border-bottom: 2px solid #ddd;
+}
+
+#sci-chempanel-molmcalc-result {
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    background: #f0f8f7;
+    border-left: 4px solid #83c1bb;
+    min-height: 20px;
+    color: #333;
+}
+
+#sci-chempanel-molmcalc-result:hover {
+    background: #e4fffa;
 }
 
 /* --- Info Page --- */

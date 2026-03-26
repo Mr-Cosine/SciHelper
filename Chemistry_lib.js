@@ -193,10 +193,10 @@ function openElemSearchWindow(outputLoc) {
     symbol_legend.classList.add('sci-chempanel-elem-row-symbol');
     symbol_legend.textContent = "Symbol: ";
     var name_legend = document.createElement("div");
-    name_legend.classList.add('sci-chempanel-elem-row-name');
+    name_legend.classList.add('sci-chempanel-elem-row-text');
     name_legend.textContent = "Name: ";
     var mass_legend = document.createElement("div");
-    mass_legend.classList.add('sci-chempanel-elem-row-name');
+    mass_legend.classList.add('sci-chempanel-elem-row-text');
     mass_legend.textContent = "Molar Mass: ";
 
     legend.append(symbol_legend, name_legend, mass_legend);
@@ -214,11 +214,11 @@ function openElemSearchWindow(outputLoc) {
         symbol_legend.textContent = "Symbol: ";
 
         var name_legend = document.createElement("div");
-        name_legend.classList.add('sci-chempanel-elem-row-name');
+        name_legend.classList.add('sci-chempanel-elem-row-text');
         name_legend.textContent = "Name: ";
 
         var mass_legend = document.createElement("div");
-        mass_legend.classList.add('sci-chempanel-elem-row-name');
+        mass_legend.classList.add('sci-chempanel-elem-row-text');
         mass_legend.textContent = "Molar Mass: ";
 
         legend.append(symbol_legend, name_legend, mass_legend);
@@ -245,8 +245,8 @@ function openElemSearchWindow(outputLoc) {
                         '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9',
                         '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9'
                     };
-                    return map[char] || char;
-                }).toLowerCase();
+                    return map[char] || char;}
+                    ).toLowerCase();
 
                 if (query.length === 1) {
                     // Single letter: Match startsWith for speed/accuracy
@@ -278,13 +278,13 @@ function openElemSearchWindow(outputLoc) {
                 symbol.textContent = symbolToPaste;
                 symbol.onclick = () => {insertIntoWindow(outputLoc, symbolToPaste);}
                 var name = document.createElement("div");
-                name.classList.add('sci-chempanel-elem-row-name');
+                name.classList.add('sci-chempanel-elem-row-text');
                 name.textContent = nameToPaste;
                 name.onclick = () => {insertIntoWindow(outputLoc, nameToPaste);}
                 var mass = document.createElement("div");
-                mass.classList.add('sci-chempanel-elem-row-name');
-                mass.textContent = massToPaste.slice(0,-1);
-                mass.onclick = () => {insertIntoWindow(outputLoc, massToPaste);}
+                mass.classList.add('sci-chempanel-elem-row-text');
+                mass.textContent = massToPaste;
+                mass.onclick = () => {insertIntoWindow(outputLoc, massToPaste.slice(0,-1));}
 
                 row.append(symbol, name, mass);
                 resultsArea.appendChild(row);
@@ -363,13 +363,13 @@ function openMolarMassWindow(outputLoc) {
     symbol_legend.classList.add('sci-chempanel-molm-row-symbol');
     symbol_legend.textContent = "Element: ";
     var count_legend = document.createElement("div");
-    count_legend.classList.add('sci-chempanel-molm-row-name');
+    count_legend.classList.add('sci-chempanel-molm-row-text');
     count_legend.textContent = "Count: ";
     var mass_legend = document.createElement("div");
-    mass_legend.classList.add('sci-chempanel-molm-row-name');
+    mass_legend.classList.add('sci-chempanel-molm-row-text');
     mass_legend.textContent = "Mass: ";
     var masspercent_legend = document.createElement("div");
-    masspercent_legend.classList.add('sci-chempanel-molm-row-name');
+    masspercent_legend.classList.add('sci-chempanel-molm-row-text');
     masspercent_legend.textContent = "%Mass: ";
 
     legend.append(symbol_legend, count_legend, mass_legend, masspercent_legend);
@@ -387,13 +387,13 @@ function openMolarMassWindow(outputLoc) {
             symbol_legend.classList.add('sci-chempanel-molm-row-symbol');
             symbol_legend.textContent = "Element: ";
             var count_legend = document.createElement("div");
-            count_legend.classList.add('sci-chempanel-molm-row-name');
+            count_legend.classList.add('sci-chempanel-molm-row-text');
             count_legend.textContent = "Count: ";
             var mass_legend = document.createElement("div");
-            mass_legend.classList.add('sci-chempanel-molm-row-name');
+            mass_legend.classList.add('sci-chempanel-molm-row-text');
             mass_legend.textContent = "Mass: ";
             var masspercent_legend = document.createElement("div");
-            masspercent_legend.classList.add('sci-chempanel-molm-row-name');
+            masspercent_legend.classList.add('sci-chempanel-molm-row-text');
             masspercent_legend.textContent = "%Mass: ";
 
             legend.append(symbol_legend, count_legend, mass_legend, masspercent_legend);
@@ -431,17 +431,17 @@ function openMolarMassWindow(outputLoc) {
                     symbol.onclick = () => { insertIntoWindow(outputLoc, nameToPaste); }
                                         
                     var count = document.createElement("div");
-                    count.classList.add('sci-chempanel-molm-row-name');
+                    count.classList.add('sci-chempanel-molm-row-text');
                     count.textContent = countToPaste;
                     count.onclick = () => { insertIntoWindow(outputLoc, countToPaste); }
 
                     var mass = document.createElement("div");
-                    mass.classList.add('sci-chempanel-molm-row-name');
+                    mass.classList.add('sci-chempanel-molm-row-text');
                     mass.textContent = massToPaste;
                     mass.onclick = () => { insertIntoWindow(outputLoc, massToPaste); }
 
                     var masspercent = document.createElement("div");
-                    masspercent.classList.add('sci-chempanel-molm-row-name');
+                    masspercent.classList.add('sci-chempanel-molm-row-text');
                     masspercent.textContent = percentToPaste;
                     masspercent.onclick = () => { insertIntoWindow(outputLoc, percentToPaste); }
 

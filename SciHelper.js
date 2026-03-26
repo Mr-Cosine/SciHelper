@@ -61,8 +61,7 @@
         var btnContainer = document.createElement('div');
         btnContainer.setAttribute('id', 'sci-mainpanel-btncontainer');
 
-        var outputBox = document.createElement('input');
-        outputBox.setAttribute('type', 'text');
+        var outputBox = document.createElement('textarea');
         outputBox.setAttribute('id', 'sci-mainpanel-output');
         outputBox.setAttribute('placeholder', 'Type symbols...');
         outputLoc = outputBox;
