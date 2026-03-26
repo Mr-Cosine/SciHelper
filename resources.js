@@ -199,3 +199,27 @@ if (typeof window.elements === 'undefined') {
 
     window.elements = Object.freeze(e);
 }
+
+if (typeof window.polyions === 'undefined') {
+    const p = [];
+
+    p[0]  = new element("Ammonium",       "NH₄⁺",     -1,   18.044);
+    p[1]  = new element("Acetate",        "CH₃COO⁻",  -1,   59.044);
+    p[2]  = new element("Bicarbonate",    "HCO₃⁻",    -1,   61.016);
+    p[3]  = new element("Chlorate",       "ClO₃⁻",    -1,   83.451);
+    p[4]  = new element("Cyanide",        "CN⁻",      -1,   26.017);
+    p[5]  = new element("Hydroxide",      "OH⁻",      -1,   17.007);
+    p[6]  = new element("Nitrate",        "NO₃⁻",     -1,   62.004);
+    p[7]  = new element("Nitrite",        "NO₂⁻",     -1,   46.005);
+    p[8]  = new element("Permanganate",   "MnO₄⁻",    -1,   118.937);
+    p[9]  = new element("Carbonate",      "CO₃²⁻",    -1,   60.008);
+    p[10] = new element("Chromate",       "CrO₄²⁻",   -1,   115.994);
+    p[11] = new element("Dichromate",     "Cr₂O₇²⁻",  -1,   215.988);
+    p[12] = new element("Oxalate",        "C₂O₄²⁻",   -1,   88.019);
+    p[13] = new element("Sulfate",        "SO₄²⁻",    -1,   96.062);
+    p[14] = new element("Sulfite",        "SO₃²⁻",    -1,   80.062);
+    p[15] = new element("Phosphate",      "PO₄³⁻",    -1,   94.971);
+    p[16] = new element("Phosphite",      "PO₃³⁻",    -1,   78.972);
+    
+    window.polyions = Object.freeze(p);
+}

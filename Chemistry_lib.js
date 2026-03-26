@@ -10,6 +10,17 @@ function round(num, digit) {
     }
 }
 
+function hasMultipleCapitals(query) {
+    let count = 0;
+    for (let i = 0; i < query.length; i++) {
+        if (isUpper(query[i])) {
+            count++;
+        }
+        if (count > 1) return true; // Exit early once we hit 2
+    }
+    return false;
+}
+
 class elementinformula {
     constructor(name = "", count = 0) {
         this.name = name;
@@ -214,16 +225,31 @@ function openElemSearchWindow(outputLoc) {
         resultsArea.appendChild(legend);
 
         if (!query) return;
-        else if (isNum(query)) {
-            var found = elements.filter(elem => elem.atomicNumber == query);
-        }
-        else if (query.length > 1) {
-            var found = elements.filter(elem => 
-                elem.name.toLowerCase().includes(query) || elem.symbol.toLowerCase().includes(query));
-        }
+
+        var searchPool = elements.concat(polyions); 
+
+        var found = [];
+
+        if (!isNaN(query) && query !== "") {// Atomic Number Search (Elements only)
+            found = elements.filter(elem => elem.atomicNumber == query);
+        } 
         else {
-            var found = elements.filter(elem => 
-                elem.name.toLowerCase().startsWith(query) || elem.symbol.toLowerCase().startsWith(query));
+            // Text Search (Name or Symbol)
+            found = searchPool.filter(item => {
+                var name = item.name.toLowerCase();
+                var symbol = item.symbol.toLowerCase();
+                // Remove superscripts/subscripts for "easy" typing (e.g., SO4 matching SO₄²⁻)
+                var polySymbol = item.symbol.replace(/[⁺⁻¹²³⁴⁵⁶⁷⁸⁹⁰₀₁₂₃₄₅₆₇₈₉]/g, "").toLowerCase();
+
+                if (query.length === 1) {
+                    // Single letter: Match startsWith for speed/accuracy
+                    return name.startsWith(query) || symbol.startsWith(query);
+                } 
+                else {
+                    // Multiple letters: Match anywhere in string
+                    return name.includes(query) || symbol.includes(query) || polySymbol.includes(query);
+                 }
+            });
         }
 
         if (found.length === 0 && query.length > 0) {
