@@ -309,7 +309,6 @@
     color: #83c1bb;
 }
 
-
 .sci-chempanel-molm-row-name, 
 .molm-col-data {
     flex: 1;
@@ -323,4 +322,93 @@
     font-size: 0.9em;
     color: #666;
     border-bottom: 2px solid #ddd;
+}
+
+/* --- Info Page --- */
+#sci-infopanel, 
+#sci-infopanel-contentpage {
+    position: fixed;
+    width: 150px;
+    background: #fff;
+    border: 1px solid #000;
+    z-index: 2147483646;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.sci-infopanel-header, 
+.sci-infopanel-contentpage-header {
+    background: #000;
+    color: #fff;
+    padding: 6px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    height: 18px;
+}
+
+.sci-infopanel-menubtn,
+.sci-infopanel-contentpage-scroll-row {
+    padding: 10px 8px;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.sci-infopanel-menubtn:hover,
+.sci-infopanel-contentpage-scroll-row:hover {
+    background: #f5f5f5;
+}
+
+.sci-infopanel-contentpage-scroll {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+ .sci-infopanel-contentpage-scroll-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    cursor: pointer;
+} 
+
+.sci-info-contentpage-scroll-row-original,
+.sci-info-contentpage-scroll-row-arrow,
+.sci-info-contentpage-scroll-row-mapped {
+    flex: 1;
+    text-align: center;
+    color: #000;
+}
+
+.sci-info-contentpage-scroll-row-original {
+    color: #888;
+    font-size: 11px;
+}
+
+.sci-info-contentpage-scroll-row-mapped {
+    font-weight: bold;
+    font-family: "Times New Roman", serif;
+}
+
+.sci-infopanel-contentpage-header-closebtn {
+    background: none;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
 }

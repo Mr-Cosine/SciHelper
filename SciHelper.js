@@ -6,6 +6,7 @@
         upperMode: false,
         lowerMode: false,
         mathMode: false,
+        info: false,
         chemWindow: null
     };
 
@@ -22,6 +23,7 @@
         state.upperMode = false;
         state.lowerMode = false;
         state.mathMode = false;
+        state.info = false;
         state.chemWindow = null;
         
         // --- UI Construction ---
@@ -103,13 +105,13 @@
         infoBtn.classList.add('no-select');
 
         infoBtn.addEventListener('click', function () {
-            const existingMenu = document.getElementById('sci-info-menu');
-            const existingPage = document.getElementById('sci-content-page');
-            
-            if (existingMenu || existingPage) {
+            if (state.info) {
                 closeInfo();
-            } else {
-                openInfo(panel);
+                state.info = false;
+            } 
+            else {
+                openInfo(outputLoc, panel);
+                state.info = true;
             }
         });
 

@@ -94,31 +94,21 @@ function createCopyBtn(target) {
     return copyBtn;
 }
 
-function openInfo(parentpanel) {
-    if (document.getElementById('sci-info-menu')) return;
+function openInfo(outputLoc, parentpanel) {
+    if (document.getElementById('sci-infopanel')) return;
 
-    // 1. Get the reference to the info button to dock against
     var infoBtn = document.getElementById('sci-mainpanel-info');
     var rect = infoBtn.getBoundingClientRect();
 
-    // 2. Create Slim Menu Window
     var menuWin = document.createElement('div');
-    menuWin.id = 'sci-info-menu';
-    menuWin.style.cssText = `
-        position: fixed; 
-        width: 120px; 
-        background: #fff; 
-        border: 1px solid #000;
-        z-index: 2147483647; 
-        box-shadow: 2px 2px 0px #ccc;
-        left: ${rect.right + 2}px; 
-        top: ${rect.top}px;
-    `;
+    menuWin.id = 'sci-infopanel'; // Updated ID
+    menuWin.style.left = (rect.right + 2) + 'px';
+    menuWin.style.top = rect.top + 'px';
 
-    // 3. Header
     var header = document.createElement('div');
+    header.className = 'sci-infopanel-header';
+    header.style.cursor = 'default';
     header.textContent = 'MAPPING';
-    header.style.cssText = 'background:#000; color:#fff; padding:3px 6px; font-size:10px; font-weight:bold; cursor:default;';
     
     var btnList = document.createElement('div');
     btnList.style.display = 'flex';
@@ -126,23 +116,18 @@ function openInfo(parentpanel) {
 
     function createMenuBtn(label, data) {
         var btn = document.createElement('button');
+        btn.className = 'sci-infopanel-menubtn';
         btn.textContent = label;
-        btn.style.cssText = 'padding:6px; background:#fff; border:none; border-bottom:1px solid #eee; cursor:pointer; text-align:left; font-size:10px;';
         
         btn.onclick = () => {
-            // Re-calculate rect in case the main panel moved while menu was open
             var freshRect = infoBtn.getBoundingClientRect();
-            renderContentWindow(label, data, freshRect.right + 2, freshRect.top, parentpanel); 
+            renderContentWindow(label, data, freshRect.right + 2, freshRect.top, outputLoc, parentpanel); 
             menuWin.remove();
         };
-        
-        btn.onmouseover = () => btn.style.background = '#f0f0f0';
-        btn.onmouseout = () => btn.style.background = '#fff';
-        
         return btn;
     }
 
-    // Populate using your global objects
+    // Populate using global objects
     btnList.appendChild(createMenuBtn('MATH', Object.entries(window.math || {})));
     btnList.appendChild(createMenuBtn('GREEK', Object.entries(window.greek || {})));
     btnList.appendChild(createMenuBtn('SUP/SUB', Object.entries(window.superscripts || {}).concat(Object.entries(window.subscripts || {}))));
@@ -152,81 +137,79 @@ function openInfo(parentpanel) {
     document.body.appendChild(menuWin);
 }
 
-function renderContentWindow(title, mapping, x, y, parentpanel) {
-    if (document.getElementById('sci-content-page')) {
-        document.getElementById('sci-content-page').remove();
-    }
+function renderContentWindow(title, mapping, x, y, outputLoc, parentpanel) {
+    var existingPage = document.getElementById('sci-infopanel-contentpage');
+    if (existingPage) existingPage.remove();
 
     var contentWin = document.createElement('div');
-    contentWin.id = 'sci-content-page';
-    contentWin.style.cssText = `
-        position: fixed; 
-        width: 120px; 
-        background: #fff; 
-        border: 1px solid #000;
-        z-index: 2147483646; 
-        left: ${x}px; 
-        top: ${y}px;
-        display: flex; 
-        flex-direction: column;
-        box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-    `;
+    contentWin.id = 'sci-infopanel-contentpage';
+    contentWin.style.left = x + 'px';
+    contentWin.style.top = y + 'px';
 
-    // Header with Close Button
     var header = document.createElement('div');
-    header.style.cssText = 'background:#000; color:#fff; padding:4px 6px; display:flex; justify-content:space-between; align-items:center; cursor:move;';
+    header.className = 'sci-infopanel-contentpage-header';
+    header.style.cursor = 'move';
     
     var titleSpan = document.createElement('span');
+    titleSpan.className = 'sci-infopanel-contentpage-header-title';
     titleSpan.textContent = title;
-    titleSpan.style.fontSize = '9px';
-    titleSpan.style.fontWeight = 'bold';
 
     var closeBtn = document.createElement('button');
+    closeBtn.className = 'sci-infopanel-contentpage-header-closebtn';
     closeBtn.textContent = '×';
-    closeBtn.style.cssText = 'background:none; color:#fff; border:none; cursor:pointer; font-weight:bold; padding:0 2px;';
-    closeBtn.onclick = () => {contentWin.remove(); openInfo(parentpanel);};
+    closeBtn.onclick = () => {
+        contentWin.remove(); 
+        openInfo(outputLoc, parentpanel);
+    };
 
     header.append(titleSpan, closeBtn);
 
-    // Scrollable Display Area
     var displayArea = document.createElement('div');
-    displayArea.style.cssText = 'height:300px; overflow-y:auto; font-family: monospace; background:#fff; padding-left: 10px; padding-right: 20px';
+    displayArea.className = 'sci-infopanel-contentpage-scroll';
 
     mapping.forEach(([key, val]) => {
         var row = document.createElement('div');
-        row.style.cssText = 'display:flex; padding:5px; border-bottom:1px solid #f0f0f0; cursor:pointer; align-items:center;';
-        row.innerHTML = `<div style="flex:1; color:#888; font-size:14px;">${key}    →</div>
-                         <div style="flex:1; text-align:right; font-weight:bold; font-size:14px; color:#000;">${val}</div>`;
-        
+        row.className = 'sci-infopanel-contentpage-scroll-row';
+
+        var originalDiv = document.createElement('div');
+        originalDiv.className = 'sci-infopanel-contentpage-scroll-row-original';
+        originalDiv.textContent = key;
+
+        var arrowDiv = document.createElement('div');
+        arrowDiv.className = 'sci-infopanel-contentpage-scroll-row-arrow';
+        arrowDiv.textContent = '→';
+
+        var mappedDiv = document.createElement('div');
+        mappedDiv.className = 'sci-infopanel-contentpage-scroll-row-mapped';
+        mappedDiv.textContent = val;
+
+        row.appendChild(originalDiv);
+        row.appendChild(arrowDiv);
+        row.appendChild(mappedDiv);
+
         row.onclick = () => {
-            // Using your existing outputLoc reference
             if (typeof insertIntoWindow === 'function' && outputLoc) {
                 insertIntoWindow(outputLoc, val);
             }
         };
 
-        row.onmouseover = () => row.style.background = '#f9f9f9';
-        row.onmouseout = () => row.style.background = '#fff';
-        
+        // Hover effects handled via CSS or JS (optional)
         displayArea.appendChild(row);
     });
 
     contentWin.append(header, displayArea);
-    
-    // CRITICAL: Append to body first
     document.body.appendChild(contentWin);
 
-    // Now initialize draggable on the header
     if (typeof makeDraggable === 'function') {
         makeDraggable(header, contentWin);
     }
 }
 
 function closeInfo() {
-    while(document.getElementById('sci-content-page')) {
-        document.getElementById('sci-content-page').remove();
+    if(document.getElementById('sci-infopanel-contentpage')) {
+        document.getElementById('sci-infopanel-contentpage').remove();
     }
-    while(document.getElementById('sci-info-menu')){
-        document.getElementById('sci-info-menu').remove();
+    if(document.getElementById('sci-infopanel')){
+        document.getElementById('sci-infopanel').remove();
     }
 }
