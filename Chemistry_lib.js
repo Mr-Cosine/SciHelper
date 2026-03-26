@@ -1,3 +1,95 @@
+// --- Helper Functions ---
+function isLetter(token) {return /[a-zA-Z]/.test(token);}
+function islegit(token) {return (isLetter(token) || !isNaN(token));}
+function isUpper(token) {return (isLetter(token) && token === token.toUpperCase());}
+function isLower(token) {return (isLetter(token) && token === token.toLowerCase());}
+function isNum(token) {return (!isNaN(token));}
+function round(num, digit) {
+    if (isNum(num) && isNum(digit)){
+        return Math.round(num * (10**digit)) / (10**digit);
+    }
+}
+
+class elementinformula {
+    constructor(name = "", count = 0) {
+        this.name = name;
+        this.count = count;
+    }
+}
+
+function parseInput(input) {
+    let elemList = [];
+    let i = 0;
+    while (i < input.length) {
+        let token = input[i];
+        if (isUpper(token)) {
+            let name = token;
+            i++;
+            if (i < input.length && isLower(input[i])) {
+                name += input[i];
+                i++;
+            }
+            let countStr = "";
+            while (i < input.length && isNum(input[i]) && !isLetter(input[i])) {
+                countStr += input[i];
+                i++;
+            }
+            let count = countStr === "" ? 1 : parseInt(countStr);
+            elemList.push(new elementinformula(name, count));
+        } 
+
+        else if (token === " ") {
+            i++;
+        }
+        
+        else if(token === "(" || token === ")"){
+            return ["brkt"];
+        }
+        else {
+            return ["ilgl"]
+        }
+    }
+    return elemList;
+}
+
+function lookup(elementName) {
+    for (var j = 0; j < elements.length; j++) {
+        var currentEntry = elements[j];
+
+        // 1. Safety check: make sure the array slot isn't empty/null
+        if (currentEntry && typeof currentEntry === 'object') {
+            
+            // 2. Exact match check
+            if (currentEntry.symbol.toLowerCase() === elementName.toLowerCase()) {
+                return currentEntry.molarMass;
+            }
+        }
+    }
+    return -1;
+}
+
+function calculate(elementList) {
+    // 1. Check for your custom error codes
+    if (!elementList || elementList.length === 0) return [-1, ""];
+    if (elementList[0] === "brkt") return [-2, ""]; // Code for "No brackets allowed yet"
+    if (elementList[0] === "ilgl") return [-3, ""]; // Code for "Illegal character"
+
+    let totalMass = 0;
+    var elemNotFound = "";
+    for (let el of elementList) {
+        let unitMass = lookup(el.name);
+        if (unitMass < 0) {
+            totalMass = -4;
+            elemNotFound = elemNotFound + el.name + ", ";
+        }
+        if (totalMass != -4) totalMass += unitMass * el.count;
+    }
+    return [totalMass, elemNotFound.slice(0,-2)];
+}
+
+//============================================================================
+// --- UI builders ---
+
 // --- Main Chemistry submenu ---
 function openChemWindow(parentWin) {
     if (document.getElementById('sci-chempanel')) return;
@@ -8,6 +100,7 @@ function openChemWindow(parentWin) {
     var chemHeader = document.createElement('div');
     chemHeader.setAttribute('id', 'sci-chempanel-header');
     chemHeader.textContent = 'Chemistry Toolbox';
+    chemHeader.classList.add('no-select');
 
     var fnButtonContainer = document. createElement('div');
     fnButtonContainer.setAttribute('class', 'sci-chempanel-btncontainer');
@@ -245,41 +338,41 @@ function openMolarMassWindow() {
 
     inputBox.addEventListener('input', function() {
         let elemLst = parseInput(inputBox.value);
-        let totalMass = calculate(elemLst);
+        let [totalMass,elem404] = calculate(elemLst);
+
+        while(resultBox.firstChild) { resultBox.removeChild(resultBox.firstChild); }
+
+            var legend = document.createElement('div');
+            legend.setAttribute('class', 'sci-chempanel-molm-row');
+            var symbol_legend = document.createElement("div");
+            symbol_legend.classList.add('sci-chempanel-molm-row-symbol');
+            symbol_legend.textContent = "Element: ";
+            var count_legend = document.createElement("div");
+            count_legend.classList.add('sci-chempanel-molm-row-name');
+            count_legend.textContent = "Count: ";
+            var mass_legend = document.createElement("div");
+            mass_legend.classList.add('sci-chempanel-molm-row-name');
+            mass_legend.textContent = "Mass: ";
+            var masspercent_legend = document.createElement("div");
+            masspercent_legend.classList.add('sci-chempanel-molm-row-name');
+            masspercent_legend.textContent = "%Mass: "
+
+            legend.append(symbol_legend, count_legend, mass_legend, masspercent_legend);
 
         switch (totalMass) {
             case -1:
                 result.textContent = "Molar Mass: --";
                 break;
             case -2:
-                result.textContent = "Error: Please expand the content in bracket.";
+                result.textContent = "Error: Please expand the content in bracket and remove brackets.";
                 break;
             case -3:
-                result.textContent = "Error: Invalid character.";
+                result.textContent = "Error: Contains invalid characters.";
                 break;
             case -4:
-                result.textContent = "Error: Element not found.";
+                result.textContent = "Error: Contains unrecognized elements: " + elem404;
                 break;
             default:
-                while(resultBox.firstChild) { resultBox.removeChild(resultBox.firstChild); }
-
-                var legend = document.createElement('div');
-                legend.setAttribute('class', 'sci-chempanel-molm-row');
-                var symbol_legend = document.createElement("div");
-                symbol_legend.classList.add('sci-chempanel-molm-row-symbol');
-                symbol_legend.textContent = "Element: ";
-                var count_legend = document.createElement("div");
-                count_legend.classList.add('sci-chempanel-molm-row-name');
-                count_legend.textContent = "Count: ";
-                var mass_legend = document.createElement("div");
-                mass_legend.classList.add('sci-chempanel-molm-row-name');
-                mass_legend.textContent = "Mass: ";
-                var masspercent_legend = document.createElement("div");
-                masspercent_legend.classList.add('sci-chempanel-molm-row-name');
-                masspercent_legend.textContent = "%Mass: "
-
-                legend.append(symbol_legend, count_legend, mass_legend, masspercent_legend);
-
                 resultBox.appendChild(legend);
 
                 for (elem of elemLst) {
@@ -296,17 +389,18 @@ function openMolarMassWindow() {
 
                     var mass = document.createElement("div");
                     mass.classList.add('sci-chempanel-molm-row-name');
-                    mass.textContent = (lookup(elem.name)*elem.count).toFixed(3);
+                    mass.textContent = round((lookup(elem.name)*elem.count), 3);
 
                     var masspercent = document.createElement("div");
                     masspercent.classList.add('sci-chempanel-molm-row-name');
-                    masspercent.textContent = (lookup(elem.name)*elem.count/totalMass*100).toFixed(3) + "%";
+                    masspercent.textContent = round((lookup(elem.name)*elem.count/totalMass*100), 3) + "%";
 
                     row.append(symbol, count, mass, masspercent);
                     resultBox.appendChild(row);
                 }
 
-                result.textContent = "Molar Mass = " + totalMass.toFixed(3) + " g/mol";
+                result.textContent = "Molar Mass = " + round(totalMass, 3) + " g/mol";
+                break;
         }
     });
 
@@ -319,83 +413,4 @@ function openMolarMassWindow() {
     makeDraggable(molarMassHeader, molarMassWindow);
 
     return molarMassWindow;
-}
-
-function isLetter(token) {return /[a-zA-Z]/.test(token);}
-function islegit(token) {return (isLetter(token) || !isNaN(token));}
-function isUpper(token) {return (isLetter(token) && token === token.toUpperCase());}
-function isLower(token) {return (isLetter(token) && token === token.toLowerCase());}
-function isNum(token) {return (!isNaN(token));}
-
-class elementinformula {
-    constructor(name = "", count = 0) {
-        this.name = name;
-        this.count = count;
-    }
-}
-
-function parseInput(input) {
-    let elemList = [];
-    let i = 0;
-    while (i < input.length) {
-        let token = input[i];
-        if (isUpper(token)) {
-            let name = token;
-            i++;
-            if (i < input.length && isLower(input[i])) {
-                name += input[i];
-                i++;
-            }
-            let countStr = "";
-            while (i < input.length && isNum(input[i]) && !isLetter(input[i])) {
-                countStr += input[i];
-                i++;
-            }
-            let count = countStr === "" ? 1 : parseInt(countStr);
-            elemList.push(new elementinformula(name, count));
-        } 
-
-        else if (token === " ") {
-            i++;
-        }
-        
-        else if(token === "(" || token === ")"){
-            return ["brkt"];
-        }
-        else {
-            return ["ilgl"]
-        }
-    }
-    return elemList;
-}
-
-function lookup(elementName) {
-    for (var j = 0; j < elements.length; j++) {
-        var currentEntry = elements[j];
-
-        // 1. Safety check: make sure the array slot isn't empty/null
-        if (currentEntry && typeof currentEntry === 'object') {
-            
-            // 2. Exact match check
-            if (currentEntry.symbol.toLowerCase() === elementName.toLowerCase()) {
-                return currentEntry.molarMass;
-            }
-        }
-    }
-    return -1;
-}
-
-function calculate(elementList) {
-    // 1. Check for your custom error codes
-    if (!elementList || elementList.length === 0) return -1;
-    if (elementList[0] === "brkt") return -2; // Code for "No brackets allowed yet"
-    if (elementList[0] === "ilgl") return -3; // Code for "Illegal character"
-
-    let totalMass = 0;
-    for (let el of elementList) {
-        let unitMass = lookup(el.name);
-        if (unitMass < 0) return -4; // Code for "Element not in Periodic Table"
-        totalMass += unitMass * el.count;
-    }
-    return totalMass;
 }

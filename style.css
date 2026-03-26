@@ -145,6 +145,7 @@
     font-weight: bold;
     text-align: center;
     border-radius: 3px;
+    cursor: move;
 }
 
 .sci-chempanel-btn {

@@ -36,6 +36,7 @@
         var header = document.createElement('div');
         header.setAttribute('id', 'sci-mainpanel-header');
         header.textContent = 'SciHelper';
+        header.classList.add('no-select');
         
         var closeBtn = document.createElement('button')
         closeBtn.setAttribute('id', 'sci-mainpanel-closeBtn');
@@ -80,6 +81,8 @@
                     if (state.chemMode) {
                         if (!state.chemWindow) {
                             state.chemWindow = openChemWindow(panel);
+
+                            makeDraggable(document.getElementById('sci-chempanel-header'), panel);
                         }
                     } 
                     else {
