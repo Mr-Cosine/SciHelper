@@ -239,7 +239,14 @@ function openElemSearchWindow(outputLoc) {
                 var name = item.name.toLowerCase();
                 var symbol = item.symbol.toLowerCase();
                 // Remove superscripts/subscripts for "easy" typing (e.g., SO4 matching SO₄²⁻)
-                var polySymbol = item.symbol.replace(/[⁺⁻¹²³⁴⁵⁶⁷⁸⁹⁰₀₁₂₃₄₅₆₇₈₉]/g, "").toLowerCase();
+                var polySymbol = item.symbol.replace(/[⁺⁻¹²³⁴⁵⁶⁷⁸⁹⁰₀₁₂₃₄₅₆₇₈₉]/g, function(char) {
+                    const map = {
+                        '⁺': '+', '⁻': '-', 
+                        '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9',
+                        '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9'
+                    };
+                    return map[char] || char;
+                }).toLowerCase();
 
                 if (query.length === 1) {
                     // Single letter: Match startsWith for speed/accuracy
