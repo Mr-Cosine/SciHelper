@@ -83,6 +83,21 @@ function openElemSearchWindow() {
     var resultsArea = document.createElement('div');
     resultsArea.id = 'sci-chempanel-results';
 
+    var legend = document.createElement('div');
+    legend.setAttribute('class', 'sci-chempanel-elem-row');
+    var symbol_legend = document.createElement("div");
+    symbol_legend.classList.add('sci-chempanel-elem-row-symbol');
+    symbol_legend.textContent = "Symbol: ";
+    var name_legend = document.createElement("div");
+    name_legend.classList.add('sci-chempanel-elem-row-name');
+    name_legend.textContent = "Name: ";
+    var mass_legend = document.createElement("div");
+    mass_legend.classList.add('sci-chempanel-elem-row-name');
+    mass_legend.textContent = "Molar Mass: ";
+
+    legend.append(symbol_legend, name_legend, mass_legend);
+    resultsArea.appendChild(legend);
+
     searchBox.addEventListener('input', function() {
         var query = searchBox.value.toLowerCase();
         while(resultsArea.firstChild) { resultsArea.removeChild(resultsArea.firstChild); }
@@ -106,6 +121,9 @@ function openElemSearchWindow() {
         resultsArea.appendChild(legend);
 
         if (!query) return;
+        else if (isNum(query)) {
+            var found = elements.filter(elem => elem.atomicNumber == query);
+        }
         else if (query.length > 1) {
             var found = elements.filter(elem => 
                 elem.name.toLowerCase().includes(query) || elem.symbol.toLowerCase().includes(query));
@@ -116,29 +134,30 @@ function openElemSearchWindow() {
         }
 
         if (found.length === 0 && query.length > 0) {
-            resultsArea.textContent = "No matched result.";
-        }
-
-        found.forEach(elem => {
-            
             var row = document.createElement('div');
             row.setAttribute('class', 'sci-chempanel-elem-row');
-    
-            var symbol = document.createElement("div");
-            symbol.classList.add('sci-chempanel-elem-row-symbol');
-            symbol.textContent = elem.atomicNumber + '\t' + elem.symbol;
-
-            var name = document.createElement("div");
-            name.classList.add('sci-chempanel-elem-row-name');
-            name.textContent = elem.name;
-
-            var mass = document.createElement("div");
-            mass.classList.add('sci-chempanel-elem-row-name');
-            mass.textContent = elem.molarMass;
-
-            row.append(symbol, name, mass);
+            row.textContent = "No matched result.";
             resultsArea.appendChild(row);
-        });
+        }
+        else {
+            found.forEach(elem => {
+                
+                var row = document.createElement('div');
+                row.setAttribute('class', 'sci-chempanel-elem-row');
+                var symbol = document.createElement("div");
+                symbol.classList.add('sci-chempanel-elem-row-symbol');
+                symbol.textContent = elem.atomicNumber + '\t' + elem.symbol;
+                var name = document.createElement("div");
+                name.classList.add('sci-chempanel-elem-row-name');
+                name.textContent = elem.name;
+                var mass = document.createElement("div");
+                mass.classList.add('sci-chempanel-elem-row-name');
+                mass.textContent = elem.molarMass.toFixed(3) + 'u';
+
+                row.append(symbol, name, mass);
+                resultsArea.appendChild(row);
+            });
+        }
     });
 
     elemSearchWindow.append(elemSearchHeader, searchBox, resultsArea);
@@ -206,6 +225,24 @@ function openMolarMassWindow() {
     var result = document.createElement('div');
     result.setAttribute('id', 'sci-chempanel-molmcalc-result');
 
+    var legend = document.createElement('div');
+    legend.setAttribute('class', 'sci-chempanel-molm-row');
+    var symbol_legend = document.createElement("div");
+    symbol_legend.classList.add('sci-chempanel-molm-row-symbol');
+    symbol_legend.textContent = "Element: ";
+    var count_legend = document.createElement("div");
+    count_legend.classList.add('sci-chempanel-molm-row-name');
+    count_legend.textContent = "Count: ";
+    var mass_legend = document.createElement("div");
+    mass_legend.classList.add('sci-chempanel-molm-row-name');
+    mass_legend.textContent = "Mass: ";
+    var masspercent_legend = document.createElement("div");
+    masspercent_legend.classList.add('sci-chempanel-molm-row-name');
+    masspercent_legend.textContent = "%Mass: "
+
+    legend.append(symbol_legend, count_legend, mass_legend, masspercent_legend);
+    resultBox.appendChild(legend);
+
     inputBox.addEventListener('input', function() {
         let elemLst = parseInput(inputBox.value);
         let totalMass = calculate(elemLst);
@@ -225,21 +262,18 @@ function openMolarMassWindow() {
                 break;
             default:
                 while(resultBox.firstChild) { resultBox.removeChild(resultBox.firstChild); }
+
                 var legend = document.createElement('div');
                 legend.setAttribute('class', 'sci-chempanel-molm-row');
-
                 var symbol_legend = document.createElement("div");
                 symbol_legend.classList.add('sci-chempanel-molm-row-symbol');
                 symbol_legend.textContent = "Element: ";
-
                 var count_legend = document.createElement("div");
                 count_legend.classList.add('sci-chempanel-molm-row-name');
                 count_legend.textContent = "Count: ";
-
                 var mass_legend = document.createElement("div");
                 mass_legend.classList.add('sci-chempanel-molm-row-name');
                 mass_legend.textContent = "Mass: ";
-
                 var masspercent_legend = document.createElement("div");
                 masspercent_legend.classList.add('sci-chempanel-molm-row-name');
                 masspercent_legend.textContent = "%Mass: "
@@ -269,7 +303,6 @@ function openMolarMassWindow() {
                     masspercent.textContent = (lookup(elem.name)*elem.count/totalMass*100).toFixed(3) + "%";
 
                     row.append(symbol, count, mass, masspercent);
-
                     resultBox.appendChild(row);
                 }
 

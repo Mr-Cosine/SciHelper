@@ -40,6 +40,7 @@
         var closeBtn = document.createElement('button')
         closeBtn.setAttribute('id', 'sci-mainpanel-closeBtn');
         closeBtn.textContent = "🗙";
+        closeBtn.classList.add('no-select');
 
         closeBtn.addEventListener('click', function() {
             state.chemWindow = closeChemWindow();
@@ -133,7 +134,7 @@
             } else if (state.greekMode && window.greek) {
                 symbol = window.greek[key.toLowerCase()];
             } else if (state.mathMode && window.math) {
-                symbol = window.math[key.toLowerCase()];
+                symbol = window.math[key];
             }
                     
             if (symbol) { e.preventDefault(); insertIntoWindow(outputLoc, symbol); }
@@ -143,13 +144,24 @@
     var restoreBtn = document.createElement('div');
     restoreBtn.id = 'sci-restore-btn';
     restoreBtn.textContent = '⌬';
-    restoreBtn.style.display = 'flex'; 
+    restoreBtn.classList.add('no-select');
     this.rcdx = 100; this.rcdy = 100;
 
-    restoreBtn.addEventListener('click', function() {
-        initSciHelper(this.rcdx, this.rcdy);
-        this.style.display = 'none';
+    let startTime;
+    restoreBtn.addEventListener('mousedown', function() {
+        startTime = Date.now(); // Record the exact start time
     });
+
+    restoreBtn.addEventListener('mouseup', function() {
+        let duration = Date.now() - startTime;
+
+           if (duration < 150) { 
+            initSciHelper(this.rcdx, this.rcdy);
+            this.style.display = 'none';
+        } 
+    });
+
+    makeDraggable(restoreBtn, restoreBtn);
 
     document.body.appendChild(restoreBtn);
 }

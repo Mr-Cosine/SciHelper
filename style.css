@@ -1,3 +1,9 @@
+.no-select {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none;     /* IE 10 and 11 */
+    user-select: none;         /* Standard syntax (Chrome, Firefox, Edge) */
+}
+
 /* --- Main Panel --- */
 #sci-mainpanel { 
     position: fixed; 
@@ -71,7 +77,7 @@
 
 #sci-restore-btn:hover {
     transform: scale(1.1);
-    background-color: #357abd;
+    background-color: #5d9ce3;
 }
 
 #sci-mainpanel-btncontainer { 
@@ -121,7 +127,7 @@
 #sci-chempanel {
     position: absolute;
     top: 150px;
-    right: 320px; /* Offset from main panel */
+    right: 240px; /* Offset from main panel */
     width: 220px;
     background: #fff;
     border: 1px solid #83c1bb;
@@ -175,7 +181,7 @@
 #sci-chempanel-elesearch {
     position: fixed;
     top: 150px;
-    right: 560px; /* Offset again so they don't overlap */
+    right: 560px;
     width: 300px;
     max-height: 400px;
     background: white;
