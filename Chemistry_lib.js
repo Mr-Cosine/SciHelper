@@ -91,7 +91,7 @@ function calculate(elementList) {
 // --- UI builders ---
 
 // --- Main Chemistry submenu ---
-function openChemWindow(parentWin) {
+function openChemWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-chempanel')) return;
     
     var chemWindow = document.createElement('div');
@@ -106,8 +106,8 @@ function openChemWindow(parentWin) {
     fnButtonContainer.setAttribute('class', 'sci-chempanel-btncontainer');
 
     var btncolor = '#e6e69a';
-    fnButtonContainer.appendChild(elemSearchBtn('Element Look-Up', '🔎', btncolor));
-    fnButtonContainer.appendChild(molarMassBtn('Molar Mass Calculator', '🧮', btncolor));
+    fnButtonContainer.appendChild(elemSearchBtn('Element Look-Up', '🔎', btncolor, outputLoc));
+    fnButtonContainer.appendChild(molarMassBtn('Molar Mass Calculator', '🧮', btncolor, outputLoc));
 
     chemWindow.appendChild(chemHeader);
     chemWindow.appendChild(fnButtonContainer);
@@ -117,7 +117,7 @@ function openChemWindow(parentWin) {
 }
 
 // --- Element Loop Ups ---
-function elemSearchBtn(name, symbol, color) {
+function elemSearchBtn(name, symbol, color, outputLoc) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'sci-chempanel-btn');
     btn.style.backgroundColor = '#f9f9f9'; // Default state
@@ -138,7 +138,7 @@ function elemSearchBtn(name, symbol, color) {
         
         if (!existingWindow) {
             // OPEN logic
-            openElemSearchWindow();
+            openElemSearchWindow(outputLoc);
             btn.style.backgroundColor = color;
             btn.style.color = 'white';
         } else {
@@ -160,7 +160,7 @@ function closeChemWindow() {
     return null;
 }
 
-function openElemSearchWindow() {
+function openElemSearchWindow(outputLoc) {
     if (document.getElementById('sci-chempanel-elesearch')) return;
     
     var elemSearchWindow = document.createElement('div');
@@ -233,23 +233,29 @@ function openElemSearchWindow() {
             resultsArea.appendChild(row);
         }
         else {
-            found.forEach(elem => {
-                
+            for (let elem of found) {
                 var row = document.createElement('div');
                 row.setAttribute('class', 'sci-chempanel-elem-row');
+                const symbolToPaste = elem.symbol;
+                const nameToPaste = elem.name;
+                const massToPaste = round(elem.molarMass, 3) + 'u';
+
                 var symbol = document.createElement("div");
                 symbol.classList.add('sci-chempanel-elem-row-symbol');
-                symbol.textContent = elem.atomicNumber + '\t' + elem.symbol;
+                symbol.textContent = symbolToPaste;
+                symbol.onclick = () => {insertIntoWindow(outputLoc, symbolToPaste);}
                 var name = document.createElement("div");
                 name.classList.add('sci-chempanel-elem-row-name');
-                name.textContent = elem.name;
+                name.textContent = nameToPaste;
+                name.onclick = () => {insertIntoWindow(outputLoc, nameToPaste);}
                 var mass = document.createElement("div");
                 mass.classList.add('sci-chempanel-elem-row-name');
-                mass.textContent = elem.molarMass.toFixed(3) + 'u';
+                mass.textContent = massToPaste.slice(0,-1);
+                mass.onclick = () => {insertIntoWindow(outputLoc, massToPaste);}
 
                 row.append(symbol, name, mass);
                 resultsArea.appendChild(row);
-            });
+            }
         }
     });
 
@@ -263,7 +269,7 @@ function openElemSearchWindow() {
 
 // --- Molar Mass Calculation ---
 
-function molarMassBtn(name, symbol, color) {
+function molarMassBtn(name, symbol, color, outputLoc) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'sci-chempanel-btn');
     btn.style.backgroundColor = '#f9f9f9'; // Default state
@@ -284,7 +290,7 @@ function molarMassBtn(name, symbol, color) {
         
         if (!existingWindow) {
             // OPEN logic
-            openMolarMassWindow();
+            openMolarMassWindow(outputLoc);
             btn.style.backgroundColor = color;
             btn.style.color = 'white';
         } 
@@ -299,7 +305,7 @@ function molarMassBtn(name, symbol, color) {
     return btn;
 }
 
-function openMolarMassWindow() {
+function openMolarMassWindow(outputLoc) {
     if (document.getElementById('sci-chempanel-molmcalc')) return;
     
     var molarMassWindow = document.createElement('div');
@@ -331,7 +337,7 @@ function openMolarMassWindow() {
     mass_legend.textContent = "Mass: ";
     var masspercent_legend = document.createElement("div");
     masspercent_legend.classList.add('sci-chempanel-molm-row-name');
-    masspercent_legend.textContent = "%Mass: "
+    masspercent_legend.textContent = "%Mass: ";
 
     legend.append(symbol_legend, count_legend, mass_legend, masspercent_legend);
     resultBox.appendChild(legend);
@@ -355,7 +361,7 @@ function openMolarMassWindow() {
             mass_legend.textContent = "Mass: ";
             var masspercent_legend = document.createElement("div");
             masspercent_legend.classList.add('sci-chempanel-molm-row-name');
-            masspercent_legend.textContent = "%Mass: "
+            masspercent_legend.textContent = "%Mass: ";
 
             legend.append(symbol_legend, count_legend, mass_legend, masspercent_legend);
 
@@ -375,42 +381,52 @@ function openMolarMassWindow() {
             default:
                 resultBox.appendChild(legend);
 
-                for (elem of elemLst) {
+                for (let elem of elemLst) {
                     var row = document.createElement('div');
                     row.setAttribute('class', 'sci-chempanel-molm-row');
-            
+
+                    // 1. CAPTURE the values right now so the click knows exactly what to paste
+                    const nameToPaste = elem.name;
+                    const countToPaste = elem.count.toString();
+                    const massToPaste = round((lookup(elem.name) * elem.count), 3).toString();
+                    const percentToPaste = round((lookup(elem.name) * elem.count / totalMass * 100), 3) + "%";
+
                     var symbol = document.createElement("div");
                     symbol.classList.add('sci-chempanel-molm-row-symbol');
-                    symbol.textContent = elem.name;
-                        
+                    symbol.textContent = nameToPaste;
+                    // 2. Use the CAPTURED constant here
+                    symbol.onclick = () => { insertIntoWindow(outputLoc, nameToPaste); }
+                                        
                     var count = document.createElement("div");
                     count.classList.add('sci-chempanel-molm-row-name');
-                    count.textContent = elem.count 
+                    count.textContent = countToPaste;
+                    count.onclick = () => { insertIntoWindow(outputLoc, countToPaste); }
 
                     var mass = document.createElement("div");
                     mass.classList.add('sci-chempanel-molm-row-name');
-                    mass.textContent = round((lookup(elem.name)*elem.count), 3);
+                    mass.textContent = massToPaste;
+                    mass.onclick = () => { insertIntoWindow(outputLoc, massToPaste); }
 
                     var masspercent = document.createElement("div");
                     masspercent.classList.add('sci-chempanel-molm-row-name');
-                    masspercent.textContent = round((lookup(elem.name)*elem.count/totalMass*100), 3) + "%";
+                    masspercent.textContent = percentToPaste;
+                    masspercent.onclick = () => { insertIntoWindow(outputLoc, percentToPaste); }
 
                     row.append(symbol, count, mass, masspercent);
                     resultBox.appendChild(row);
                 }
+                const finalResultStr = round(totalMass, 3) + " g/mol";
+                result.textContent = "Molar Mass = " + finalResultStr;
+                result.onclick = () => insertIntoWindow(outputLoc, finalResultStr);
 
-                result.textContent = "Molar Mass = " + round(totalMass, 3) + " g/mol";
                 break;
         }
     });
 
-    molarMassWindow.appendChild(molarMassHeader);
-    molarMassWindow.appendChild(inputBox);
-    molarMassWindow.appendChild(resultBox);
-    molarMassWindow.appendChild(result);
+    molarMassWindow.append(molarMassHeader, inputBox, resultBox, result);
     document.body.appendChild(molarMassWindow);
-
     makeDraggable(molarMassHeader, molarMassWindow);
 
     return molarMassWindow;
 }
+

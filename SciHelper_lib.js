@@ -188,9 +188,7 @@ function renderContentWindow(title, mapping, x, y, outputLoc, parentpanel) {
         row.appendChild(mappedDiv);
 
         row.onclick = () => {
-            if (typeof insertIntoWindow === 'function' && outputLoc) {
                 insertIntoWindow(outputLoc, val);
-            }
         };
 
         // Hover effects handled via CSS or JS (optional)

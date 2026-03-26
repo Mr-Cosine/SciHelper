@@ -228,21 +228,31 @@
     background: #f0f8f7;
 }
 
-.sci-chempanel-elem-row-symbol, 
-.molm-col-sym {
+.sci-chempanel-elem-row-symbol {
     width: 33.4%; 
     flex-shrink: 0;
     font-weight: bold;
     color: #83c1bb;
+    
+}
+
+.sci-chempanel-elem-row-symbol:hover {
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
 }
 
 
-.sci-chempanel-elem-row-name, 
-.molm-col-data {
+.sci-chempanel-elem-row-name {
     flex: 1;
     width: 33.3%; 
     text-align: left;
     white-space: nowrap;
+    margin-left: 8px;
+}
+
+.sci-chempanel-elem-row-name:hover {
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
 }
 
 .sci-chempanel-elem-row.legend {
@@ -278,14 +288,16 @@
 
 #sci-chempanel-molmcalc-result {
     padding: 10px;
-    margin-top: 8px;
     font-size: 14px;
     font-weight: bold;
     background: #f0f8f7;
-    border-radius: 4px;
     border-left: 4px solid #83c1bb;
     min-height: 20px;
     color: #333;
+}
+
+#sci-chempanel-molmcalc-result:hover {
+    background: #e4fffa;
 }
 
 .sci-chempanel-molm-row {
@@ -293,7 +305,6 @@
     align-items: center;
     padding: 8px 12px;
     border-bottom: 1px solid #eee;
-    gap: 10px;
     text-align: left;
 }
 
@@ -309,12 +320,23 @@
     color: #83c1bb;
 }
 
-.sci-chempanel-molm-row-name, 
-.molm-col-data {
+.sci-chempanel-molm-row-symbol:hover {
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+
+
+.sci-chempanel-molm-row-name {
     flex: 1;
     width: 25%; 
     text-align: left;
     white-space: nowrap;
+    margin-left: 8px;
+}
+
+.sci-chempanel-molm-row-name:hover {
+    border-left: 1px solid #ababab;
+    border-right: 1px solid #ccc;
 }
 
 .sci-chempanel-molm-row.legend {

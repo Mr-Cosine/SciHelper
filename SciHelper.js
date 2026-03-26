@@ -83,7 +83,7 @@
                 if (clickedId === 'chem') {
                     if (state.chemMode) {
                         if (!state.chemWindow) {
-                            state.chemWindow = openChemWindow(panel);
+                            state.chemWindow = openChemWindow(outputBox, panel);
 
                             makeDraggable(document.getElementById('sci-chempanel-header'), panel);
                         }
