@@ -35,7 +35,7 @@
         
         var header = document.createElement('div');
         header.setAttribute('id', 'sci-mainpanel-header');
-        header.textContent = 'SciHelper';
+        header.textContent = 'Sci-Helper';
         header.classList.add('no-select');
         
         var closeBtn = document.createElement('button')
@@ -45,6 +45,7 @@
 
         closeBtn.addEventListener('click', function() {
             state.chemWindow = closeChemWindow();
+            closeInfo();
             restoreBtn.style.display = 'flex';
 
             //Record current location for restoration
@@ -96,6 +97,22 @@
             }
         };
 
+        var infoBtn = document.createElement('div');
+        infoBtn.setAttribute('id', 'sci-mainpanel-info');
+        infoBtn.textContent = "🛈";
+        infoBtn.classList.add('no-select');
+
+        infoBtn.addEventListener('click', function () {
+            const existingMenu = document.getElementById('sci-info-menu');
+            const existingPage = document.getElementById('sci-content-page');
+            
+            if (existingMenu || existingPage) {
+                closeInfo();
+            } else {
+                openInfo(panel);
+            }
+        });
+
         btnContainer.appendChild(createToggle('Suprscript', 'xⁿ', 'upper', '#e57373', state, btnCallbacks));
         btnContainer.appendChild(createToggle('Subscript', 'xₙ', 'lower', '#ffb74d', state, btnCallbacks));
         btnContainer.appendChild(createToggle('Greek', 'αbγ', 'greek', '#81c784', state, btnCallbacks)); 
@@ -106,6 +123,7 @@
         headerContainer.appendChild(closeBtn);
         panel.appendChild(headerContainer);        
         panel.appendChild(btnContainer);
+        panel.appendChild(infoBtn);
         panel.appendChild(outputBox);
         panel.appendChild(createCopyBtn(outputBox));
         document.body.appendChild(panel);
@@ -167,5 +185,4 @@
     makeDraggable(restoreBtn, restoreBtn);
 
     document.body.appendChild(restoreBtn);
-}
-)();
+})();

@@ -7,7 +7,7 @@
 /* --- Main Panel --- */
 #sci-mainpanel { 
     position: fixed; 
-    width: 220px; 
+    width: 240px; 
     background: white; 
     border: 2px solid #4a90e2; 
     border-radius: 8px; 
@@ -103,6 +103,14 @@
     margin-left: 8px; 
 }
 
+#sci-mainpanel-info {
+    background: white;
+    color: black;
+    font-size: 18px;
+    width: 24px;
+    cursor: pointer;
+}
+
 #sci-mainpanel-output {
     width: 100%;
     box-sizing: border-box;
@@ -126,9 +134,9 @@
 /* --- The Chemistry Toolbox --- */
 #sci-chempanel {
     position: absolute;
+    right: 260px;
     top: 150px;
-    right: 240px; /* Offset from main panel */
-    width: 220px;
+    width: 240px;
     background: #fff;
     border: 1px solid #83c1bb;
     border-radius: 6px;

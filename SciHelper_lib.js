@@ -22,7 +22,7 @@ function makeDraggable(handle, target) {
         }
         document.addEventListener('mousemove', move);
         document.addEventListener('mouseup', () => 
-            document.removeEventListener('mousemove', move), { once: true }
+        document.removeEventListener('mousemove', move), { once: true }
         );
     });
 }
@@ -92,4 +92,141 @@ function createCopyBtn(target) {
     });
 
     return copyBtn;
+}
+
+function openInfo(parentpanel) {
+    if (document.getElementById('sci-info-menu')) return;
+
+    // 1. Get the reference to the info button to dock against
+    var infoBtn = document.getElementById('sci-mainpanel-info');
+    var rect = infoBtn.getBoundingClientRect();
+
+    // 2. Create Slim Menu Window
+    var menuWin = document.createElement('div');
+    menuWin.id = 'sci-info-menu';
+    menuWin.style.cssText = `
+        position: fixed; 
+        width: 120px; 
+        background: #fff; 
+        border: 1px solid #000;
+        z-index: 2147483647; 
+        box-shadow: 2px 2px 0px #ccc;
+        left: ${rect.right + 2}px; 
+        top: ${rect.top}px;
+    `;
+
+    // 3. Header
+    var header = document.createElement('div');
+    header.textContent = 'MAPPING';
+    header.style.cssText = 'background:#000; color:#fff; padding:3px 6px; font-size:10px; font-weight:bold; cursor:default;';
+    
+    var btnList = document.createElement('div');
+    btnList.style.display = 'flex';
+    btnList.style.flexDirection = 'column';
+
+    function createMenuBtn(label, data) {
+        var btn = document.createElement('button');
+        btn.textContent = label;
+        btn.style.cssText = 'padding:6px; background:#fff; border:none; border-bottom:1px solid #eee; cursor:pointer; text-align:left; font-size:10px;';
+        
+        btn.onclick = () => {
+            // Re-calculate rect in case the main panel moved while menu was open
+            var freshRect = infoBtn.getBoundingClientRect();
+            renderContentWindow(label, data, freshRect.right + 2, freshRect.top, parentpanel); 
+            menuWin.remove();
+        };
+        
+        btn.onmouseover = () => btn.style.background = '#f0f0f0';
+        btn.onmouseout = () => btn.style.background = '#fff';
+        
+        return btn;
+    }
+
+    // Populate using your global objects
+    btnList.appendChild(createMenuBtn('MATH', Object.entries(window.math || {})));
+    btnList.appendChild(createMenuBtn('GREEK', Object.entries(window.greek || {})));
+    btnList.appendChild(createMenuBtn('SUP/SUB', Object.entries(window.superscripts || {}).concat(Object.entries(window.subscripts || {}))));
+    btnList.appendChild(createMenuBtn('SPECIAL', [['Deg', window.degree || '°'], ['Eq', window.equilibrium || '⇌']]));
+
+    menuWin.append(header, btnList);
+    document.body.appendChild(menuWin);
+}
+
+function renderContentWindow(title, mapping, x, y, parentpanel) {
+    if (document.getElementById('sci-content-page')) {
+        document.getElementById('sci-content-page').remove();
+    }
+
+    var contentWin = document.createElement('div');
+    contentWin.id = 'sci-content-page';
+    contentWin.style.cssText = `
+        position: fixed; 
+        width: 120px; 
+        background: #fff; 
+        border: 1px solid #000;
+        z-index: 2147483646; 
+        left: ${x}px; 
+        top: ${y}px;
+        display: flex; 
+        flex-direction: column;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    `;
+
+    // Header with Close Button
+    var header = document.createElement('div');
+    header.style.cssText = 'background:#000; color:#fff; padding:4px 6px; display:flex; justify-content:space-between; align-items:center; cursor:move;';
+    
+    var titleSpan = document.createElement('span');
+    titleSpan.textContent = title;
+    titleSpan.style.fontSize = '9px';
+    titleSpan.style.fontWeight = 'bold';
+
+    var closeBtn = document.createElement('button');
+    closeBtn.textContent = '×';
+    closeBtn.style.cssText = 'background:none; color:#fff; border:none; cursor:pointer; font-weight:bold; padding:0 2px;';
+    closeBtn.onclick = () => {contentWin.remove(); openInfo(parentpanel);};
+
+    header.append(titleSpan, closeBtn);
+
+    // Scrollable Display Area
+    var displayArea = document.createElement('div');
+    displayArea.style.cssText = 'height:300px; overflow-y:auto; font-family: monospace; background:#fff; padding-left: 10px; padding-right: 20px';
+
+    mapping.forEach(([key, val]) => {
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex; padding:5px; border-bottom:1px solid #f0f0f0; cursor:pointer; align-items:center;';
+        row.innerHTML = `<div style="flex:1; color:#888; font-size:14px;">${key}    →</div>
+                         <div style="flex:1; text-align:right; font-weight:bold; font-size:14px; color:#000;">${val}</div>`;
+        
+        row.onclick = () => {
+            // Using your existing outputLoc reference
+            if (typeof insertIntoWindow === 'function' && outputLoc) {
+                insertIntoWindow(outputLoc, val);
+            }
+        };
+
+        row.onmouseover = () => row.style.background = '#f9f9f9';
+        row.onmouseout = () => row.style.background = '#fff';
+        
+        displayArea.appendChild(row);
+    });
+
+    contentWin.append(header, displayArea);
+    
+    // CRITICAL: Append to body first
+    document.body.appendChild(contentWin);
+
+    // Now initialize draggable on the header
+    if (typeof makeDraggable === 'function') {
+        makeDraggable(header, contentWin);
+    }
+}
+
+function closeInfo() {
+    while(document.getElementById('sci-content-page')) {
+        document.getElementById('sci-content-page').remove();
+    }
+    while(document.getElementById('sci-info-menu')){
+        document.getElementById('sci-info-menu').remove();
+    }
 }
