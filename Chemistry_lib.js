@@ -28,7 +28,7 @@ class elementinformula {
     }
 }
 
-function parseInput(input) {
+function parseInput(input){
     let elemList = [];
     let i = 0;
     while (i < input.length) {
@@ -52,10 +52,43 @@ function parseInput(input) {
         else if (token === " ") {
             i++;
         }
-        
-        else if(token === "(" || token === ")"){
-            return ["brkt"];
+
+        else if (token === "(") {
+            let sublist = [];
+            let j = i + 1;
+            while (j < input.length) {
+                if (input[j] === ")") {
+                    sublist = parseInput(input.substring(i + 1, j));
+                    if (sublist[0] === "ilgl") {
+                        return ["ilgl"]
+                    }
+
+                    j++;
+                    let multiplierStr = "";
+                    while (j < input.length && isNum(input[j])) {
+                        multiplierStr += input[j];
+                        j++;
+                    }
+                    let multiplier = multiplierStr === "" ? 1 : parseInt(multiplierStr);
+
+                    for (let e of sublist){
+                        e.count *= Number(multiplier);
+                    }
+                    break;
+                }
+                else{
+                    j++;
+                }
+            }
+            i = j;
+            if (sublist.length === 0) {
+                return ["ilgl"]
+            }
+            else {
+                elemList = elemList.concat(sublist);
+            }
         }
+
         else {
             return ["ilgl"]
         }
@@ -82,18 +115,17 @@ function lookup(elementName) {
 function calculate(elementList) {
     // 1. Check for your custom error codes
     if (!elementList || elementList.length === 0) return [-1, ""];
-    if (elementList[0] === "brkt") return [-2, ""]; // Code for "No brackets allowed yet"
-    if (elementList[0] === "ilgl") return [-3, ""]; // Code for "Illegal character"
+    if (elementList[0] === "ilgl") return [-2, ""]; // Code for "Illegal character"
 
     let totalMass = 0;
     var elemNotFound = "";
     for (let el of elementList) {
         let unitMass = lookup(el.name);
         if (unitMass < 0) {
-            totalMass = -4;
+            totalMass = -3;
             elemNotFound = elemNotFound + el.name + ", ";
         }
-        if (totalMass != -4) totalMass += unitMass * el.count;
+        if (totalMass >= 0) totalMass += unitMass * el.count;
     }
     return [totalMass, elemNotFound.slice(0,-2)];
 }
@@ -346,7 +378,7 @@ function openMolarMassWindow(outputLoc) {
     
     var molarMassHeader = document.createElement('div');
     molarMassHeader.setAttribute('id', 'sci-chempanel-subfunction-genericheader');
-    molarMassHeader.textContent = 'Molar Mass Calculator (No Brackets)';
+    molarMassHeader.textContent = 'Molar Mass Calculator';
 
     var inputBox = document.createElement('input');
     inputBox.placeholder = 'Enter the formula';
@@ -403,12 +435,9 @@ function openMolarMassWindow(outputLoc) {
                 result.textContent = "Molar Mass: --";
                 break;
             case -2:
-                result.textContent = "Error: Please expand the content in bracket and remove brackets.";
+                result.textContent = "Error: Contains invalid characters/structures.";
                 break;
             case -3:
-                result.textContent = "Error: Contains invalid characters.";
-                break;
-            case -4:
                 result.textContent = "Error: Contains unrecognized elements: " + elem404;
                 break;
             default:
