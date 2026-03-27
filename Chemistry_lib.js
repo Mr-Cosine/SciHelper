@@ -1,6 +1,5 @@
 // --- Helper Functions ---
 function isLetter(token) {return /[a-zA-Z]/.test(token);}
-function islegit(token) {return (isLetter(token) || !isNaN(token));}
 function isUpper(token) {return (isLetter(token) && token === token.toUpperCase());}
 function isLower(token) {return (isLetter(token) && token === token.toLowerCase());}
 function isNum(token) {return (!isNaN(token));}
@@ -105,8 +104,11 @@ function parseInput(input){
             }
                 
             subList = parseInput(input.substring(i + 1, j - 1));
-            if (subList[0] === "ilgl") {
-                return ["ilgl"]
+            if (subList.length === 0) {
+                return ["ilgl"];
+            }
+            else if (subList[0] === "ilgl") {
+                return ["ilgl"];
             }
 
             let multiplierStr = "";
@@ -121,12 +123,34 @@ function parseInput(input){
             }
             i = j;
 
+            elemList = mergeElemLst(elemList, subList);
+        }
+
+        else if (token === ".") {
+            let j = i + 1;
+            let multiplierStr = "";
+            while (j < input.length && isNum(input[j])) {
+                multiplierStr += input[j];
+                j++;
+            }
+            let multiplier = multiplierStr === "" ? 1 : parseInt(multiplierStr);
+            i = j;
+
+            while (j < input.length && input[j] != ".") {j++;}
+            
+            let subList = parseInput(input.substring(i,j));
             if (subList.length === 0) {
                 return ["ilgl"]
             }
-            else {
-                elemList = mergeElemLst(elemList, subList);
+            else if (subList[0] === "ilgl") {
+                return ["ilgl"];
             }
+            for (let e of subList){
+                e.count *= Number(multiplier);
+            }
+            i = j;
+
+            elemList = mergeElemLst(elemList, subList);
         }
 
         else {
