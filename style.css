@@ -43,7 +43,7 @@
     color: #888; /* Gray by default */
     cursor: pointer;
     font-size: 24px;
-    font-weight: heavy;
+    font-weight: bold;
     line-height: 1;
     padding-bottom: 10px;
     margin-left: 10px;
@@ -94,14 +94,15 @@
 
 .sci-mainpanel-btnsymbol { 
     font-family: "Times New Roman", serif; 
-    font-size: 14px; 
+    font-size: 16px; 
+    font-weight: bold;
     margin-left: 8px; 
 }
 
 #sci-mainpanel-info {
     background: white;
     color: black;
-    font-size: 18px;
+    font-size: 14px;
     width: 24px;
     cursor: pointer;
 }
@@ -176,6 +177,7 @@
 
 .sci-chempanel-btnsymbol {
     font-size: 24px;
+    font-weight: bold;
     line-height: 1;
     display: block;
 }
@@ -369,7 +371,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: bold;
     letter-spacing: 0.5px;
     height: 18px;
@@ -382,7 +384,7 @@
     border-bottom: 1px solid #f0f0f0;
     background: #fff;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12px;
     transition: background 0.2s;
     display: flex;
     align-items: center;
@@ -419,11 +421,12 @@
 
 .sci-info-contentpage-scroll-row-original {
     color: #888;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .sci-info-contentpage-scroll-row-mapped {
     font-weight: bold;
+    font-size: 12px;
     font-family: "Times New Roman", serif;
 }
 
@@ -434,4 +437,8 @@
     cursor: pointer;
     font-size: 16px;
     line-height: 1;
+}
+
+.sci-infopanel-contentpage-header-closebtn:hover {
+    color: #ff4242;
 }

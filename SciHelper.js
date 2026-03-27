@@ -42,7 +42,7 @@
         
         var closeBtn = document.createElement('button')
         closeBtn.setAttribute('id', 'sci-mainpanel-closeBtn');
-        closeBtn.textContent = "🗙";
+        closeBtn.textContent = "×";
         closeBtn.classList.add('no-select');
 
         closeBtn.addEventListener('click', function() {
@@ -114,11 +114,11 @@
             }
         });
 
-        btnContainer.appendChild(createToggle('Suprscript', 'xⁿ', 'upper', '#e57373', state, btnCallbacks));
-        btnContainer.appendChild(createToggle('Subscript', 'xₙ', 'lower', '#ffb74d', state, btnCallbacks));
+        btnContainer.appendChild(createToggle('Suprscript', 'Xⁿ', 'upper', '#e57373', state, btnCallbacks));
+        btnContainer.appendChild(createToggle('Subscript', 'Xₙ', 'lower', '#ffb74d', state, btnCallbacks));
         btnContainer.appendChild(createToggle('Greek', 'αbγ', 'greek', '#81c784', state, btnCallbacks)); 
         btnContainer.appendChild(createToggle('Math', '+-×÷', 'math', '#64b5f6', state, btnCallbacks)); 
-        btnContainer.appendChild(createToggle('Chem', 'H₂O', 'chem', '#83c1bb', state, btnCallbacks)); 
+        btnContainer.appendChild(createToggle('Chemistry', 'H₂O', 'chem', '#83c1bb', state, btnCallbacks)); 
 
         headerContainer.appendChild(header);
         headerContainer.appendChild(closeBtn);
