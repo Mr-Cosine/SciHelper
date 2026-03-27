@@ -10,6 +10,46 @@ function round(num, digit) {
     }
 }
 
+function sanitizeFormula(input) {
+    if (!input) return "";
+
+    const charMap = {
+        '⁺': '+', '⁻': '-', 
+        '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9',
+        '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9'
+    };
+
+    // Use regex to find all matching special characters
+    return input.replace(/[⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉]/g, function(char) {
+        return charMap[char] || char;
+    });
+}
+
+function mergeElemLst(input1, input2) {
+    let result = [];
+    input1.forEach(entry => {
+        let exist = -1;
+        result.forEach ((existedEntry, index) => {if(existedEntry.name === entry.name) exist = index;});
+        if (exist === -1){
+            result.push(new elementinformula(entry.name, entry.count));
+        }
+        else {
+            result[exist].count += entry.count;
+        }
+    });
+    input2.forEach(entry => {
+        let exist = -1;
+        result.forEach ((existedEntry, index) => {if(existedEntry.name === entry.name) exist = index;});
+        if (exist === -1){
+            result.push(new elementinformula(entry.name, entry.count));
+        }
+        else {
+            result[exist].count += entry.count;
+        }
+    });
+    return result;
+}
+
 function hasMultipleCapitals(query) {
     let count = 0;
     for (let i = 0; i < query.length; i++) {
@@ -46,7 +86,7 @@ function parseInput(input){
                 i++;
             }
             let count = countStr === "" ? 1 : parseInt(countStr);
-            elemList.push(new elementinformula(name, count));
+            elemList = mergeElemLst(elemList, [new elementinformula(name, count)]);
         } 
 
         else if (token === " ") {
@@ -54,38 +94,38 @@ function parseInput(input){
         }
 
         else if (token === "(") {
-            let sublist = [];
+            let subList = [];
             let j = i + 1;
-            while (j < input.length) {
-                if (input[j] === ")") {
-                    sublist = parseInput(input.substring(i + 1, j));
-                    if (sublist[0] === "ilgl") {
-                        return ["ilgl"]
-                    }
+            let bracketlevel = 1;
+            
+            while (j < input.length && bracketlevel > 0) {
+                if (input[j] === "(") bracketlevel++;
+                if (input[j] === ")") bracketlevel--;
+                j++;
+            }
+                
+            subList = parseInput(input.substring(i + 1, j - 1));
+            if (subList[0] === "ilgl") {
+                return ["ilgl"]
+            }
 
-                    j++;
-                    let multiplierStr = "";
-                    while (j < input.length && isNum(input[j])) {
-                        multiplierStr += input[j];
-                        j++;
-                    }
-                    let multiplier = multiplierStr === "" ? 1 : parseInt(multiplierStr);
+            let multiplierStr = "";
+            while (j < input.length && isNum(input[j])) {
+                multiplierStr += input[j];
+                j++;
+            }
+            let multiplier = multiplierStr === "" ? 1 : parseInt(multiplierStr);
 
-                    for (let e of sublist){
-                        e.count *= Number(multiplier);
-                    }
-                    break;
-                }
-                else{
-                    j++;
-                }
+            for (let e of subList){
+                e.count *= Number(multiplier);
             }
             i = j;
-            if (sublist.length === 0) {
+
+            if (subList.length === 0) {
                 return ["ilgl"]
             }
             else {
-                elemList = elemList.concat(sublist);
+                elemList = mergeElemLst(elemList, subList);
             }
         }
 
@@ -271,14 +311,7 @@ function openElemSearchWindow(outputLoc) {
                 var name = item.name.toLowerCase();
                 var symbol = item.symbol.toLowerCase();
                 // Remove superscripts/subscripts for "easy" typing (e.g., SO4 matching SO₄²⁻)
-                var polySymbol = item.symbol.replace(/[⁺⁻¹²³⁴⁵⁶⁷⁸⁹⁰₀₁₂₃₄₅₆₇₈₉]/g, function(char) {
-                    const map = {
-                        '⁺': '+', '⁻': '-', 
-                        '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9',
-                        '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9'
-                    };
-                    return map[char] || char;}
-                    ).toLowerCase();
+                var polySymbol = sanitizeFormula(item.symbol).toLowerCase();
 
                 if (query.length === 1) {
                     // Single letter: Match startsWith for speed/accuracy
@@ -408,7 +441,7 @@ function openMolarMassWindow(outputLoc) {
     resultBox.appendChild(legend);
 
     inputBox.addEventListener('input', function() {
-        let elemLst = parseInput(inputBox.value);
+        let elemLst = parseInput(sanitizeFormula(inputBox.value));
         let [totalMass,elem404] = calculate(elemLst);
 
         while(resultBox.firstChild) { resultBox.removeChild(resultBox.firstChild); }
