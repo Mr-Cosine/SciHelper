@@ -726,14 +726,19 @@ function openLimReagentWindow() {
             result.textContent = "Error in calculating, please check input.";
         } 
         else {
-            let product = round(resultValue[resultValue.length - 1], 3) * ((prodRatio.value === "")? 1 : Number(prodRatio.value));
-            resultValue.pop();
-            let resultstr = "Limiting Reagent(s): ";
-            for (let res of resultValue) {
-                resultstr += res + ', ';
+            if (prodRatio.value !== "" && (isNaN(prodRatio.value) || Number(prodRatio.value) <= 0)) {
+                result.textContent = "Invalid product ratio. Please enter a positive number.";
             }
-            resultstr = resultstr.slice(0, -2) + "\nAmount of product formed: " + product + "mol.";
-            result.textContent = resultstr;
+            else {
+                let product = round(resultValue[resultValue.length - 1], 3) * ((prodRatio.value === "") ? 1 : Number(prodRatio.value));
+                resultValue.pop();
+                let resultstr = "Limiting Reagent(s): ";
+                for (let res of resultValue) {
+                    resultstr += res + ', ';
+                }
+                resultstr = resultstr.slice(0, -2) + "\nAmount of product formed: " + product + "mol.";
+                result.textContent = resultstr;
+            }
         }
     });
 

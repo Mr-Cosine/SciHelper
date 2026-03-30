@@ -12,7 +12,6 @@
   "host_permissions": [
     "https://docs.google.com/*",
     "https://*.google.com/*"
-
   ],
 
   "background": {
