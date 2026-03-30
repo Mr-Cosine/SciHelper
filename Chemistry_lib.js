@@ -845,6 +845,7 @@ function createRow(reactantDefaultName) {
         removeBtn.disabled = true;
         removeBtn.style.color = 'transparent';
     }
+    
     row.append(name, stoicoefficient, concentration, concUnit, amount, amountUnit, removeBtn);
     return row;
 }
