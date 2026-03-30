@@ -194,10 +194,64 @@ function calculate(elementList) {
     return [totalMass, elemNotFound.slice(0,-2)];
 }
 
+ function calculateLimR(reagentList) {
+    possibleProd = [];
+    for (let r of reagentList) {
+        const isVolumetricConc = (r.concUnit === 'molL' || r.concUnit === 'gL');
+        const isMassConc = (r.concUnit === 'molg' || r.concUnit === 'gg');
+        const isVolumetricAmt = (r.amountUnit === 'L' || r.amountUnit === 'mL');
+        const isMassAmt = (r.amountUnit === 'g' || r.amountUnit === 'mg');
+
+        if (isVolumetricConc && isMassAmt) return 'err';
+        if (isMassConc && isVolumetricAmt) return 'err';
+        if ((r.amountUnit !== 'mol' && r.amountUnit !== 'g') && r.concUnit === 'none') return 'err';
+
+        let moles = 0;
+
+        if (isNum(r.stoicoefficient) && isNum(r.concentration) && isNum(r.amount)) {
+            if (r.amountUnit === 'mL' || r.amountUnit === 'mg') {
+                r.amount = r.amount/1000;
+                r.amountUnit = (r.amountUnit === 'mL')? 'L':'g';
+            }
+            if ((r.concUnit === 'gL' || r.concUnit === 'gg') && r.concUnit !== 'none') {
+                let molm = calculate(parseInput(r.formula));
+                if(molm[0] <= 0) return 'err';
+                moles = r.concentration*r.amount/molm[0];
+            }
+
+            else if (r.amountUnit === 'mol') {
+                moles = r.amount;
+            }
+
+            else if (r.amountUnit === 'g' && r.concUnit === 'none') {
+                let molm = calculate(parseInput(r.formula));
+                if (molm[0] <= 0) return 'err';
+                moles = r.amount/molm[0];
+            }
+
+            else {
+                moles = r.concentration*r.amount;
+            }
+            possibleProd.push([r.formula, moles/r.stoicoefficient]);
+        }
+        else {
+            return 'err';
+        }
+    }
+    possibleProd.sort((a, b) => a[1] - b[1]);
+    let returnList = [];
+    for (let prod of possibleProd) {
+        if (prod[1] === possibleProd[0][1]) returnList.push(prod[0]);
+        else break;
+    }
+    returnList.push(possibleProd[0][1])
+    return returnList;
+ }
+
 //============================================================================
 // --- UI builders ---
 
-// --- Main Chemistry submenu ---
+// --- Main Chemistry submenu ---`
 function openChemWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-chempanel')) return;
     
@@ -215,6 +269,7 @@ function openChemWindow(outputLoc, parentWin) {
     var btncolor = '#e6e69a';
     fnButtonContainer.appendChild(elemSearchBtn('Element Look-Up', '🔎', btncolor, outputLoc));
     fnButtonContainer.appendChild(molarMassBtn('Molar Mass Calculator', '🧮', btncolor, outputLoc));
+    fnButtonContainer.appendChild(LimReagentBtn('Limiting Reagent Calculator', '🧪', btncolor));
 
     chemWindow.appendChild(chemHeader);
     chemWindow.appendChild(fnButtonContainer);
@@ -262,6 +317,7 @@ function elemSearchBtn(name, symbol, color, outputLoc) {
 function closeChemWindow() {
     document.getElementById('sci-chempanel-elesearch')?.remove();
     document.getElementById('sci-chempanel-molmcalc')?.remove();
+    document.getElementById('sci-chempanel-limcalc')?.remove();
     document.getElementById('sci-chempanel')?.remove();
 
     return null;
@@ -549,3 +605,244 @@ function openMolarMassWindow(outputLoc) {
     return molarMassWindow;
 }
 
+// --- Limiting Reagent Calculation --- 
+
+function LimReagentBtn(name, symbol, color) {
+    var btn = document.createElement('button');
+    btn.setAttribute('class', 'sci-chempanel-btn');
+    btn.style.backgroundColor = '#f9f9f9'; // Default state
+
+    // Use 'name' from arguments
+    var labelSpan = document.createElement('span');
+    labelSpan.textContent = name;
+        
+    var symbolSpan = document.createElement('span');
+    symbolSpan.setAttribute('class', 'sci-chempanel-btnsymbol');
+    symbolSpan.style.color = color;
+    symbolSpan.textContent = symbol;
+
+    btn.append(labelSpan, symbolSpan);
+
+    btn.addEventListener('click', function() {
+        var existingWindow = document.getElementById('sci-chempanel-limcalc');
+        
+        if (!existingWindow) {
+            // OPEN logic
+            openLimReagentWindow();
+            btn.style.backgroundColor = color;
+            btn.style.color = 'white';
+        } 
+        else {
+            // CLOSE logic
+            existingWindow.remove();
+            btn.style.backgroundColor = '#f9f9f9';
+            btn.style.color = 'black';
+        }
+    });
+
+    return btn;
+}
+
+function openLimReagentWindow() {
+    if (document.getElementById('sci-chempanel-limcalc')) return;
+    
+    var LimReagentWindow = document.createElement('div');
+    LimReagentWindow.setAttribute('id', 'sci-chempanel-limcalc');
+    
+    var LimReagentHeader = document.createElement('div');
+    LimReagentHeader.setAttribute('id', 'sci-chempanel-subfunction-genericheader');
+    LimReagentHeader.textContent = 'Limiting Reagent Calculator';
+
+    var inputBox = document.createElement('div');
+    inputBox.setAttribute('id', 'sci-chempanel-limcalc-input');
+
+    inputBox.append(createRow('A'));
+    inputBox.append(createRow('B'));
+
+    var addrowBtn = document.createElement('button');
+    addrowBtn.setAttribute('id', 'sci-chempanel-limcalc-addrow')
+    addrowBtn.textContent = '+';
+
+    addrowBtn.addEventListener('click', () => {
+        let currentRows = document.querySelectorAll('.sci-chempanel-limcalc-input-row')
+        let placeholder = String.fromCharCode(currentRows[currentRows.length - 1].rowID.charCodeAt(0) + 1);
+
+        if (currentRows.length < 5 && placeholder <= 'Z') {
+            inputBox.appendChild(createRow(placeholder));
+        }
+        
+        if(currentRows.length >= 4 || placeholder >= 'Z') {
+            addrowBtn.style.color = '#aaa';
+        }
+    });
+
+    var prodRatioBox = document.createElement('div');
+    prodRatioBox.setAttribute('id', 'sci-chempanel-limcalc-productratiobox');
+    var prodRatioLabel = document.createElement('span');
+    prodRatioLabel.setAttribute('id', 'sci-chempanel-limcalc-productratiobox-label');
+    prodRatioLabel.textContent = "Product/Limiting Reagent: ";
+    var prodRatio = document.createElement('input');
+    prodRatio.setAttribute('id', 'sci-chempanel-limcalc-productratiobox-input');
+    prodRatio.placeholder = "Product Ratio";
+    prodRatio.value = "1";
+
+    prodRatioBox.append(prodRatioLabel, prodRatio);
+
+    var confirmBtn = document.createElement('button');
+    confirmBtn.setAttribute('id', 'sci-chempanel-limcalc-confirm')
+    confirmBtn.textContent = 'Calculate';
+
+    var result = document.createElement('div');
+    result.setAttribute('id', 'sci-chempanel-limcalc-result');
+
+    confirmBtn.addEventListener('click', ()=> {
+        result.textContent = "";
+        reagentList = [];
+        class reagent {
+            constructor(formula, stoicoefficient, concentration, amount, units) {
+                this.formula = formula;
+                this.stoicoefficient = stoicoefficient;
+                this.concentration = concentration;
+                this.amount = amount;
+                this.concUnit = units[0];
+                this.amountUnit = units[1];
+            }
+        }
+        let rowLst = document.getElementsByClassName('sci-chempanel-limcalc-input-row');
+        for (let indiRow of rowLst) {
+            let fName = sanitizeFormula(indiRow.querySelector('.sci-chempanel-limcalc-input-row-name').value);
+            let stoic = indiRow.querySelector('.sci-chempanel-limcalc-input-row-stoic').value;
+            let conc  = indiRow.querySelector('.sci-chempanel-limcalc-input-row-concentration').value;
+            let amt   = indiRow.querySelector('.sci-chempanel-limcalc-input-row-amount').value;
+            let cUnit = indiRow.querySelector('.sci-chempanel-limcalc-input-row-concentration-unit').value;
+            let aUnit = indiRow.querySelector('.sci-chempanel-limcalc-input-row-amount-unit').value;
+
+            if (fName === "" || stoic === "" || conc === "" || amt === "") {continue;}
+
+            reagentList.push(new reagent(fName, stoic, conc, amt, [cUnit, aUnit]));
+        }
+        let resultValue = calculateLimR(reagentList);
+        if (resultValue === 'err') {
+            result.textContent = "Error in calculating, please check input.";
+        } 
+        else {
+            let product = round(resultValue[resultValue.length - 1], 3) * ((prodRatio.value === "")? 1 : Number(prodRatio.value));
+            resultValue.pop();
+            let resultstr = "Limiting Reagent(s): ";
+            for (let res of resultValue) {
+                resultstr += res + ', ';
+            }
+            resultstr = resultstr.slice(0, -2) + "\nAmount of product formed: " + product + "mol.";
+            result.textContent = resultstr;
+        }
+    });
+
+    LimReagentWindow.append(LimReagentHeader, inputBox, addrowBtn, prodRatioBox, confirmBtn, result);
+    document.body.appendChild(LimReagentWindow);
+    makeDraggable(LimReagentHeader, LimReagentWindow);
+
+    return LimReagentWindow;
+}
+
+function createRow(reactantDefaultName) {
+    var row = document.createElement('div');
+    row.setAttribute('class', 'sci-chempanel-limcalc-input-row');
+    row.rowID = reactantDefaultName;
+
+    var name = document.createElement('input');
+    name.setAttribute('class','sci-chempanel-limcalc-input-row-name');
+    name.placeholder = reactantDefaultName;
+
+    var stoicoefficient = document.createElement('input');
+    stoicoefficient.setAttribute('class','sci-chempanel-limcalc-input-row-stoic');
+    stoicoefficient.placeholder = "Stoi. coefficient";
+
+    var concentration = document.createElement('input');
+    concentration.setAttribute('class','sci-chempanel-limcalc-input-row-concentration');
+    concentration.placeholder = "Concentration";
+
+    var concUnit = document.createElement('select');
+    concUnit.setAttribute('class','sci-chempanel-limcalc-input-row-concentration-unit');
+
+    const concOptions = [
+        { value: 'molL', text: 'mol/L' }, { value: 'gL', text: 'g/L' },
+        { value: 'gg', text: 'g/g' }, { value: 'molg', text: 'mol/g' },
+        {value: 'none', text: '--'}
+    ];
+
+    concOptions.forEach(opt => {
+        let el = document.createElement('option');
+        el.value = opt.value;
+        el.text = opt.text;
+        concUnit.appendChild(el);
+    });
+
+    concUnit.addEventListener('change', function() {
+        const selected = this.value;
+        if (selected === 'none') {
+            concentration.value = 1;
+            concentration.readOnly = true;
+        }
+        else {
+            concentration.readOnly = false;
+            concentration.value = "";
+        }
+    });
+
+    var amount = document.createElement('input');
+    amount.setAttribute('class','sci-chempanel-limcalc-input-row-amount');
+    amount.placeholder = "Amount";
+
+    var amountUnit = document.createElement('select');
+    amountUnit.setAttribute('class', 'sci-chempanel-limcalc-input-row-amount-unit');
+    
+    const amountOptions = [
+        { value: 'L', text: 'L' },
+        { value: 'mL', text: 'mL' },
+        { value: 'g', text: 'g' },
+        { value: 'mg', text: 'mg' },
+        { value: 'mol', text: 'mol'}
+    ];
+
+    amountOptions.forEach(opt => {
+        let el = document.createElement('option');
+        el.value = opt.value;
+        el.text = opt.text;
+        amountUnit.appendChild(el);
+    });
+
+    amountUnit.addEventListener('change', function() {
+        const selected = this.value;
+
+        if (selected === 'mol') {
+            concUnit.value = 'none'; 
+            concUnit.disabled = true;
+            concentration.value = 1;
+            concentration.readOnly = true;
+        }
+        else if ((selected === 'g' || selected === 'mg') && concUnit.value !== 'none') {
+            concUnit.disabled = false;
+        }
+        else {
+            concUnit.disabled = false;
+        }
+    });
+
+    var removeBtn = document.createElement('button');
+    removeBtn.setAttribute('class', 'sci-chempanel-limcalc-input-row-remove');
+    removeBtn.textContent = '⊝';
+    removeBtn.buttonID = reactantDefaultName;
+
+    removeBtn.addEventListener('click', () => {
+        let rowLst = document.getElementsByClassName(row.className);
+        for (let existingRow of rowLst) {if (existingRow.rowID === removeBtn.buttonID) existingRow.remove();}
+        if (rowLst.length < 5) document.getElementById('sci-chempanel-limcalc-addrow').style.color = 'black';
+    })
+    
+    if (reactantDefaultName <= 'B') {
+        removeBtn.disabled = true;
+        removeBtn.style.color = 'transparent';
+    }
+    row.append(name, stoicoefficient, concentration, concUnit, amount, amountUnit, removeBtn);
+    return row;
+}
