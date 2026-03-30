@@ -26,6 +26,7 @@ function sanitizeFormula(input) {
 
 function mergeElemLst(input1, input2) {
     let result = [];
+    
     input1.forEach(entry => {
         let exist = -1;
         result.forEach ((existedEntry, index) => {if(existedEntry.name === entry.name) exist = index;});
@@ -36,6 +37,7 @@ function mergeElemLst(input1, input2) {
             result[exist].count += entry.count;
         }
     });
+
     input2.forEach(entry => {
         let exist = -1;
         result.forEach ((existedEntry, index) => {if(existedEntry.name === entry.name) exist = index;});
