@@ -3,11 +3,6 @@ function isLetter(token) {return /[a-zA-Z]/.test(token);}
 function isUpper(token) {return (isLetter(token) && token === token.toUpperCase());}
 function isLower(token) {return (isLetter(token) && token === token.toLowerCase());}
 function isNum(token) {return (!isNaN(token));}
-function round(num, digit) {
-    if (isNum(num) && isNum(digit)){
-        return Math.round(num * (10**digit)) / (10**digit);
-    }
-}
 
 function sanitizeFormula(input) {
     if (!input) return "";
@@ -418,7 +413,7 @@ function openElemSearchWindow(outputLoc) {
                 row.setAttribute('class', 'sci-chempanel-elem-row');
                 const symbolToPaste = elem.symbol;
                 const nameToPaste = elem.name;
-                const massToPaste = round(elem.molarMass, 3) + 'u';
+                const massToPaste = elem.molarMass.toFixed(3);
 
                 var symbol = document.createElement("div");
                 symbol.classList.add('sci-chempanel-elem-row-symbol');
@@ -431,7 +426,7 @@ function openElemSearchWindow(outputLoc) {
                 var mass = document.createElement("div");
                 mass.classList.add('sci-chempanel-elem-row-text');
                 mass.textContent = massToPaste;
-                mass.onclick = () => {insertIntoWindow(outputLoc, massToPaste.slice(0,-1));}
+                mass.onclick = () => {insertIntoWindow(outputLoc, massToPaste + "g/mol ");}
 
                 row.append(symbol, name, mass);
                 resultsArea.appendChild(row);
@@ -565,8 +560,8 @@ function openMolarMassWindow(outputLoc) {
                     // 1. CAPTURE the values right now so the click knows exactly what to paste
                     const nameToPaste = elem.name;
                     const countToPaste = elem.count.toString();
-                    const massToPaste = round((lookup(elem.name) * elem.count), 3).toString();
-                    const percentToPaste = round((lookup(elem.name) * elem.count / totalMass * 100), 3) + "%";
+                    const massToPaste = (lookup(elem.name) * elem.count).toFixed(3).toString();
+                    const percentToPaste = (lookup(elem.name) * elem.count / totalMass * 100).toFixed(3) + "%";
 
                     var symbol = document.createElement("div");
                     symbol.classList.add('sci-chempanel-molm-row-symbol');
@@ -582,7 +577,7 @@ function openMolarMassWindow(outputLoc) {
                     var mass = document.createElement("div");
                     mass.classList.add('sci-chempanel-molm-row-text');
                     mass.textContent = massToPaste;
-                    mass.onclick = () => { insertIntoWindow(outputLoc, massToPaste); }
+                    mass.onclick = () => { insertIntoWindow(outputLoc, massToPaste + "g/mol "); }
 
                     var masspercent = document.createElement("div");
                     masspercent.classList.add('sci-chempanel-molm-row-text');
@@ -592,7 +587,7 @@ function openMolarMassWindow(outputLoc) {
                     row.append(symbol, count, mass, masspercent);
                     resultBox.appendChild(row);
                 }
-                const finalResultStr = round(totalMass, 3) + " g/mol";
+                const finalResultStr = totalMass.toFixed(3) + " g/mol";
                 result.textContent = "Molar Mass = " + finalResultStr;
                 result.onclick = () => insertIntoWindow(outputLoc, finalResultStr);
 
@@ -732,7 +727,7 @@ function openLimReagentWindow() {
                 result.textContent = "Invalid product ratio. Please enter a positive number.";
             }
             else {
-                let product = round(resultValue[resultValue.length - 1], 3) * ((prodRatio.value === "") ? 1 : Number(prodRatio.value));
+                let product = (resultValue[resultValue.length - 1] * ((prodRatio.value === "") ? 1 : Number(prodRatio.value))).toFixed(3);
                 resultValue.pop();
                 let resultstr = "Limiting Reagent(s): ";
                 for (let res of resultValue) {

@@ -222,6 +222,7 @@
     display: flex;
     align-items: center;
     padding: 8px 12px;
+    padding-left: 0px; 
     border-bottom: 1px solid #eee;
     gap: 10px;
     text-align: left;
