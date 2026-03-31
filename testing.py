@@ -4,7 +4,6 @@ import os
 import time;
 
 # 1. Update this to your copied profile path
-# Example: r"C:\Users\Andy\AppData\Roaming\Mozilla\Firefox\Profiles\xyz.default-release"
 PROFILE_PATH = r"C:\Users\Jiaqi\Desktop\h7lxgegg.default-release"
 EXTENSION_PATH = os.path.abspath(r"D:\Coding projects\SciHelper")
 addon_id = "scihelper@yourdomain.com"
