@@ -2,12 +2,12 @@
 
     var state = {
         greekMode: false,
-        chemMode: false,
         upperMode: false,
         lowerMode: false,
         mathMode: false,
-        info: false,
-        chemWindow: null
+        chemMode: false,
+        physMode: false,
+        info: false
     };
 
     var outputLoc = null;
@@ -66,38 +66,6 @@
         outputBox.setAttribute('placeholder', 'Type symbols...');
         outputLoc = outputBox;
 
-        // Buttons behaviour
-        var btnCallbacks = {
-            onUpdate: function(clickedId) {
-                // Update Colors
-                var allBtns = document.querySelectorAll('.sci-mainpanel-btn');
-                allBtns.forEach(b => {
-                    const active = state[b.id + 'Mode']; 
-                    // Use the dataset fix or a color map here
-                    b.style.backgroundColor = active ? b.color : '#f9f9f9';
-                    b.style.color = active ? 'white' : 'black';
-                });
-
-                // Chem Window
-                if (clickedId === 'chem') {
-                    if (state.chemMode) {
-                        if (!state.chemWindow) {
-                            state.chemWindow = openChemWindow(outputBox, panel);
-
-                            makeDraggable(document.getElementById('sci-chempanel-header'), panel);
-                        }
-                    } 
-                    else {
-                        if (state.chemWindow) {
-                            state.chemWindow = closeChemWindow();
-                        }
-                    }
-                }
-
-                outputBox.focus();
-            }
-        };
-
         var infoBtn = document.createElement('div');
         infoBtn.setAttribute('id', 'sci-mainpanel-info');
         infoBtn.textContent = "🛈";
@@ -114,19 +82,15 @@
             }
         });
 
-        btnContainer.appendChild(createToggle('Suprscript', 'Xⁿ', 'upper', '#e57373', state, btnCallbacks));
-        btnContainer.appendChild(createToggle('Subscript', 'Xₙ', 'lower', '#ffb74d', state, btnCallbacks));
-        btnContainer.appendChild(createToggle('Greek', 'αbγ', 'greek', '#81c784', state, btnCallbacks)); 
-        btnContainer.appendChild(createToggle('Math', '+-×÷', 'math', '#64b5f6', state, btnCallbacks)); 
-        btnContainer.appendChild(createToggle('Chemistry', 'H₂O', 'chem', '#83c1bb', state, btnCallbacks)); 
+        btnContainer.appendChild(createToggle('Suprscript', 'Xⁿ', 'upper', '#e57373', state));
+        btnContainer.appendChild(createToggle('Subscript', 'Xₙ', 'lower', '#ffb74d', state));
+        btnContainer.appendChild(createToggle('Greek', 'αbγ', 'greek', '#81c784', state)); 
+        btnContainer.appendChild(createToggle('Math', '+-×÷', 'math', '#64b5f6', state)); 
+        btnContainer.appendChild(createSubMenuToggle('Chemistry', 'H₂O', 'chem', '#83c1bb', state, outputLoc, panel)); 
+        btnContainer.appendChild(createSubMenuToggle('Physics', 'F=ma', 'phys', '#ba68c8', state, outputLoc, panel));
 
-        headerContainer.appendChild(header);
-        headerContainer.appendChild(closeBtn);
-        panel.appendChild(headerContainer);        
-        panel.appendChild(btnContainer);
-        panel.appendChild(infoBtn);
-        panel.appendChild(outputBox);
-        panel.appendChild(createCopyBtn(outputBox));
+        headerContainer.append(header, closeBtn);
+        panel.append(headerContainer, btnContainer, infoBtn, outputBox, createCopyBtn(outputBox));        
         document.body.appendChild(panel);
 
         makeDraggable(header, panel);

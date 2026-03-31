@@ -22,7 +22,7 @@ try:
     
     # 3. NOW navigate to the Google Doc
     # Because the addon is already installed, the content script will inject naturally
-    driver.get("https://docs.google.com/document/create")
+    driver.get("https://www.editpad.org")
     
     print("✅ Browser opened, extension loaded, and navigating to Docs.")
 

@@ -28,7 +28,17 @@ function makeDraggable(handle, target) {
 }
 
 // --- Mode toggle buttons ---
-function createToggle(label, symbol, id, color, state, callbacks) {
+function refreshBtnDisp(state) {
+    var allBtns = document.getElementsByClassName('sci-mainpanel-btn');
+    for (let b of allBtns) {
+        const active = state[b.id + 'Mode']; 
+        // Use the dataset fix or a color map here
+        b.style.backgroundColor = active ? b.color : '#f9f9f9';
+        b.style.color = active ? 'white' : 'black';
+    }
+}
+
+function createToggle(label, symbol, id, color, state) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'sci-mainpanel-btn');
     btn.style.backgroundColor = '#f9f9f9';
@@ -47,19 +57,43 @@ function createToggle(label, symbol, id, color, state, callbacks) {
     btn.appendChild(symbolSpan);
 
     btn.addEventListener('click', function() {
-        if (id === 'chem') {
-            state.chemMode = !state.chemMode;
-        } 
-        else {
-            state.upperMode = (id === 'upper') ? !state.upperMode : false;
-            state.lowerMode = (id === 'lower') ? !state.lowerMode : false;
-            state.greekMode = (id === 'greek') ? !state.greekMode : false;
-            state.mathMode  = (id === 'math')  ? !state.mathMode  : false;
-        }
+        state.upperMode = (id === 'upper') ? !state.upperMode : false;
+        state.lowerMode = (id === 'lower') ? !state.lowerMode : false;
+        state.greekMode = (id === 'greek') ? !state.greekMode : false;
+        state.mathMode  = (id === 'math')  ? !state.mathMode  : false;
 
-        if (callbacks && typeof callbacks.onUpdate === 'function') {
-            callbacks.onUpdate(id);
+        refreshBtnDisp(state);
+    });
+
+    return btn;
+}
+
+function createSubMenuToggle(label, symbol, id, color, state, outputLoc, parentPanel) {
+    var btn = document.createElement('button');
+    btn.setAttribute('class', 'sci-mainpanel-btn');
+    btn.style.backgroundColor = '#f9f9f9';
+    btn.id = id;
+    btn.color = color;
+
+    var labelSpan = document.createElement('span');
+    labelSpan.appendChild(document.createTextNode(label));
+        
+    var symbolSpan = document.createElement('span');
+    symbolSpan.setAttribute('class', 'sci-mainpanel-btnsymbol');
+    symbolSpan.style.color = color;
+    symbolSpan.appendChild(document.createTextNode(symbol));
+
+    btn.appendChild(labelSpan);
+    btn.appendChild(symbolSpan);
+    btn.addEventListener('click', function() {
+        if (id === 'chem') {
+            state.chemMode = (state.chemMode === false) ? openChemWindow(outputLoc, parentPanel) : closeChemWindow();
+
         }
+        else if (id === 'phys') {
+            state.physMode = (state.physMode === false) ? openPhysWindow(outputLoc, parentPanel) : closePhysWindow();
+        }
+        refreshBtnDisp(state);
     });
 
     return btn;

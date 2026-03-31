@@ -272,7 +272,7 @@ function openChemWindow(outputLoc, parentWin) {
     chemWindow.appendChild(fnButtonContainer);
     parentWin.appendChild(chemWindow);
 
-    return chemWindow;
+    return true;
 }
 
 // --- Element Loop Ups ---
@@ -317,7 +317,7 @@ function closeChemWindow() {
     document.getElementById('sci-chempanel-limcalc')?.remove();
     document.getElementById('sci-chempanel')?.remove();
 
-    return null;
+    return false;
 }
 
 function openElemSearchWindow(outputLoc) {
