@@ -194,13 +194,27 @@
     display: block;
 }
 
-#sci-chempanel-subfunction-genericheader {
+.sci-chempanel-subfunction-genericheader {
     padding: 8px;
     background: #444;
     color: white;
     font-size: 13px;
     font-weight: bold;
     cursor: move;
+}
+
+.sci-chempanel-subfunction-genericresult {
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    background: #f0f8f7;
+    border-left: 4px solid #83c1bb;
+    min-height: 20px;
+    color: #333;
+}
+
+.sci-chempanel-subfunction-genericresult:hover {
+    background: #f8fffe;
 }
 
 /* --- Element Search Window --- */
@@ -224,13 +238,13 @@
     border: 1px solid #bbb;
 }
 
-#sci-chempanel-results {
+#sci-chempanel-elem-results {
     overflow-y: auto;
     flex-grow: 1;
     padding: 5px;
 }
 
-.sci-chempanel-elem-row {
+.sci-chempanel-elem-results-row {
     display: flex;
     align-items: center;
     padding: 8px 12px;
@@ -240,11 +254,11 @@
     text-align: left;
 }
 
-.sci-chempanel-elem-row:hover {
+.sci-chempanel-elem-results-row:hover {
     background: #f0f8f7;
 }
 
-.sci-chempanel-elem-row-symbol {
+.sci-chempanel-elem-results-row-symbol {
     width: 33.4%; 
     flex-shrink: 0;
     font-weight: bold;
@@ -252,13 +266,13 @@
     text-align: center;
 }
 
-.sci-chempanel-elem-row-symbol:hover {
+.sci-chempanel-elem-results-row-symbol:hover {
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
 }
 
 
-.sci-chempanel-elem-row-text {
+.sci-chempanel-elem-results-row-text {
     flex: 1;
     width: 33.3%; 
     text-align: left;
@@ -267,12 +281,12 @@
     text-align: center;
 }
 
-.sci-chempanel-elem-row-text:hover {
+.sci-chempanel-elem-results-row-text:hover {
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
 }
 
-.sci-chempanel-elem-row.legend {
+.sci-chempanel-elem-results-row.legend {
     background-color: #f8f9fa;
     font-size: 0.9em;
     color: #666;
@@ -301,7 +315,7 @@
     border: 1px solid #bbb;
 }
 
-.sci-chempanel-molm-row {
+.sci-chempanel-molm-results-row {
     display: flex;
     align-items: center;
     padding: 8px 12px;
@@ -309,7 +323,7 @@
     text-align: left;
 }
 
-.sci-chempanel-molm-row:hover {
+.sci-chempanel-molm-results-row:hover {
     background: #f0f8f7;
 }
 
@@ -321,13 +335,13 @@
     text-align: center;
 }
 
-.sci-chempanel-molm-row-symbol:hover {
+.sci-chempanel-molm-results-row-symbol:hover {
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
 }
 
 
-.sci-chempanel-molm-row-text {
+.sci-chempanel-molm-results-row-text {
     flex: 1;
     width: 25%; 
     text-align: left;
@@ -336,7 +350,7 @@
     text-align: center;
 }
 
-.sci-chempanel-molm-row-text:hover {
+.sci-chempanel-molm-results-row-text:hover {
     border-left: 1px solid #ababab;
     border-right: 1px solid #ccc;
 }
@@ -346,20 +360,6 @@
     font-size: 0.9em;
     color: #666;
     border-bottom: 2px solid #ddd;
-}
-
-#sci-chempanel-molmcalc-result {
-    padding: 10px;
-    font-size: 14px;
-    font-weight: bold;
-    background: #f0f8f7;
-    border-left: 4px solid #83c1bb;
-    min-height: 20px;
-    color: #333;
-}
-
-#sci-chempanel-molmcalc-result:hover {
-    background: #e4fffa;
 }
 
 /* --- Limiting Reagent Calculator --- */
@@ -446,6 +446,16 @@ input[readonly] {
     font-weight: bold;
 }
 
+.sci-chempanel-limcalc-input-row-remove {
+    background: none;
+    border: none;
+    color: #ff4d4d;
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 0 5px;
+    flex: 0;
+}
+
 #sci-chempanel-limcalc-addrow {
     width: 24px;
     height: 24px;
@@ -490,25 +500,19 @@ input[readonly] {
     font-size: 14px;
 }
 
-.sci-chempanel-limcalc-input-row-remove {
-    background: none;
-    border: none;
-    color: #ff4d4d;
-    font-size: 1.2em;
-    cursor: pointer;
-    padding: 0 5px;
-    flex: 0;
-}
-
-#sci-chempanel-limcalc-result {
-    padding: 10px;
-    font-size: 14px;
-    font-weight: bold;
-    background: #f0f8f7;
-    border-left: 4px solid #83c1bb;
-    min-height: 20px;
-    color: #333;
-    white-space: pre-line;
+/* --- Electrochemistry Calculator --- */
+#sci-chempanel-elecchem {
+    position: fixed;
+    top: 150px;
+    right: 560px;
+    width: 400px;
+    max-height: 400px;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px black;
+    z-index: 2147483647;
+    display: flex;
+    flex-direction: column;
 }
 
 /* --- Info Page --- */

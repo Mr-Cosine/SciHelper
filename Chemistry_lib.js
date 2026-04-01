@@ -346,25 +346,25 @@ function openElemSearchWindow(outputLoc) {
     elemSearchWindow.setAttribute('class', 'sci-chempanel-tool');
     
     var elemSearchHeader = document.createElement('div');
-    elemSearchHeader.setAttribute('id', 'sci-chempanel-subfunction-genericheader');
+    elemSearchHeader.setAttribute('class', 'sci-chempanel-subfunction-genericheader');
     elemSearchHeader.textContent = 'Elements Look-Up  ';
 
     var searchBox = document.createElement('input');
     searchBox.placeholder = 'Search element...';
 
     var resultsArea = document.createElement('div');
-    resultsArea.id = 'sci-chempanel-results';
+    resultsArea.setAttribute('class', 'sci-chempanel-elem-results');
 
     var legend = document.createElement('div');
-    legend.setAttribute('class', 'sci-chempanel-elem-row');
+    legend.setAttribute('class', 'sci-chempanel-elem-results-row');
     var symbol_legend = document.createElement("div");
-    symbol_legend.classList.add('sci-chempanel-elem-row-symbol');
+    symbol_legend.classList.add('sci-chempanel-elem-results-row-symbol');
     symbol_legend.textContent = "Symbol: ";
     var name_legend = document.createElement("div");
-    name_legend.classList.add('sci-chempanel-elem-row-text');
+    name_legend.classList.add('sci-chempanel-elem-results-row-text');
     name_legend.textContent = "Name: ";
     var mass_legend = document.createElement("div");
-    mass_legend.classList.add('sci-chempanel-elem-row-text');
+    mass_legend.classList.add('sci-chempanel-elem-results-row-text');
     mass_legend.textContent = "Molar Mass: ";
 
     legend.append(symbol_legend, name_legend, mass_legend);
@@ -406,28 +406,28 @@ function openElemSearchWindow(outputLoc) {
 
         if (found.length === 0 && query.length > 0) {
             var row = document.createElement('div');
-            row.setAttribute('class', 'sci-chempanel-elem-row');
+            row.setAttribute('class', 'sci-chempanel-elem-results-row');
             row.textContent = "No matched result.";
             resultsArea.appendChild(row);
         }
         else {
             for (let elem of found) {
                 var row = document.createElement('div');
-                row.setAttribute('class', 'sci-chempanel-elem-row');
+                row.setAttribute('class', 'sci-chempanel-elem-results-row');
                 const symbolToPaste = elem.symbol;
                 const nameToPaste = elem.name;
                 const massToPaste = elem.molarMass.toFixed(3);
 
                 var symbol = document.createElement("div");
-                symbol.classList.add('sci-chempanel-elem-row-symbol');
+                symbol.classList.add('sci-chempanel-elem-results-row-symbol');
                 symbol.textContent = symbolToPaste;
                 symbol.onclick = () => {insertIntoWindow(outputLoc, symbolToPaste);}
                 var name = document.createElement("div");
-                name.classList.add('sci-chempanel-elem-row-text');
+                name.classList.add('sci-chempanel-elem-results-row-text');
                 name.textContent = nameToPaste;
                 name.onclick = () => {insertIntoWindow(outputLoc, nameToPaste);}
                 var mass = document.createElement("div");
-                mass.classList.add('sci-chempanel-elem-row-text');
+                mass.classList.add('sci-chempanel-elem-results-row-text');
                 mass.textContent = massToPaste;
                 mass.onclick = () => {insertIntoWindow(outputLoc, massToPaste + "g/mol ");}
 
@@ -455,31 +455,31 @@ function openMolarMassWindow(outputLoc) {
     molarMassWindow.setAttribute('class', 'sci-chempanel-tool');
     
     var molarMassHeader = document.createElement('div');
-    molarMassHeader.setAttribute('id', 'sci-chempanel-subfunction-genericheader');
+    molarMassHeader.setAttribute('class', 'sci-chempanel-subfunction-genericheader');
     molarMassHeader.textContent = 'Molar Mass Calculator';
 
     var inputBox = document.createElement('input');
     inputBox.placeholder = 'Enter the formula';
 
     var resultBox = document.createElement('div')
-    resultBox.id = 'sci-chempanel-results';
+    resultBox.setAttribute('class', 'sci-chempanel-molm-results');
 
     var result = document.createElement('div');
-    result.setAttribute('id', 'sci-chempanel-molmcalc-result');
+    result.setAttribute('id', 'sci-chempanel-subfunction-genericresult');
 
     var legend = document.createElement('div');
-    legend.setAttribute('class', 'sci-chempanel-molm-row');
+    legend.setAttribute('class', 'sci-chempanel-molm-results-row');
     var symbol_legend = document.createElement("div");
-    symbol_legend.classList.add('sci-chempanel-molm-row-symbol');
+    symbol_legend.classList.add('sci-chempanel-molm-results`-row-symbol');
     symbol_legend.textContent = "Element: ";
     var count_legend = document.createElement("div");
-    count_legend.classList.add('sci-chempanel-molm-row-text');
+    count_legend.classList.add('sci-chempanel-molm-results-row-text');
     count_legend.textContent = "Count: ";
     var mass_legend = document.createElement("div");
-    mass_legend.classList.add('sci-chempanel-molm-row-text');
+    mass_legend.classList.add('sci-chempanel-molm-results-row-text');
     mass_legend.textContent = "Mass: ";
     var masspercent_legend = document.createElement("div");
-    masspercent_legend.classList.add('sci-chempanel-molm-row-text');
+    masspercent_legend.classList.add('sci-chempanel-molm-results-row-text');
     masspercent_legend.textContent = "%Mass: ";
 
     legend.append(symbol_legend, count_legend, mass_legend, masspercent_legend);
@@ -517,23 +517,23 @@ function openMolarMassWindow(outputLoc) {
                     const percentToPaste = (lookup(elem.name) * elem.count / totalMass * 100).toFixed(3) + "%";
 
                     var symbol = document.createElement("div");
-                    symbol.classList.add('sci-chempanel-molm-row-symbol');
+                    symbol.classList.add('sci-chempanel-molm-results-row-symbol');
                     symbol.textContent = nameToPaste;
                     // 2. Use the CAPTURED constant here
                     symbol.onclick = () => { insertIntoWindow(outputLoc, nameToPaste); }
                                         
                     var count = document.createElement("div");
-                    count.classList.add('sci-chempanel-molm-row-text');
+                    count.classList.add('sci-chempanel-molm-results-row-text');
                     count.textContent = countToPaste;
                     count.onclick = () => { insertIntoWindow(outputLoc, countToPaste); }
 
                     var mass = document.createElement("div");
-                    mass.classList.add('sci-chempanel-molm-row-text');
+                    mass.classList.add('sci-chempanel-molm-results-row-text');
                     mass.textContent = massToPaste;
                     mass.onclick = () => { insertIntoWindow(outputLoc, massToPaste + "g/mol "); }
 
                     var masspercent = document.createElement("div");
-                    masspercent.classList.add('sci-chempanel-molm-row-text');
+                    masspercent.classList.add('sci-chempanel-molm-results-row-text');
                     masspercent.textContent = percentToPaste;
                     masspercent.onclick = () => { insertIntoWindow(outputLoc, percentToPaste); }
 
@@ -564,7 +564,7 @@ function openLimReagentWindow() {
     LimReagentWindow.setAttribute('class', 'sci-chempanel-tool');
     
     var LimReagentHeader = document.createElement('div');
-    LimReagentHeader.setAttribute('id', 'sci-chempanel-subfunction-genericheader');
+    LimReagentHeader.setAttribute('class', 'sci-chempanel-subfunction-genericheader');
     LimReagentHeader.textContent = 'Limiting Reagent Calculator';
 
     var inputBox = document.createElement('div');
@@ -607,7 +607,7 @@ function openLimReagentWindow() {
     confirmBtn.textContent = 'Calculate';
 
     var result = document.createElement('div');
-    result.setAttribute('id', 'sci-chempanel-limcalc-result');
+    result.setAttribute('id', 'sci-chempanel-subfunction-genericresult');
 
     confirmBtn.addEventListener('click', ()=> {
         result.textContent = "";
@@ -770,4 +770,22 @@ function createRow(reactantDefaultName) {
 // --- Electrochemistry Dictionary ---
 function openElectroChemWindow(outputLoc) {
     if (document.getElementById('sci-chempanel-elecchem')) return;
+
+    var electroChemWindow = document.createElement('div');
+    electroChemWindow.setAttribute('id', 'sci-chempanel-elecchem');
+    electroChemWindow.setAttribute('class', 'sci-chempanel-tool');
+
+    var ElectroChemHeader = document.createElement('div');
+    ElectroChemHeader.setAttribute('class', 'sci-chempanel-subfunction-genericheader');
+    ElectroChemHeader.textContent = 'Electrochemistry Info';
+
+    var inputBox = document.createElement('input');
+    inputBox.placeholder = 'Search for ion...';
+
+    var resultsArea = document.createElement('div');
+
+    electroChemWindow.append(ElectroChemHeader);
+    document.body.appendChild(electroChemWindow);
+
+    return electroChemWindow;
 }
