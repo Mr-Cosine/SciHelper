@@ -470,7 +470,7 @@ function openMolarMassWindow(outputLoc) {
     var legend = document.createElement('div');
     legend.setAttribute('class', 'sci-chempanel-molm-results-row');
     var symbol_legend = document.createElement("div");
-    symbol_legend.classList.add('sci-chempanel-molm-results`-row-symbol');
+    symbol_legend.classList.add('sci-chempanel-molm-results-row-symbol');
     symbol_legend.textContent = "Element: ";
     var count_legend = document.createElement("div");
     count_legend.classList.add('sci-chempanel-molm-results-row-text');
