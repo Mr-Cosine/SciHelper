@@ -465,7 +465,8 @@ function openMolarMassWindow(outputLoc) {
     resultBox.setAttribute('class', 'sci-chempanel-molm-results');
 
     var result = document.createElement('div');
-    result.setAttribute('id', 'sci-chempanel-subfunction-genericresult');
+    result.setAttribute('class', 'sci-chempanel-subfunction-genericresult');
+    result.textContent = "Molar Mass: --";
 
     var legend = document.createElement('div');
     legend.setAttribute('class', 'sci-chempanel-molm-results-row');
@@ -508,7 +509,7 @@ function openMolarMassWindow(outputLoc) {
 
                 for (let elem of elemLst) {
                     var row = document.createElement('div');
-                    row.setAttribute('class', 'sci-chempanel-molm-row');
+                    row.setAttribute('class', 'sci-chempanel-molm-results-row');
 
                     // 1. CAPTURE the values right now so the click knows exactly what to paste
                     const nameToPaste = elem.name;
@@ -607,7 +608,8 @@ function openLimReagentWindow() {
     confirmBtn.textContent = 'Calculate';
 
     var result = document.createElement('div');
-    result.setAttribute('id', 'sci-chempanel-subfunction-genericresult');
+    result.setAttribute('class', 'sci-chempanel-subfunction-genericresult');
+    result.textContent = "Limiting Reagent(s): --\nAmount of product formed: --";
 
     confirmBtn.addEventListener('click', ()=> {
         result.textContent = "";
@@ -779,13 +781,114 @@ function openElectroChemWindow(outputLoc) {
     ElectroChemHeader.setAttribute('class', 'sci-chempanel-subfunction-genericheader');
     ElectroChemHeader.textContent = 'Electrochemistry Info';
 
-    var inputBox = document.createElement('input');
-    inputBox.placeholder = 'Search for ion...';
+    var inputBox1 = createSearchInput('Search redox reactions');
+    var inputBox2 = createSearchInput('Search redox reactions');
+
+    var confirmBtn = document.createElement('button');
+    confirmBtn.setAttribute('id', 'sci-chempanel-elecchem-confirm')
+    confirmBtn.textContent = 'Calculate Cell';
 
     var resultsArea = document.createElement('div');
+    resultsArea.setAttribute('class', 'sci-chempanel-subfunction-genericresult');
+    electroChemWindow.append(ElectroChemHeader, inputBox1, inputBox2, confirmBtn, resultsArea);
+    
+    confirmBtn.addEventListener('click', () => {
+        let reaction1 = inputBox1.redoxLabel == 'reduction' ? inputBox1.redox: -1 * inputBox1.redox;
+        let reaction2 = inputBox2.redoxLabel == 'reduction' ? inputBox2.redox: -1 * inputBox2.redox;
 
-    electroChemWindow.append(ElectroChemHeader);
+        resultsArea.textContent = "E°cell = " + (reaction1 + reaction2).toFixed(3) + " V" + '\n';
+        
+        resultsArea.textContent +=  (reaction1 - reaction2).toFixed(3) > 0 ? "Spontaneous" : "Non-spontaneous";
+    });
+
+    resultsArea.addEventListener('click', () => {
+        if (resultsArea.textContent.startsWith("E°cell = ")) {
+            let cellPotential = resultsArea.textContent.split(" ")[2];
+            insertIntoWindow(outputLoc, cellPotential + " V");
+        }
+    });
+
     document.body.appendChild(electroChemWindow);
 
     return electroChemWindow;
+}
+
+function createSearchInput(placeholderText) {
+    var container = document.createElement('div');
+    container.setAttribute('class', 'sci-chempanel-elecchem-container');
+    container.style.position = 'relative'; 
+    container.style.width = '100%';
+    container.redox = null;
+
+    var input = document.createElement('div');
+    input.setAttribute('class', 'sci-chempanel-elecchem-container-input-container');
+
+    var inputBox = document.createElement('input');
+    inputBox.setAttribute('class', 'sci-chempanel-elecchem-container-input-inputbox');
+    inputBox.placeholder = placeholderText;
+
+    var resultWindow = document.createElement('div');
+    resultWindow.setAttribute('class', 'sci-chempanel-elecchem-container-input-result');
+
+    var redoxLabel = document.createElement('select');
+    redoxLabel.setAttribute('class', 'sci-chempanel-elecchem-container-input-redoxlabel');
+    const redoxOptions = [{ value: 'oxidation', text: 'Oxidation' }, { value: 'reduction', text: 'Reduction' }];
+    redoxOptions.forEach(opt => {
+        let el = document.createElement('option');
+        el.value = opt.value;
+        el.text = opt.text;
+        redoxLabel.appendChild(el);
+    });
+
+    input.append(inputBox, redoxLabel);
+    container.append(input, resultWindow);
+
+    inputBox.addEventListener('input', function() {
+        var query = inputBox.value.toLowerCase();
+        while(resultWindow.firstChild) { resultWindow.removeChild(resultWindow.firstChild); }
+        
+        if (!query) {
+            resultWindow.style.display = 'none';
+            return;
+        }
+
+        for (let entry of window.electroPotentials) {
+            let isMatch = false;
+
+            if (isNum(query) && Math.abs(entry.potential - Number(query)) < 0.025) {
+                isMatch = true;
+            }
+
+            else if (entry.name.toLowerCase().includes(query) || sanitizeFormula(entry.rxn).includes(query)) {
+                isMatch = true;
+            }
+
+            if (isMatch) {
+                var row = document.createElement('div'); 
+                row.setAttribute('class', 'sci-chempanel-elecchem-container-input-result-row');
+                
+                var reaction = document.createElement("div"); 
+                reaction.textContent = entry.rxn;
+                
+                var potential = document.createElement("div"); 
+                potential.textContent = entry.e0 + " V";
+
+                row.append(reaction, potential);
+
+                row.addEventListener('click', () => {
+                    inputBox.value = entry.rxn;
+                    container.redox = entry.e0;
+                    container.redoxLabel = redoxLabel.value;
+                    resultWindow.style.display = 'none';
+                });
+
+                resultWindow.appendChild(row);
+
+            }
+        }
+        
+        resultWindow.style.display = resultWindow.firstChild ? 'block' : 'none';
+    });
+
+    return container; // Return the container, not just the input
 }

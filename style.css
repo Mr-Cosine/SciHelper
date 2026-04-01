@@ -211,6 +211,7 @@
     border-left: 4px solid #83c1bb;
     min-height: 20px;
     color: #333;
+    white-space: pre-wrap;
 }
 
 .sci-chempanel-subfunction-genericresult:hover {
@@ -359,6 +360,11 @@
 }
 
 /* --- Limiting Reagent Calculator --- */
+#sci-chempanel-limcalc,
+#sci-chempanel-limcalc * {
+    box-sizing: border-box;
+}
+
 #sci-chempanel-limcalc {
     position: fixed;
     top: 150px;
@@ -373,33 +379,17 @@
     flex-direction: column;
 }
 
-.sci-chempanel-limcalc-legend {
-    display: flex;
-    gap: 10px;
-    padding: 5px 10px;
-    font-weight: bold;
-    font-size: 0.85em;
-    color: #555;
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 10px;
-}
-
-.legend-item { flex: 1; text-align: center; }
-.legend-name { flex: 1.5; }
-
 .sci-chempanel-limcalc-input-row {
     width: 100%;
     display: flex;
+    flex-wrap: nowrap;
     align-items: center;
     gap: 5px;
     margin-top: 5px;
     padding: 5px;
     padding-bottom: 0px;
-    background: none;
-    border-radius: 4px;
 
     box-sizing: border-box;
-    min-width: 0;
 }
 
 .sci-chempanel-limcalc-input-row input, 
@@ -407,39 +397,23 @@
     padding: 3px;
     border: 1px solid #ccc;
     font-size: 10px;
-    
+    flex-shrink: 1;
     min-width: 0;
-    width: 0;
+    box-sizing: border-box;
+    width: 100%;
 }
 
-.sci-chempanel-limcalc-input-row-name,
-.sci-chempanel-limcalc-input-row-concentration {
-    flex: 1;
-}
-
-.sci-chempanel-limcalc-input-row-amount {
-    flex: 0.8;
-}
-
-.sci-chempanel-limcalc-input-row-stoic {
-    flex: 0.5;
-}
+.sci-chempanel-limcalc-input-row-name {flex: 1; font-weight: bold;}
+.sci-chempanel-limcalc-input-row-concentration {flex: 1;}
+.sci-chempanel-limcalc-input-row-amount {flex: 1;}
+.sci-chempanel-limcalc-input-row-stoic {flex: 0 0 40px;}
+.sci-chempanel-limcalc-input-row select {flex: 0 0 50px;}
 
 
 input[readonly] {
     background-color: #f0f0f0; 
     color: #666;
     border: 1px dashed #ccc;
-}
-
-.sci-chempanel-limcalc-input-row select {
-    cursor: pointer;
-    flex: 0.6;
-}
-
-.sci-chempanel-limcalc-input-row-name {
-    flex: 1;
-    font-weight: bold;
 }
 
 .sci-chempanel-limcalc-input-row-remove {
@@ -497,18 +471,94 @@ input[readonly] {
 }
 
 /* --- Electrochemistry Calculator --- */
+#sci-chempanel-elecchem, 
+#sci-chempanel-elecchem * {
+    box-sizing: border-box;
+}
+
 #sci-chempanel-elecchem {
     position: fixed;
     top: 150px;
     right: 560px;
-    width: 400px;
-    max-height: 400px;
+    width: 320px;
     background: white;
     border: 1px solid #ccc;
     box-shadow: 0 4px 8px black;
     z-index: 2147483647;
     display: flex;
     flex-direction: column;
+    padding-bottom: 10px;
+}
+
+.sci-chempanel-elecchem-container {
+    padding: 8px 10px 0 10px;
+    width: 100%;
+}
+
+.sci-chempanel-elecchem-container-input-container {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
+.sci-chempanel-elecchem-container-input-inputbox {
+    flex: 0.8;
+    padding: 4px 6px;
+    font-size: 12px;
+    min-width: 0;
+    border: 1px solid #ccc;
+    border-right: none;
+    outline: none;
+}
+
+.sci-chempanel-elecchem-container-input-redoxlabel {
+    flex: 0.2;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    background: #f8f9fa;
+    cursor: pointer;
+    outline: none;
+}
+
+.sci-chempanel-elecchem-container-input-result {
+    position: absolute;
+    top: 100%;
+    left: 10px;
+    right: 10px;
+    z-index: 100;
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-height: 150px;
+    overflow-y: auto;
+    display: none;
+}
+
+.sci-chempanel-elecchem-container-input-result-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 8px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.sci-chempanel-elecchem-container-input-result-row:hover {
+    background-color: #f0f8f7;
+}
+
+#sci-chempanel-elecchem-confirm {
+    width: 80px;
+    padding: 10px;
+    margin-left: 5px;
+    margin-top: 15px;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 10px;
+    background: none;
+    border: 1px solid #ccc;
+    font-size: 14px;
 }
 
 /* --- Info Page --- */
