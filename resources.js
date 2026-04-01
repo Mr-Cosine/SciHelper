@@ -28,8 +28,8 @@ if (typeof window.subscripts === 'undefined') {
 }
 
 // greeke letters
-if (typeof window.greek === 'undefined') {
-    window.greek = Object.freeze({
+if (typeof window.greeks === 'undefined') {
+    window.greeks = Object.freeze({
         "a": "α", "b": "β", "g": "γ", "d": "δ", "e": "ε",
         "z": "ζ", "h": "η", "q": "θ", "i": "ι", "k": "κ",
         "l": "λ", "m": "μ", "n": "ν", "x": "ξ", "o": "ο",
@@ -39,12 +39,12 @@ if (typeof window.greek === 'undefined') {
 }
 
 // math symbols
-if (typeof window.math === 'undefined') {
-    window.math = Object.freeze({
+if (typeof window.maths === 'undefined') {
+    window.maths = Object.freeze({
         "i": "∫", "p": "∂", "s": "∑", "r": "√", "l": "∞", "d": "∆",
-        "g": "∇", "o": "ₒ", "e": "≈", "c": "∮", "*": "×", "f": "ƒ",
-        "b": "≥", "s": "≤", "/": "÷", ".": "·", "n": "≠", "A": "∀",
-        "E": "∃", "@": "∈"
+        "g": "∇", "o": "ₒ", "e": "≈", "@": "∈", "*": "×", "f": "ƒ",
+        "b": "≥", "s": "≤", "/": "÷", ".": "·", "n": "≠", "a": "∀",
+        "E": "∃", "v": "⃗",
     });
 }
 
@@ -222,4 +222,41 @@ if (typeof window.polyions === 'undefined') {
     p[16] = new element("Phosphite",      "PO₃³⁻",    -1,   78.972);
     
     window.polyions = Object.freeze(p);
+}
+
+if (typeof window.electroPotentials === 'undefined') {
+    const ELECTRO_POTENTIALS = [
+        { name: "Fluorine", symbol: "F₂", rxn: "F₂ (g) + 2e⁻ → 2F⁻ (aq)", e0: 2.87 },
+        { name: "Hydrogen Peroxide", symbol: "H₂O₂", rxn: "H₂O₂ (aq) + 2H⁺ (aq) + 2e⁻ → 2H₂O (l)", e0: 1.78 },
+        { name: "Permanganate", symbol: "MnO₄⁻", rxn: "MnO₄⁻ (aq) + 8H⁺ (aq) + 5e⁻ → Mn²⁺ (aq) + 4H₂O (l)", e0: 1.51 },
+        { name: "Gold", symbol: "Au³⁺", rxn: "Au³⁺ (aq) + 3e⁻ → Au (s)", e0: 1.50 },
+        { name: "Chlorine", symbol: "Cl₂", rxn: "Cl₂ (g) + 2e⁻ → 2Cl⁻ (aq)", e0: 1.36 },
+        { name: "Dichromate", symbol: "Cr₂O₇²⁻", rxn: "Cr₂O₇²⁻ (aq) + 14H⁺ (aq) + 6e⁻ → 2Cr³⁺ (aq) + 7H₂O (l)", e0: 1.33 },
+        { name: "Oxygen", symbol: "O₂", rxn: "O₂ (g) + 4H⁺ (aq) + 4e⁻ → 2H₂O (l)", e0: 1.23 },
+        { name: "Bromine", symbol: "Br₂", rxn: "Br₂ (l) + 2e⁻ → 2Br⁻ (aq)", e0: 1.07 },
+        { name: "Nitrate", symbol: "NO₃⁻", rxn: "NO₃⁻ (aq) + 4H⁺ (aq) + 3e⁻ → NO (g) + 2H₂O (l)", e0: 0.96 },
+        { name: "Silver", symbol: "Ag⁺", rxn: "Ag⁺ (aq) + e⁻ → Ag (s)", e0: 0.80 },
+        { name: "Iron(III)", symbol: "Fe³⁺", rxn: "Fe³⁺ (aq) + e⁻ → Fe²⁺ (aq)", e0: 0.77 },
+        { name: "Iodine", symbol: "I₂", rxn: "I₂ (s) + 2e⁻ → 2I⁻ (aq)", e0: 0.54 },
+        { name: "Copper(I)", symbol: "Cu⁺", rxn: "Cu⁺ (aq) + e⁻ → Cu (s)", e0: 0.52 },
+        { name: "Copper(II)", symbol: "Cu²⁺", rxn: "Cu²⁺ (aq) + 2e⁻ → Cu (s)", e0: 0.34 },
+        { name: "Tin(IV)", symbol: "Sn⁴⁺", rxn: "Sn⁴⁺ (aq) + 2e⁻ → Sn²⁺ (aq)", e0: 0.15 },
+        { name: "Hydrogen (SHE)", symbol: "H⁺", rxn: "2H⁺ (aq) + 2e⁻ → H₂ (g)", e0: 0.00 },
+        { name: "Lead(II)", symbol: "Pb²⁺", rxn: "Pb²⁺ (aq) + 2e⁻ → Pb (s)", e0: -0.13 },
+        { name: "Tin(II)", symbol: "Sn²⁺", rxn: "Sn²⁺ (aq) + 2e⁻ → Sn (s)", e0: -0.14 },
+        { name: "Nickel(II)", symbol: "Ni²⁺", rxn: "Ni²⁺ (aq) + 2e⁻ → Ni (s)", e0: -0.26 },
+        { name: "Cobalt(II)", symbol: "Co²⁺", rxn: "Co²⁺ (aq) + 2e⁻ → Co (s)", e0: -0.28 },
+        { name: "Iron(II)", symbol: "Fe²⁺", rxn: "Fe²⁺ (aq) + 2e⁻ → Fe (s)", e0: -0.44 },
+        { name: "Chromium(III)", symbol: "Cr³⁺", rxn: "Cr³⁺ (aq) + 3e⁻ → Cr (s)", e0: -0.74 },
+        { name: "Zinc", symbol: "Zn²⁺", rxn: "Zn²⁺ (aq) + 2e⁻ → Zn (s)", e0: -0.76 },
+        { name: "Water (Reduction)", symbol: "H₂O", rxn: "2H₂O (l) + 2e⁻ → H₂ (g) + 2OH⁻ (aq)", e0: -0.83 },
+        { name: "Manganese(II)", symbol: "Mn²⁺", rxn: "Mn²⁺ (aq) + 2e⁻ → Mn (s)", e0: -1.18 },
+        { name: "Aluminum", symbol: "Al³⁺", rxn: "Al³⁺ (aq) + 3e⁻ → Al (s)", e0: -1.66 },
+        { name: "Magnesium", symbol: "Mg²⁺", rxn: "Mg²⁺ (aq) + 2e⁻ → Mg (s)", e0: -2.37 },
+        { name: "Sodium", symbol: "Na⁺", rxn: "Na⁺ (aq) + e⁻ → Na (s)", e0: -2.71 },
+        { name: "Calcium", symbol: "Ca²⁺", rxn: "Ca²⁺ (aq) + 2e⁻ → Ca (s)", e0: -2.87 },
+        { name: "Potassium", symbol: "K⁺", rxn: "K⁺ (aq) + e⁻ → K (s)", e0: -2.93 },
+        { name: "Lithium", symbol: "Li⁺", rxn: "Li⁺ (aq) + e⁻ → Li (s)", e0: -3.04 }
+    ];
+    window.electroPotentials = Object.freeze(ELECTRO_POTENTIALS);
 }

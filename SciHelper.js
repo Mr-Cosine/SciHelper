@@ -1,12 +1,12 @@
 (function() {
 
     var state = {
-        greekMode: false,
-        upperMode: false,
-        lowerMode: false,
-        mathMode: false,
-        chemMode: false,
-        physMode: false,
+        greek: false,
+        superscript: false,
+        subscript: false,
+        math: false,
+        chemistry: false,
+        physics: false,
         info: false
     };
 
@@ -18,13 +18,7 @@
         // Wait for body to be ready
         if (!document.body || document.getElementById('sci-mainpanel')) return;
 
-        state.greekMode = false;
-        state.chemMode = false;
-        state.upperMode = false;
-        state.lowerMode = false;
-        state.mathMode = false;
-        state.info = false;
-        state.chemWindow = null;
+        for (let key in state) { state[key] = false;}
         
         // --- UI Construction ---
         var panel = document.createElement('div');
@@ -82,12 +76,12 @@
             }
         });
 
-        btnContainer.appendChild(createToggle('Suprscript', 'Xⁿ', 'upper', '#e57373', state));
-        btnContainer.appendChild(createToggle('Subscript', 'Xₙ', 'lower', '#ffb74d', state));
+        btnContainer.appendChild(createToggle('Suprscript', 'Xⁿ', 'superscript', '#e57373', state));
+        btnContainer.appendChild(createToggle('Subscript', 'Xₙ', 'subscript', '#ffb74d', state));
         btnContainer.appendChild(createToggle('Greek', 'αbγ', 'greek', '#81c784', state)); 
         btnContainer.appendChild(createToggle('Math', '+-×÷', 'math', '#64b5f6', state)); 
-        btnContainer.appendChild(createSubMenuToggle('Chemistry', 'H₂O', 'chem', '#83c1bb', state, outputLoc, panel)); 
-        btnContainer.appendChild(createSubMenuToggle('Physics', 'F=ma', 'phys', '#ba68c8', state, outputLoc, panel));
+        btnContainer.appendChild(createSubMenuToggle('Chemistry', 'H₂O', 'chemistry', '#83c1bb', state, outputLoc, panel)); 
+        btnContainer.appendChild(createSubMenuToggle('Physics', 'F=ma', 'physics', '#ba68c8', state, outputLoc, panel));
 
         headerContainer.append(header, closeBtn);
         panel.append(headerContainer, btnContainer, infoBtn, outputBox, createCopyBtn(outputBox));        
@@ -113,14 +107,14 @@
             var symbol = null;
             var key = e.key;
 
-            if (state.upperMode && window.superscripts) {
+            if (state.superscript && window.superscripts) {
                 symbol = window.superscripts[key] || (e.code.startsWith("Digit") ? window.superscripts[e.code.replace("Digit", "")] : null);
-            } else if (state.lowerMode && window.subscripts) {
+            } else if (state.subscript && window.subscripts) {
                 symbol = window.subscripts[key] || (e.code.startsWith("Digit") ? window.subscripts[e.code.replace("Digit", "")] : null);
-            } else if (state.greekMode && window.greek) {
-                symbol = window.greek[key.toLowerCase()];
-            } else if (state.mathMode && window.math) {
-                symbol = window.math[key];
+            } else if (state.greek && window.greeks) {
+                symbol = window.greeks[key.toLowerCase()];
+            } else if (state.math && window.maths) {
+                symbol = window.maths[key];
             }
                     
             if (symbol) { e.preventDefault(); insertIntoWindow(outputLoc, symbol); }

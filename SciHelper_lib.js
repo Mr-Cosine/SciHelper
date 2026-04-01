@@ -5,7 +5,7 @@ function insertIntoWindow(target, text) {
     var end = target.selectionEnd || target.value.length;
     target.value = target.value.slice(0, start) + text + target.value.slice(end);
     target.selectionStart = target.selectionEnd = start + text.length;
-    target.focus;
+    target.focus();
 }
 
 
@@ -28,10 +28,10 @@ function makeDraggable(handle, target) {
 }
 
 // --- Mode toggle buttons ---
-function refreshBtnDisp(state) {
-    var allBtns = document.getElementsByClassName('sci-mainpanel-btn');
+function refreshBtnDisp(classname, state) {
+    var allBtns = document.getElementsByClassName(classname);
     for (let b of allBtns) {
-        const active = state[b.id + 'Mode']; 
+        const active = state[b.id]; 
         // Use the dataset fix or a color map here
         b.style.backgroundColor = active ? b.color : '#f9f9f9';
         b.style.color = active ? 'white' : 'black';
@@ -53,16 +53,15 @@ function createToggle(label, symbol, id, color, state) {
     symbolSpan.style.color = color;
     symbolSpan.appendChild(document.createTextNode(symbol));
 
-    btn.appendChild(labelSpan);
-    btn.appendChild(symbolSpan);
+    btn.append(labelSpan, symbolSpan);
 
     btn.addEventListener('click', function() {
-        state.upperMode = (id === 'upper') ? !state.upperMode : false;
-        state.lowerMode = (id === 'lower') ? !state.lowerMode : false;
-        state.greekMode = (id === 'greek') ? !state.greekMode : false;
-        state.mathMode  = (id === 'math')  ? !state.mathMode  : false;
+        state.superscript = (id === 'superscript') ? !state.superscript : false;
+        state.subscript = (id === 'subscript') ? !state.subscript : false;
+        state.greek = (id === 'greek') ? !state.greek : false;
+        state.math = (id === 'math')  ? !state.math  : false;
 
-        refreshBtnDisp(state);
+        refreshBtnDisp(btn.className, state);
     });
 
     return btn;
@@ -83,17 +82,17 @@ function createSubMenuToggle(label, symbol, id, color, state, outputLoc, parentP
     symbolSpan.style.color = color;
     symbolSpan.appendChild(document.createTextNode(symbol));
 
-    btn.appendChild(labelSpan);
-    btn.appendChild(symbolSpan);
+    btn.append(labelSpan, symbolSpan);
+    
     btn.addEventListener('click', function() {
-        if (id === 'chem') {
-            state.chemMode = (state.chemMode === false) ? openChemWindow(outputLoc, parentPanel) : closeChemWindow();
+        if (id === 'chemistry') {
+            state.chemistry = (state.chemistry === false) ? openChemWindow(outputLoc, parentPanel) : closeChemWindow();
 
         }
-        else if (id === 'phys') {
-            state.physMode = (state.physMode === false) ? openPhysWindow(outputLoc, parentPanel) : closePhysWindow();
+        else if (id === 'physics') {
+            state.physics = (state.physics === false) ? openPhysWindow(outputLoc, parentPanel) : closePhysWindow();
         }
-        refreshBtnDisp(state);
+        refreshBtnDisp(btn.className, state);
     });
 
     return btn;
@@ -159,15 +158,15 @@ function openInfo(outputLoc, parentpanel) {
         
         btn.onclick = () => {
             var freshRect = infoBtn.getBoundingClientRect();
-            renderContentWindow(label, data, freshRect.right + 2, freshRect.top, outputLoc, parentpanel); 
+            openInfoContent(label, data, freshRect.right + 2, freshRect.top, outputLoc, parentpanel); 
             menuWin.remove();
         };
         return btn;
     }
 
     // Populate using global objects
-    btnList.appendChild(createMenuBtn('MATH', Object.entries(window.math || {})));
-    btnList.appendChild(createMenuBtn('GREEK', Object.entries(window.greek || {})));
+    btnList.appendChild(createMenuBtn('MATH', Object.entries(window.maths || {})));
+    btnList.appendChild(createMenuBtn('GREEK', Object.entries(window.greeks || {})));
     btnList.appendChild(createMenuBtn('SUP/SUB', Object.entries(window.superscripts || {}).concat(Object.entries(window.subscripts || {}))));
     btnList.appendChild(createMenuBtn('SPECIAL', [['Deg', window.degree || '°'], ['Eq', window.equilibrium || '⇌']]));
 
@@ -175,7 +174,7 @@ function openInfo(outputLoc, parentpanel) {
     document.body.appendChild(menuWin);
 }
 
-function renderContentWindow(title, mapping, x, y, outputLoc, parentpanel) {
+function openInfoContent(title, mapping, x, y, outputLoc, parentpanel) {
     var existingPage = document.getElementById('sci-infopanel-contentpage');
     if (existingPage) existingPage.remove();
 
@@ -242,10 +241,6 @@ function renderContentWindow(title, mapping, x, y, outputLoc, parentpanel) {
 }
 
 function closeInfo() {
-    if(document.getElementById('sci-infopanel-contentpage')) {
-        document.getElementById('sci-infopanel-contentpage').remove();
-    }
-    if(document.getElementById('sci-infopanel')){
-        document.getElementById('sci-infopanel').remove();
-    }
+    document.getElementById('sci-infopanel-contentpage')?.remove();
+    document.getElementById('sci-infopanel')?.remove();
 }

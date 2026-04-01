@@ -243,7 +243,7 @@ function calculate(elementList) {
     }
     returnList.push(possibleProd[0][1])
     return returnList;
- }
+}
 
 //============================================================================
 // --- UI builders ---
@@ -251,6 +251,13 @@ function calculate(elementList) {
 // --- Main Chemistry submenu ---`
 function openChemWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-chempanel')) return;
+
+    state_chem = {
+        elemSearch: false,
+        molmCalc: false,
+        limCalc: false,
+        electroChem: false
+    }
     
     var chemWindow = document.createElement('div');
     chemWindow.setAttribute('id', 'sci-chempanel');
@@ -263,10 +270,11 @@ function openChemWindow(outputLoc, parentWin) {
     var fnButtonContainer = document. createElement('div');
     fnButtonContainer.setAttribute('class', 'sci-chempanel-btncontainer');
 
-    var btncolor = '#e6e69a';
-    fnButtonContainer.appendChild(elemSearchBtn('Element Look-Up', '🔎', btncolor, outputLoc));
-    fnButtonContainer.appendChild(molarMassBtn('Molar Mass Calculator', '🧮', btncolor, outputLoc));
-    fnButtonContainer.appendChild(LimReagentBtn('Limiting Reagent Calculator', '🧪', btncolor));
+    var btncolor = '#83c1bb';
+    fnButtonContainer.appendChild(createFnBtn('Element Look-Up', '🔎', btncolor, 'elemSearch', state_chem, outputLoc));
+    fnButtonContainer.appendChild(createFnBtn('Molar Mass Calculator', '🧮', btncolor, 'molmCalc', state_chem, outputLoc));
+    fnButtonContainer.appendChild(createFnBtn('Limiting Reagent Calculator', '🧪', btncolor, 'limCalc', state_chem, outputLoc));
+    fnButtonContainer.appendChild(createFnBtn('Electrochemistry', '⚡', btncolor, 'electroChem', state_chem, outputLoc));
 
     chemWindow.appendChild(chemHeader);
     chemWindow.appendChild(fnButtonContainer);
@@ -275,11 +283,20 @@ function openChemWindow(outputLoc, parentWin) {
     return true;
 }
 
-// --- Element Loop Ups ---
-function elemSearchBtn(name, symbol, color, outputLoc) {
+function closeChemWindow() {
+    let toolWindow = document.getElementsByClassName('sci-chempanel-tool');
+    while (toolWindow.length > 0) {toolWindow[0].remove();}
+    document.getElementById('sci-chempanel')?.remove();
+
+    return false;
+}
+
+function createFnBtn(name, symbol, color, id, state_chem, outputLoc) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'sci-chempanel-btn');
     btn.style.backgroundColor = '#f9f9f9'; // Default state
+    btn.id = id;
+    btn.color = color;
 
     // Use 'name' from arguments
     var labelSpan = document.createElement('span');
@@ -293,38 +310,40 @@ function elemSearchBtn(name, symbol, color, outputLoc) {
     btn.append(labelSpan, symbolSpan);
 
     btn.addEventListener('click', function() {
-        var existingWindow = document.getElementById('sci-chempanel-elesearch');
-        
-        if (!existingWindow) {
-            // OPEN logic
-            openElemSearchWindow(outputLoc);
-            btn.style.backgroundColor = color;
-            btn.style.color = 'white';
-        } else {
-            // CLOSE logic
-            existingWindow.remove();
-            btn.style.backgroundColor = '#f9f9f9';
-            btn.style.color = 'black';
+        if (id === 'elemSearch') {
+            var existingWindow = document.getElementById('sci-chempanel-elesearch');
+            if (!existingWindow) {openElemSearchWindow(outputLoc); state_chem.elemSearch = true;}
+            else {existingWindow.remove(); state_chem.elemSearch = false;}
         }
+        else if (id === 'molmCalc') {
+            var existingWindow = document.getElementById('sci-chempanel-molmcalc');
+            if (!existingWindow) {openMolarMassWindow(outputLoc); state_chem.molmCalc = true;} 
+            else {existingWindow.remove(); state_chem.molmCalc = false;}
+        }
+        else if (id === 'limCalc') {
+            var existingWindow = document.getElementById('sci-chempanel-limcalc');
+            if (!existingWindow) {openLimReagentWindow(); state_chem.limCalc = true;}
+            else {existingWindow.remove(); state_chem.limCalc = false;}
+        }
+        else if (id === 'electroChem') {
+            var existingWindow = document.getElementById('sci-chempanel-elecchem');
+            if (!existingWindow) {openElectroChemWindow(outputLoc); state_chem.electroChem = true;}
+            else {existingWindow.remove(); state_chem.electroChem = false;}
+        }
+        refreshBtnDisp(btn.className, state_chem);
     });
 
     return btn;
 }
 
-function closeChemWindow() {
-    document.getElementById('sci-chempanel-elesearch')?.remove();
-    document.getElementById('sci-chempanel-molmcalc')?.remove();
-    document.getElementById('sci-chempanel-limcalc')?.remove();
-    document.getElementById('sci-chempanel')?.remove();
-
-    return false;
-}
+// --- Element Look-Ups ---
 
 function openElemSearchWindow(outputLoc) {
     if (document.getElementById('sci-chempanel-elesearch')) return;
     
     var elemSearchWindow = document.createElement('div');
     elemSearchWindow.setAttribute('id', 'sci-chempanel-elesearch');
+    elemSearchWindow.setAttribute('class', 'sci-chempanel-tool');
     
     var elemSearchHeader = document.createElement('div');
     elemSearchHeader.setAttribute('id', 'sci-chempanel-subfunction-genericheader');
@@ -428,47 +447,12 @@ function openElemSearchWindow(outputLoc) {
 
 // --- Molar Mass Calculation ---
 
-function molarMassBtn(name, symbol, color, outputLoc) {
-    var btn = document.createElement('button');
-    btn.setAttribute('class', 'sci-chempanel-btn');
-    btn.style.backgroundColor = '#f9f9f9'; // Default state
-
-    // Use 'name' from arguments
-    var labelSpan = document.createElement('span');
-    labelSpan.textContent = name;
-        
-    var symbolSpan = document.createElement('span');
-    symbolSpan.setAttribute('class', 'sci-chempanel-btnsymbol');
-    symbolSpan.style.color = color;
-    symbolSpan.textContent = symbol;
-
-    btn.append(labelSpan, symbolSpan);
-
-    btn.addEventListener('click', function() {
-        var existingWindow = document.getElementById('sci-chempanel-molmcalc');
-        
-        if (!existingWindow) {
-            // OPEN logic
-            openMolarMassWindow(outputLoc);
-            btn.style.backgroundColor = color;
-            btn.style.color = 'white';
-        } 
-        else {
-            // CLOSE logic
-            existingWindow.remove();
-            btn.style.backgroundColor = '#f9f9f9';
-            btn.style.color = 'black';
-        }
-    });
-
-    return btn;
-}
-
 function openMolarMassWindow(outputLoc) {
     if (document.getElementById('sci-chempanel-molmcalc')) return;
     
     var molarMassWindow = document.createElement('div');
     molarMassWindow.setAttribute('id', 'sci-chempanel-molmcalc');
+    molarMassWindow.setAttribute('class', 'sci-chempanel-tool');
     
     var molarMassHeader = document.createElement('div');
     molarMassHeader.setAttribute('id', 'sci-chempanel-subfunction-genericheader');
@@ -572,48 +556,12 @@ function openMolarMassWindow(outputLoc) {
 }
 
 // --- Limiting Reagent Calculation --- 
-
-function LimReagentBtn(name, symbol, color) {
-    var btn = document.createElement('button');
-    btn.setAttribute('class', 'sci-chempanel-btn');
-    btn.style.backgroundColor = '#f9f9f9'; // Default state
-
-    // Use 'name' from arguments
-    var labelSpan = document.createElement('span');
-    labelSpan.textContent = name;
-        
-    var symbolSpan = document.createElement('span');
-    symbolSpan.setAttribute('class', 'sci-chempanel-btnsymbol');
-    symbolSpan.style.color = color;
-    symbolSpan.textContent = symbol;
-
-    btn.append(labelSpan, symbolSpan);
-
-    btn.addEventListener('click', function() {
-        var existingWindow = document.getElementById('sci-chempanel-limcalc');
-        
-        if (!existingWindow) {
-            // OPEN logic
-            openLimReagentWindow();
-            btn.style.backgroundColor = color;
-            btn.style.color = 'white';
-        } 
-        else {
-            // CLOSE logic
-            existingWindow.remove();
-            btn.style.backgroundColor = '#f9f9f9';
-            btn.style.color = 'black';
-        }
-    });
-
-    return btn;
-}
-
 function openLimReagentWindow() {
     if (document.getElementById('sci-chempanel-limcalc')) return;
     
     var LimReagentWindow = document.createElement('div');
     LimReagentWindow.setAttribute('id', 'sci-chempanel-limcalc');
+    LimReagentWindow.setAttribute('class', 'sci-chempanel-tool');
     
     var LimReagentHeader = document.createElement('div');
     LimReagentHeader.setAttribute('id', 'sci-chempanel-subfunction-genericheader');
@@ -817,4 +765,9 @@ function createRow(reactantDefaultName) {
     
     row.append(name, stoicoefficient, concentration, concUnit, amount, amountUnit, removeBtn);
     return row;
+}
+
+// --- Electrochemistry Dictionary ---
+function openElectroChemWindow(outputLoc) {
+    if (document.getElementById('sci-chempanel-elecchem')) return;
 }

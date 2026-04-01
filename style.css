@@ -4,6 +4,18 @@
     user-select: none;         /* Standard syntax (Chrome, Firefox, Edge) */
 }
 
+/* --- Font Import --- */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans&family=Noto+Sans+Math&display=swap');
+
+#sci-mainpanel, 
+#sci-mainpanel *, 
+#sci-infopanel, 
+#sci-infopanel * {
+    font-family: 'Noto Sans', 'Noto Sans Math', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 /* --- Main Panel --- */
 #sci-mainpanel { 
     position: fixed; 
@@ -12,7 +24,6 @@
     border: 2px solid #4a90e2; 
     z-index: 2147483646; 
     padding: 10px; 
-    font-family: sans-serif; 
     box-shadow: 0 4px 8px black; 
     display: flex; 
     flex-direction: column; 
@@ -86,14 +97,15 @@
 }
 
 .sci-mainpanel-btn { 
-    padding: 6px 2px; 
-    font-size: 14x; 
+    width: 100%;
+    padding: 6px 6px; 
+    font-size: 14px; 
     cursor: pointer; 
     border: 1px solid #ccc; 
 }
 
 .sci-mainpanel-btnsymbol { 
-    font-family: "Times New Roman", serif; 
+    font-family: 'Times New Roman', 'Noto Sans Math', serif !important;
     font-size: 16px; 
     font-weight: bold;
     margin-left: 8px; 
@@ -116,8 +128,8 @@
     margin: 10px 0;
     padding: 8px;
     border: 1px solid #ccc;
-    font-family: "Times New Roman", Times, serif;
     font-size: 16px;
+    font-family: 'Times New Roman', 'Noto Sans Math', serif !important;
     
     min-height: 50px;
     max-height: 250px; 
@@ -561,23 +573,21 @@ input[readonly] {
     cursor: pointer;
 } 
 
-.sci-info-contentpage-scroll-row-original,
-.sci-info-contentpage-scroll-row-arrow,
-.sci-info-contentpage-scroll-row-mapped {
+.sci-infopanel-contentpage-scroll-row-original,
+.sci-infopanel-contentpage-scroll-row-arrow,
+.sci-infopanel-contentpage-scroll-row-mapped {
     flex: 1;
     text-align: center;
     color: #000;
 }
 
-.sci-info-contentpage-scroll-row-original {
+.sci-infopanel-contentpage-scroll-row-original {
     color: #888;
     font-size: 12px;
 }
-
-.sci-info-contentpage-scroll-row-mapped {
+.sci-infopanel-contentpage-scroll-row-mapped {
     font-weight: bold;
     font-size: 12px;
-    font-family: "Times New Roman", serif;
 }
 
 .sci-infopanel-contentpage-header-closebtn {
