@@ -605,14 +605,14 @@ function openLimReagentWindow() {
 
     var confirmBtn = document.createElement('button');
     confirmBtn.setAttribute('id', 'sci-chempanel-limcalc-confirm')
-    confirmBtn.textContent = 'Calculate';
+    confirmBtn.textContent = 'CALCULATE';
 
     var result = document.createElement('div');
     result.setAttribute('class', 'sci-chempanel-subfunction-genericresult');
     result.textContent = "Limiting Reagent(s): --\nAmount of product formed: --";
 
     confirmBtn.addEventListener('click', ()=> {
-        result.textContent = "";
+        result.textContent = "Limiting Reagent(s): --\nAmount of product formed: --";
         reagentList = [];
         class reagent {
             constructor(formula, stoicoefficient, concentration, amount, units) {
@@ -786,19 +786,28 @@ function openElectroChemWindow(outputLoc) {
 
     var confirmBtn = document.createElement('button');
     confirmBtn.setAttribute('id', 'sci-chempanel-elecchem-confirm')
-    confirmBtn.textContent = 'Calculate Cell';
+    confirmBtn.textContent = 'CALCULATE CELL';
 
     var resultsArea = document.createElement('div');
     resultsArea.setAttribute('class', 'sci-chempanel-subfunction-genericresult');
+    resultsArea.textContent = "E°cell = -- V\nSpontaneity: --";
+
     electroChemWindow.append(ElectroChemHeader, inputBox1, inputBox2, confirmBtn, resultsArea);
     
     confirmBtn.addEventListener('click', () => {
+        resultsArea.textContent = "E°cell = -- V\nSpontaneity: --";
         let reaction1 = inputBox1.redoxLabel == 'reduction' ? inputBox1.redox: -1 * inputBox1.redox;
         let reaction2 = inputBox2.redoxLabel == 'reduction' ? inputBox2.redox: -1 * inputBox2.redox;
 
-        resultsArea.textContent = "E°cell = " + (reaction1 + reaction2).toFixed(3) + " V" + '\n';
-        
-        resultsArea.textContent +=  (reaction1 - reaction2).toFixed(3) > 0 ? "Spontaneous" : "Non-spontaneous";
+        if (reaction1 == null || reaction2 == null) {
+            resultsArea.textContent = "E°cell = -- V\nSpontaneity: --";
+        }
+
+        else {
+            resultsArea.textContent = "E°cell = " + (reaction1 + reaction2).toFixed(3) + " V" + '\n';
+            resultsArea.textContent +=  (reaction1 - reaction2).toFixed(3) > 0 ? "Spontaneous" : "Non-spontaneous";
+        }
+
     });
 
     resultsArea.addEventListener('click', () => {
@@ -844,6 +853,8 @@ function createSearchInput(placeholderText) {
     container.append(input, resultWindow);
 
     inputBox.addEventListener('input', function() {
+        container.redoxLabel = null;
+        container.redox = redoxLabel.value;
         var query = inputBox.value.toLowerCase();
         while(resultWindow.firstChild) { resultWindow.removeChild(resultWindow.firstChild); }
         
