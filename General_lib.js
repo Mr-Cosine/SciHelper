@@ -194,7 +194,7 @@ function openPolyWindow(outputLoc) {
                 return r.toFixed(3);
             });
             
-            if (roots.length === 0) result.textContent = '𝑥 = No real roots';
+            if (roots.length === 0) result.textContent = 'No real roots';
             else result.textContent = '𝑥 = ' + roots.join(', ');
         }
         else result.textContent = '𝑥 =';
