@@ -157,7 +157,7 @@ function openPolyWindow(outputLoc) {
     inputContainer.append(row1, row2);
 
     var addRowBtn = document.createElement('button');
-    addRowBtn.setAttribute('class', 'sci-genpanel-poly-addrow-btn');
+    addRowBtn.setAttribute('id', 'sci-genpanel-poly-addrow');
     addRowBtn.textContent = '+';
     addRowBtn.addEventListener('click', function() {
         rowID = document.getElementsByClassName(row1.className).length + 1;
@@ -165,7 +165,7 @@ function openPolyWindow(outputLoc) {
     });
 
     var solveBtn = document.createElement('button');
-    solveBtn.setAttribute('class', 'sci-genpanel-poly-solve-btn');
+    solveBtn.setAttribute('id', 'sci-genpanel-poly-confirm');
     solveBtn.textContent = 'Solve polynomials';
 
     var result = document.createElement('div');
@@ -182,11 +182,22 @@ function openPolyWindow(outputLoc) {
             polynomials.push({ coeff: parseFloat(coefficient), exp: parseInt(exponent) });
         }
 
-        let roots = solve(polynomials);
-
-        result.textContent = '𝑥 =';
-        for (let root of roots) {result.textContent += root + ', '}
-
+        if (polynomials.length > 1) {
+            let roots = solve(polynomials);
+            roots = roots.map(root => {
+                let r = Number(root);
+                let rounded = Math.round(r);
+                
+                if (Math.abs(rounded - r) < 1e-6) {
+                    return rounded;
+                }
+                return r.toFixed(3);
+            });
+            
+            if (roots.length === 0) result.textContent = '𝑥 = No real roots';
+            else result.textContent = '𝑥 = ' + roots.join(', ');
+        }
+        else result.textContent = '𝑥 =';
     });
 
     polyWindow.append(header, inputContainer, addRowBtn, solveBtn, result);
@@ -227,7 +238,7 @@ function createPolyInput(rowID, defaultExponent = 'n') {
     exponent.setAttribute('type', 'text');
     exponent.setAttribute('placeholder', 'n');
     exponent.setAttribute('class', 'sci-genpanel-poly-input-inputsection-exponent');
-    exponent.value = defaultExponent;
+    if (defaultExponent !== 'n') {exponent.value = defaultExponent;}
 
 
     var removeBtn = document.createElement('button');

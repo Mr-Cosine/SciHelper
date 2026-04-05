@@ -764,7 +764,7 @@ function createRow(reactantDefaultName) {
     
     if (reactantDefaultName <= 'B') {
         removeBtn.disabled = true;
-        removeBtn.style.color = 'transparent';
+        removeBtn.style.visibility = 'hidden';
     }
     
     row.append(name, stoicoefficient, concentration, concUnit, amount, amountUnit, removeBtn);

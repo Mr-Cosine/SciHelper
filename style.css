@@ -805,7 +805,7 @@ input[readonly] {
     padding-top: 0;
 }
 
-.sci-genpanel-poly-addrow-btn {
+#sci-genpanel-poly-addrow {
     width: 24px;
     height: 24px;
     margin-bottom: 10px;
@@ -818,11 +818,11 @@ input[readonly] {
 }
 
 #sci-genpanel-poly-confirm {
-    width: calc(100% - 20px);
+    width: auto;
     padding: 8px;
     margin: 10px;
-    border: 1px solid #cfe084;
-    background: #f4f8e6;
+    border: 1px solid #ccc;
+    background: white;
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
