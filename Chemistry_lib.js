@@ -13,7 +13,6 @@ function sanitizeFormula(input) {
         '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9'
     };
 
-    // Use regex to find all matching special characters
     return input.replace(/[⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉]/g, function(char) {
         return charMap[char] || char;
     });
@@ -248,7 +247,7 @@ function calculate(elementList) {
 //============================================================================
 // --- UI builders ---
 
-// --- Main Chemistry submenu ---`
+// --- Main Chemistry submenu ---
 function openChemWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-chempanel')) return;
 
@@ -271,10 +270,10 @@ function openChemWindow(outputLoc, parentWin) {
     fnButtonContainer.setAttribute('class', 'sci-chempanel-btncontainer');
 
     var btncolor = '#83c1bb';
-    fnButtonContainer.appendChild(createFnBtn('Element Look-Up', '🔎', btncolor, 'elemSearch', state_chem, outputLoc));
-    fnButtonContainer.appendChild(createFnBtn('Molar Mass Calculator', '🧮', btncolor, 'molmCalc', state_chem, outputLoc));
-    fnButtonContainer.appendChild(createFnBtn('Limiting Reagent Calculator', '🧪', btncolor, 'limCalc', state_chem, outputLoc));
-    fnButtonContainer.appendChild(createFnBtn('Electrochemistry', '⚡', btncolor, 'electroChem', state_chem, outputLoc));
+    fnButtonContainer.appendChild(createFnBtn_chem('Element Look-Up', '🔎', btncolor, 'elemSearch', state_chem, outputLoc));
+    fnButtonContainer.appendChild(createFnBtn_chem('Molar Mass Calculator', '🧮', btncolor, 'molmCalc', state_chem, outputLoc));
+    fnButtonContainer.appendChild(createFnBtn_chem('Limiting Reagent Calculator', '🧪', btncolor, 'limCalc', state_chem, outputLoc));
+    fnButtonContainer.appendChild(createFnBtn_chem('Electrochemistry', '⚡', btncolor, 'electroChem', state_chem, outputLoc));
 
     chemWindow.appendChild(chemHeader);
     chemWindow.appendChild(fnButtonContainer);
@@ -291,7 +290,7 @@ function closeChemWindow() {
     return false;
 }
 
-function createFnBtn(name, symbol, color, id, state_chem, outputLoc) {
+function createFnBtn_chem(name, symbol, color, id, state_chem, outputLoc) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'sci-chempanel-btn');
     btn.style.backgroundColor = '#f9f9f9'; // Default state
@@ -348,6 +347,7 @@ function openElemSearchWindow(outputLoc) {
     var elemSearchHeader = document.createElement('div');
     elemSearchHeader.setAttribute('class', 'sci-chempanel-subfunction-genericheader');
     elemSearchHeader.textContent = 'Elements Look-Up  ';
+    elemSearchHeader.classList.add('no-select');
 
     var searchBox = document.createElement('input');
     searchBox.placeholder = 'Search element...';
@@ -457,6 +457,7 @@ function openMolarMassWindow(outputLoc) {
     var molarMassHeader = document.createElement('div');
     molarMassHeader.setAttribute('class', 'sci-chempanel-subfunction-genericheader');
     molarMassHeader.textContent = 'Molar Mass Calculator';
+    molarMassHeader.classList.add('no-select');
 
     var inputBox = document.createElement('input');
     inputBox.placeholder = 'Enter the formula';
@@ -567,6 +568,7 @@ function openLimReagentWindow() {
     var LimReagentHeader = document.createElement('div');
     LimReagentHeader.setAttribute('class', 'sci-chempanel-subfunction-genericheader');
     LimReagentHeader.textContent = 'Limiting Reagent Calculator';
+    LimReagentHeader.classList.add('no-select');
 
     var inputBox = document.createElement('div');
     inputBox.setAttribute('id', 'sci-chempanel-limcalc-input');
@@ -780,6 +782,7 @@ function openElectroChemWindow(outputLoc) {
     var ElectroChemHeader = document.createElement('div');
     ElectroChemHeader.setAttribute('class', 'sci-chempanel-subfunction-genericheader');
     ElectroChemHeader.textContent = 'Electrochemistry Info';
+    ElectroChemHeader.classList.add('no-select');
 
     var inputBox1 = createSearchInput('Search redox reactions');
     var inputBox2 = createSearchInput('Search redox reactions');
@@ -869,7 +872,6 @@ function createSearchInput(placeholderText) {
             if (isNum(query) && Math.abs(entry.potential - Number(query)) < 0.025) {
                 isMatch = true;
             }
-
             else if (entry.name.toLowerCase().includes(query) || sanitizeFormula(entry.rxn).includes(query)) {
                 isMatch = true;
             }

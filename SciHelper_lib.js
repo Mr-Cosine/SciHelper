@@ -32,8 +32,7 @@ function refreshBtnDisp(classname, state) {
     var allBtns = document.getElementsByClassName(classname);
     for (let b of allBtns) {
         const active = state[b.id]; 
-        // Use the dataset fix or a color map here
-        b.style.backgroundColor = active ? b.color : '#f9f9f9';
+        b.style.backgroundColor = active ? b.color : 'white';
         b.style.color = active ? 'white' : 'black';
     }
 }
@@ -41,7 +40,7 @@ function refreshBtnDisp(classname, state) {
 function createToggle(label, symbol, id, color, state) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'sci-mainpanel-btn');
-    btn.style.backgroundColor = '#f9f9f9';
+    btn.style.backgroundColor = 'white';
     btn.id = id;
     btn.color = color;
 
@@ -87,10 +86,12 @@ function createSubMenuToggle(label, symbol, id, color, state, outputLoc, parentP
     btn.addEventListener('click', function() {
         if (id === 'chemistry') {
             state.chemistry = (state.chemistry === false) ? openChemWindow(outputLoc, parentPanel) : closeChemWindow();
-
         }
         else if (id === 'physics') {
             state.physics = (state.physics === false) ? openPhysWindow(outputLoc, parentPanel) : closePhysWindow();
+        }
+        else if (id === 'general') {
+            state.general = (state.general === false) ? openGenWindow(outputLoc, parentPanel) : closeGenWindow();
         }
         refreshBtnDisp(btn.className, state);
     });
@@ -101,7 +102,7 @@ function createSubMenuToggle(label, symbol, id, color, state, outputLoc, parentP
 function createCopyBtn(target) {
     var copyBtn = document.createElement('button');
     copyBtn.setAttribute('id', 'sci-mainpanel-copybtn');
-    copyBtn.textContent = 'COPY'; // Cleaner than appendChild(createTextNode)
+    copyBtn.textContent = 'COPY';
 
     copyBtn.addEventListener('click', function() {
         if (!target) return;

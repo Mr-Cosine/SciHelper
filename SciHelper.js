@@ -7,6 +7,7 @@
         math: false,
         chemistry: false,
         physics: false,
+        general: false,
         info: false
     };
 
@@ -77,11 +78,12 @@
         });
 
         btnContainer.appendChild(createToggle('Suprscript', 'Xⁿ', 'superscript', '#e57373', state));
-        btnContainer.appendChild(createToggle('Subscript', 'Xₙ', 'subscript', '#ffb74d', state));
+        btnContainer.appendChild(createToggle('Subscript', 'Xₙ', 'subscript', '#ffaf4d', state));
         btnContainer.appendChild(createToggle('Greek', 'αbγ', 'greek', '#81c784', state)); 
         btnContainer.appendChild(createToggle('Math', '+-×÷', 'math', '#64b5f6', state)); 
         btnContainer.appendChild(createSubMenuToggle('Chemistry', 'H₂O', 'chemistry', '#83c1bb', state, outputLoc, panel)); 
         btnContainer.appendChild(createSubMenuToggle('Physics', 'F=ma', 'physics', '#ba68c8', state, outputLoc, panel));
+        btnContainer.appendChild(createSubMenuToggle('General', '⌬', 'general', '#cfe084', state, outputLoc, panel));
 
         headerContainer.append(header, closeBtn);
         panel.append(headerContainer, btnContainer, infoBtn, outputBox, createCopyBtn(outputBox));        

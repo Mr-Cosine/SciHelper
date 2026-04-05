@@ -19,7 +19,7 @@
 /* --- Main Panel --- */
 #sci-mainpanel { 
     position: fixed; 
-    width: 240px; 
+    width: auto; 
     background: white; 
     border: 2px solid #4a90e2; 
     z-index: 2147483646; 
@@ -27,6 +27,7 @@
     box-shadow: 0 4px 8px black; 
     display: flex; 
     flex-direction: column; 
+    box-sizing: border-box;
 }
 
 #sci-mainpanel-headerContainer {
@@ -80,7 +81,7 @@
     font-weight: 500;
     cursor: pointer;
     box-shadow: 0 4px 8px black;
-    z-index: 2147483645;
+    z-index: 2147483646;
     transition: transform 0.2s;
 }
 
@@ -94,6 +95,7 @@
     grid-template-columns: 1fr 1fr; 
     gap: 4px; 
     margin-bottom: 8px; 
+    box-sizing: border-box;
 }
 
 .sci-mainpanel-btn { 
@@ -151,6 +153,100 @@
     font-weight: bold; 
 }
 
+/*===========================================================================================================================*/
+/* --- Info Page --- */
+#sci-infopanel, 
+#sci-infopanel-contentpage {
+    position: fixed;
+    width: 150px;
+    background: #fff;
+    border: 1px solid #000;
+    z-index: 2147483647;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.sci-infopanel-header, 
+.sci-infopanel-contentpage-header {
+    background: #000;
+    color: #fff;
+    padding: 6px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    height: 18px;
+}
+
+.sci-infopanel-menubtn,
+.sci-infopanel-contentpage-scroll-row {
+    padding: 10px 8px;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.sci-infopanel-menubtn:hover,
+.sci-infopanel-contentpage-scroll-row:hover {
+    background: #f5f5f5;
+}
+
+.sci-infopanel-contentpage-scroll {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+ .sci-infopanel-contentpage-scroll-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    cursor: pointer;
+} 
+
+.sci-infopanel-contentpage-scroll-row-original,
+.sci-infopanel-contentpage-scroll-row-arrow,
+.sci-infopanel-contentpage-scroll-row-mapped {
+    flex: 1;
+    text-align: center;
+    color: #000;
+}
+
+.sci-infopanel-contentpage-scroll-row-original {
+    color: #888;
+    font-size: 12px;
+}
+.sci-infopanel-contentpage-scroll-row-mapped {
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.sci-infopanel-contentpage-header-closebtn {
+    background: none;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.sci-infopanel-contentpage-header-closebtn:hover {
+    color: #ff4242;
+}
+
+/*===========================================================================================================================*/
 /* --- The Chemistry Toolbox --- */
 #sci-chempanel {
     position: absolute;
@@ -160,7 +256,7 @@
     background: #fff;
     border: 1px solid #83c1bb;
     box-shadow: 0 2px 8px black;
-    z-index: 9998;
+    z-index: 2147483645;
     padding: 8px;
 }
 
@@ -198,7 +294,7 @@
     padding: 8px;
     background: #444;
     color: white;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: bold;
     cursor: move;
 }
@@ -566,94 +662,173 @@ input[readonly] {
     box-sizing: border-box;
 }
 
-/* --- Info Page --- */
-#sci-infopanel, 
-#sci-infopanel-contentpage {
-    position: fixed;
-    width: 150px;
+/*===========================================================================================================================*/
+/* --- The General Toolbox --- */
+#sci-genpanel {
+    position: absolute;
+    right: 260px;
+    top: 150px;
+    width: 180px;
     background: #fff;
-    border: 1px solid #000;
-    z-index: 2147483646;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-    font-family: 'Segoe UI', Tahoma, sans-serif;
+    border: 1px solid #cfe084;
+    box-shadow: 0 2px 8px black;
+    z-index: 2147483645;
+    padding: 8px;
 }
 
-.sci-infopanel-header, 
-.sci-infopanel-contentpage-header {
-    background: #000;
-    color: #fff;
-    padding: 6px 8px;
+#sci-genpanel-header {
+    background: #cfe084;
+    color: white;
+    padding: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    cursor: move;
+}
+
+.sci-genpanel-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 12px;
-    font-weight: bold;
-    letter-spacing: 0.5px;
-    height: 18px;
-}
-
-.sci-infopanel-menubtn,
-.sci-infopanel-contentpage-scroll-row {
-    padding: 10px 8px;
-    border: none;
-    border-bottom: 1px solid #f0f0f0;
-    background: #fff;
-    cursor: pointer;
-    font-size: 12px;
     transition: background 0.2s;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    box-sizing: border-box;
-    text-align: left;
+    font-size: 14px;
 }
 
-.sci-infopanel-menubtn:hover,
-.sci-infopanel-contentpage-scroll-row:hover {
-    background: #f5f5f5;
-}
-
-.sci-infopanel-contentpage-scroll {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
- .sci-infopanel-contentpage-scroll-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-around;
-    cursor: pointer;
-} 
-
-.sci-infopanel-contentpage-scroll-row-original,
-.sci-infopanel-contentpage-scroll-row-arrow,
-.sci-infopanel-contentpage-scroll-row-mapped {
-    flex: 1;
-    text-align: center;
-    color: #000;
-}
-
-.sci-infopanel-contentpage-scroll-row-original {
-    color: #888;
-    font-size: 12px;
-}
-.sci-infopanel-contentpage-scroll-row-mapped {
+.sci-genpanel-btnsymbol {
+    font-size: 24px;
     font-weight: bold;
-    font-size: 12px;
+    line-height: 1;
+    display: block;
 }
 
-.sci-infopanel-contentpage-header-closebtn {
-    background: none;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
+.sci-genpanel-subfunction-genericheader {
+    padding: 8px;
+    background: #444;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: move;
+}
+
+.sci-genpanel-subfunction-genericresult {
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    background: #f4f8e6;
+    border-left: 4px solid #cfe084;
+    min-height: 20px;
+    color: #333;
+    white-space: pre-wrap;
+}
+
+.sci-genpanel-subfunction-genericresult:hover {
+    background: #ecf2d4;
+}
+
+/* --- Polynomial Solver --- */
+#sci-genpanel-poly,
+#sci-genpanel-poly * {
+    box-sizing: border-box;
+}
+
+#sci-genpanel-poly {
+    position: fixed;
+    top: 150px;
+    right: 560px;
+    width: 320px;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px black;
+    z-index: 2147483647;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.sci-genpanel-poly-input-row {
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 5px;
+    margin-top: 5px;
+    padding: 5px 10px;
+    overflow: hidden;
+}
+
+.sci-genpanel-poly-input-inputsection {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+.sci-genpanel-poly-input-inputsection input {
+    padding: 3px;
+    border: 1px solid #ccc;
+    font-size: 12px;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.sci-genpanel-poly-input-inputsection-constant { flex: 0 0 50px; }
+.sci-genpanel-poly-input-inputsection-equalsign { flex: 0 0 15px; text-align: center; padding-top: 2px; }
+.sci-genpanel-poly-input-inputsection-coefficient { flex: 1; min-width: 0;}
+
+.sci-genpanel-poly-input-inputsection-variable {
+    font-size: 24px;
+    font-family: "Times New Roman", serif;
     line-height: 1;
 }
 
-.sci-infopanel-contentpage-header-closebtn:hover {
-    color: #ff4242;
+.sci-genpanel-poly-input-inputsection-exponent {
+    flex: 0 0 25px;
+    font-size: 10px;
+    height: 16px;
+    padding: 1px !important;
+    margin-top: -4px;
+}
+
+.sci-genpanel-poly-input-remove {
+    background: none;
+    border: none;
+    color: #ff4d4d;
+    font-size: 1.2em;
+    cursor: pointer;
+    flex: 0 0 24px;
+    padding-top: 0;
+}
+
+.sci-genpanel-poly-addrow-btn {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 10px;
+    margin-left: 75px;
+    font-size: 24px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: black;
+}
+
+#sci-genpanel-poly-confirm {
+    width: calc(100% - 20px);
+    padding: 8px;
+    margin: 10px;
+    border: 1px solid #cfe084;
+    background: #f4f8e6;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+#sci-genpanel-poly-confirm:hover {
+    background: #ecf2d4;
 }

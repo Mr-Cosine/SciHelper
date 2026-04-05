@@ -18,7 +18,7 @@
     {
       "matches": ["https://docs.google.com/document/*"],
       "css": ["style.css"],
-      "js": ["resources.js", "Chemistry_lib.js", "SciHelper_lib.js", "SciHelper.js"],
+      "js": ["resources.js", "Chemistry_lib.js", "General_lib.js", "SciHelper_lib.js", "SciHelper.js"],
       "run_at": "document_end"
     }
   ],
