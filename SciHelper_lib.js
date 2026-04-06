@@ -8,7 +8,6 @@ function insertIntoWindow(target, text) {
     target.focus();
 }
 
-
 // --- Drag logic ---
 function makeDraggable(handle, target) {
     handle.addEventListener('mousedown', function(e) {

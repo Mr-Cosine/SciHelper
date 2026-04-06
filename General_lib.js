@@ -25,16 +25,27 @@ function ddx(polynomials) {
     return derivedPoly.filter(term => term.exp !== -1 && term.coeff !== 0);
 }
 
-function solve(polynomials) {
+function solve(rawPolynomials) {
     const epsi = 0.000001;
     let result = [];
+    let polynomials = [];
 
-    polynomials = polynomials.filter(term => term.coeff !== 0);
+    if (rawPolynomials.length === 0) return ['blnk'];
+    for (let term of rawPolynomials) {
+        if (term.coeff === null || term.exp === null || term.coeff === "" || term.exp === "") return ['blnk'];
+
+        let c = parseFloat(term.coeff);
+        let e = parseInt(term.exp);
+
+        if (isNaN(c) || isNaN(e)) return ['ilgl'];
+        if (e > 40) return ['big'];
+        if (c !== 0) polynomials.push({ coeff: c, exp: e });
+    }
 
     polynomials.sort((a, b) => b.exp - a.exp);
     const range = getBound(polynomials);
 
-    derivative = ddx(polynomials);
+    let derivative = ddx(polynomials);
 
     let x = -range; 
     let rangeCheck = [];
@@ -50,11 +61,47 @@ function solve(polynomials) {
         x += stepSize;
     }
 
+    if (polynomials[0].exp === 1) result = getExactRoot(polynomials);
+    else if (polynomials[0].exp === 2) result = getExactRoot(polynomials);
+    else {
         for (let range of rangeCheck) {
             result.push(getRoot(range.lower, range.upper, epsi, polynomials));
         }
+    }
+    return result;
+}
 
-        return result;
+function getExactRoot(polynomials) {
+    polynomials.sort((a, b) => b.exp - a.exp);
+    if (polynomials[0].exp <= 0 || polynomials[0].exp > 2) return 'err';
+
+    let a = 0, b = 0, c = 0;
+
+    for (let term of polynomials) {
+        if (term.exp === 2) a += term.coeff;
+        else if (term.exp === 1) b += term.coeff;
+        else if (term.exp === 0) c += term.coeff;
+    }
+
+    if (a === 0) {
+        if (b === 0) return [];
+        else if (c === 0) return [0];
+        else {let result = '-' + Math.abs(c).toString() + '/' + Math.abs(b).toString(); return (c*b < 0)? '-' + result: result;}
+    }
+    else {
+        let sqrtContent = b**2 - 4 * a * c;
+        if (sqrtContent < 0) return [];
+        else if (sqrtContent === 0) return [0];
+
+        else {
+            let result = '√' + sqrtContent + ((b<0)? '-' + Math.abs(b): '+' + Math.abs(b)).toString() + ') / ' + Math.abs(2*a).toString();
+            let result1 = result;
+            let result2 = result;
+            if (2*a < 0) {result1 = '(-' + result1; result2 = "(" + result2;}
+            else {result1 = '(' + result1; result2 = '(-' + result2;}
+            return [result1, result2];
+        }
+    }
 }
 
 function getRoot(lo, hi, epsi, polynomials) {
@@ -110,11 +157,10 @@ function closeGenWindow() {
 function createFnBtn_gen(name, symbol, color, id, state_gen, outputLoc) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'sci-genpanel-btn');
-    btn.style.backgroundColor = '#f9f9f9'; // Default state
+    btn.style.backgroundColor = '#f9f9f9';
     btn.id = id;
     btn.color = color;
 
-    // Use 'name' from arguments
     var labelSpan = document.createElement('span');
     labelSpan.textContent = name;
         
@@ -137,6 +183,7 @@ function createFnBtn_gen(name, symbol, color, id, state_gen, outputLoc) {
     return btn;
 }
 
+// --- Polynomials Solver ---
 function openPolyWindow(outputLoc) {
     if (document.getElementById('sci-genpanel-poly')) return;
 
@@ -179,25 +226,28 @@ function openPolyWindow(outputLoc) {
         for (let row of rows) {
             let coefficient = row.coefficient.value;
             let exponent = row.exponent.value;
-            polynomials.push({ coeff: parseFloat(coefficient), exp: parseInt(exponent) });
+            polynomials.push({ coeff: coefficient, exp: exponent });
         }
 
-        if (polynomials.length > 1) {
-            let roots = solve(polynomials);
-            roots = roots.map(root => {
-                let r = Number(root);
-                let rounded = Math.round(r);
-                
-                if (Math.abs(rounded - r) < 1e-6) {
+        let roots = solve(polynomials);
+        roots = roots.map(root => {
+            if (isNum(root)) {
+                let rounded = Math.round(root);
+                if (Math.abs(rounded - root) < 1e-6) {
                     return rounded;
                 }
-                return r.toFixed(3);
-            });
+                return root.toFixed(3);
+            }
+            else {
+                return root;
+            }
+        });
             
-            if (roots.length === 0) result.textContent = 'No real roots';
-            else result.textContent = '𝑥 = ' + roots.join(', ');
-        }
-        else result.textContent = '𝑥 =';
+        if (roots.length === 0) result.textContent = 'No real roots';
+        else if (roots[0] == 'ilgl') result.textContent = 'Illegal characters present.';
+        else if (roots[0] == 'big') result.textContent = 'Exponent too big.';
+        else if (roots[0] == 'blnk') result.textContent = 'Incomplete expression, fill all blank spaces.';
+        else result.textContent = '𝑥 = ' + roots.join(', ');
     });
 
     polyWindow.append(header, inputContainer, addRowBtn, solveBtn, result);
@@ -268,3 +318,4 @@ function createPolyInput(rowID, defaultExponent = 'n') {
 
     return row;
 }
+

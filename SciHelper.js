@@ -92,7 +92,7 @@
         makeDraggable(header, panel);
     }
 
-            // --- Keydown Logic ---
+    // --- Keydown Logic ---
     document.addEventListener("keydown", function(e) {
         // Detect focus conflict
         if (document.activeElement.tagName === 'INPUT' && 
