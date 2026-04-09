@@ -41,7 +41,8 @@
         closeBtn.classList.add('no-select');
 
         closeBtn.addEventListener('click', function() {
-            state.chemWindow = closeChemWindow();
+            closeChemWindow();
+            closeGenWindow();
             closeInfo();
             restoreBtn.style.display = 'flex';
 
@@ -70,7 +71,7 @@
             if (state.info) {
                 closeInfo();
                 state.info = false;
-            } 
+            }
             else {
                 openInfo(outputLoc, panel);
                 state.info = true;
