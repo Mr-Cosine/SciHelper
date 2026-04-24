@@ -1,4 +1,4 @@
-function openPhysWindow(outputLoc, parentWin) {
+export function openPhysWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-physpanel')) return;
     
     var physWindow = document.createElement('div');
@@ -20,4 +20,9 @@ function openPhysWindow(outputLoc, parentWin) {
     parentWin.appendChild(physWindow);
 
     return true;
+}
+
+export function closePhysWindow() {
+    document.getElementById('sci-physpanel')?.remove();
+    return false;
 }

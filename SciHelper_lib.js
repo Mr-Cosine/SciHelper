@@ -1,5 +1,10 @@
+import { maths, greeks, superscripts, subscripts, degree, equilibium } from './resources.js';
+import { openChemWindow, closeChemWindow } from './Chemistry_lib.js';
+import { openGenWindow, closeGenWindow } from './General_lib.js';
+import { openPhysWindow, closePhysWindow } from './Physics_lib.js';
+
 // --- Put on textbox ---
-function insertIntoWindow(target, text) {
+export function insertIntoWindow(target, text) {
     if (!text || !target) return;
     var start = target.selectionStart || target.value.length;
     var end = target.selectionEnd || target.value.length;
@@ -9,7 +14,7 @@ function insertIntoWindow(target, text) {
 }
 
 // --- Drag logic ---
-function makeDraggable(handle, target) {
+export function makeDraggable(handle, target) {
     handle.addEventListener('mousedown', function(e) {
         var rect = target.getBoundingClientRect();
         var shiftX = e.clientX - rect.left;
@@ -27,7 +32,7 @@ function makeDraggable(handle, target) {
 }
 
 // --- Mode toggle buttons ---
-function refreshBtnDisp(classname, state) {
+export function refreshBtnDisp(classname, state) {
     var allBtns = document.getElementsByClassName(classname);
     for (let b of allBtns) {
         const active = state[b.id]; 
@@ -36,7 +41,7 @@ function refreshBtnDisp(classname, state) {
     }
 }
 
-function createToggle(label, symbol, id, color, state) {
+export function createToggle(label, symbol, id, color, state) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'sci-mainpanel-btn');
     btn.style.backgroundColor = 'white';
@@ -65,7 +70,7 @@ function createToggle(label, symbol, id, color, state) {
     return btn;
 }
 
-function createSubMenuToggle(label, symbol, id, color, state, outputLoc, parentPanel) {
+export function createSubMenuToggle(label, symbol, id, color, state, outputLoc, parentPanel) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'sci-mainpanel-btn');
     btn.style.backgroundColor = '#f9f9f9';
@@ -98,7 +103,7 @@ function createSubMenuToggle(label, symbol, id, color, state, outputLoc, parentP
     return btn;
 }
 
-function createCopyBtn(target) {
+export function createCopyBtn(target) {
     var copyBtn = document.createElement('button');
     copyBtn.setAttribute('id', 'sci-mainpanel-copybtn');
     copyBtn.textContent = 'COPY';
@@ -131,7 +136,7 @@ function createCopyBtn(target) {
     return copyBtn;
 }
 
-function openInfo(outputLoc, parentpanel) {
+export function openInfo(outputLoc, parentpanel) {
     if (document.getElementById('sci-infopanel')) return;
 
     var infoBtn = document.getElementById('sci-mainpanel-info');
@@ -164,17 +169,16 @@ function openInfo(outputLoc, parentpanel) {
         return btn;
     }
 
-    // Populate using global objects
-    btnList.appendChild(createMenuBtn('MATH', Object.entries(window.maths || {})));
-    btnList.appendChild(createMenuBtn('GREEK', Object.entries(window.greeks || {})));
-    btnList.appendChild(createMenuBtn('SUP/SUB', Object.entries(window.superscripts || {}).concat(Object.entries(window.subscripts || {}))));
-    btnList.appendChild(createMenuBtn('SPECIAL', [['Deg', window.degree || '°'], ['Eq', window.equilibrium || '⇌']]));
+    btnList.appendChild(createMenuBtn('MATH', Object.entries(maths)));
+    btnList.appendChild(createMenuBtn('GREEK', Object.entries(greeks)));
+    btnList.appendChild(createMenuBtn('SUP/SUB', Object.entries(superscripts).concat(Object.entries(subscripts))));
+    btnList.appendChild(createMenuBtn('SPECIAL', [['Deg', degree], ['Eq', equilibium]]));
 
     menuWin.append(header, btnList);
     document.body.appendChild(menuWin);
 }
 
-function openInfoContent(title, mapping, x, y, outputLoc, parentpanel) {
+export function openInfoContent(title, mapping, x, y, outputLoc, parentpanel) {
     var existingPage = document.getElementById('sci-infopanel-contentpage');
     if (existingPage) existingPage.remove();
 
@@ -235,12 +239,10 @@ function openInfoContent(title, mapping, x, y, outputLoc, parentpanel) {
     contentWin.append(header, displayArea);
     document.body.appendChild(contentWin);
 
-    if (typeof makeDraggable === 'function') {
-        makeDraggable(header, contentWin);
-    }
+    makeDraggable(header, contentWin);
 }
 
-function closeInfo() {
+export function closeInfo() {
     document.getElementById('sci-infopanel-contentpage')?.remove();
     document.getElementById('sci-infopanel')?.remove();
 }

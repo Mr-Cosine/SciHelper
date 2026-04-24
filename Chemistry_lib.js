@@ -1,8 +1,11 @@
+import { elements, polyions, electroPotentials } from './resources.js';
+import { insertIntoWindow, makeDraggable } from './SciHelper_lib.js';
+
 // --- Helper Functions ---
 function isLetter(token) {return /[a-zA-Z]/.test(token);}
 function isUpper(token) {return (isLetter(token) && token === token.toUpperCase());}
 function isLower(token) {return (isLetter(token) && token === token.toLowerCase());}
-function isNum(token) {return (!isNaN(token));}
+export function isNum(token) {return (!isNaN(token));}
 
 function sanitizeFormula(input) {
     if (!input) return "";
@@ -248,7 +251,7 @@ function calculate(elementList) {
 // --- UI builders ---
 
 // --- Main Chemistry submenu ---
-function openChemWindow(outputLoc, parentWin) {
+export function openChemWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-chempanel')) return;
 
     state_chem = {
@@ -282,7 +285,7 @@ function openChemWindow(outputLoc, parentWin) {
     return true;
 }
 
-function closeChemWindow() {
+export function closeChemWindow() {
     let toolWindow = document.getElementsByClassName('sci-chempanel-tool');
     while (toolWindow.length > 0) {toolWindow[0].remove();}
     document.getElementById('sci-chempanel')?.remove();
@@ -867,7 +870,7 @@ function createSearchInput(placeholderText) {
             return;
         }
 
-        for (let entry of window.electroPotentials) {
+        for (let entry of electroPotentials) {
             let isMatch = false;
 
             if (isNum(query) && Math.abs(entry.potential - Number(query)) < 0.025) {

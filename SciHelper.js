@@ -1,3 +1,8 @@
+import { superscripts, subscripts, greeks, maths, degree, equilibium } from './resources.js';
+import { insertIntoWindow, makeDraggable, refreshBtnDisp, createToggle, createSubMenuToggle, createCopyBtn, openInfo, closeInfo } from './SciHelper_lib.js';
+import { closeChemWindow } from './Chemistry_lib.js';
+import { closeGenWindow } from './General_lib.js';
+
 (function() {
 
     var state = {
@@ -102,22 +107,22 @@
         }
 
         if (e.ctrlKey && e.altKey) {
-            if (e.code === "KeyD") { insertIntoWindow(outputLoc, window.degree); e.preventDefault(); return; }
-            if (e.code === "KeyE") { insertIntoWindow(outputLoc, window.equilibium); e.preventDefault(); return; }
+            if (e.code === "KeyD") { insertIntoWindow(outputLoc, degree); e.preventDefault(); return; }
+            if (e.code === "KeyE") { insertIntoWindow(outputLoc, equilibium); e.preventDefault(); return; }
         }
-            
+
         if ((e.ctrlKey || e.altKey) === false) {
             var symbol = null;
             var key = e.key;
 
-            if (state.superscript && window.superscripts) {
-                symbol = window.superscripts[key] || (e.code.startsWith("Digit") ? window.superscripts[e.code.replace("Digit", "")] : null);
-            } else if (state.subscript && window.subscripts) {
-                symbol = window.subscripts[key] || (e.code.startsWith("Digit") ? window.subscripts[e.code.replace("Digit", "")] : null);
-            } else if (state.greek && window.greeks) {
-                symbol = window.greeks[key.toLowerCase()];
-            } else if (state.math && window.maths) {
-                symbol = window.maths[key];
+            if (state.superscript) {
+                symbol = superscripts[key] || (e.code.startsWith("Digit") ? superscripts[e.code.replace("Digit", "")] : null);
+            } else if (state.subscript) {
+                symbol = subscripts[key] || (e.code.startsWith("Digit") ? subscripts[e.code.replace("Digit", "")] : null);
+            } else if (state.greek) {
+                symbol = greeks[key.toLowerCase()];
+            } else if (state.math) {
+                symbol = maths[key];
             }
                     
             if (symbol) { e.preventDefault(); insertIntoWindow(outputLoc, symbol); }
@@ -128,7 +133,7 @@
     restoreBtn.id = 'sci-restore-btn';
     restoreBtn.textContent = '⌬';
     restoreBtn.classList.add('no-select');
-    this.rcdx = 100; this.rcdy = 100;
+    restoreBtn.rcdx = 100; restoreBtn.rcdy = 100;
 
     let startTime;
     restoreBtn.addEventListener('mousedown', function() {
