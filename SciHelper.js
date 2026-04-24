@@ -18,57 +18,45 @@ import { closeGenWindow } from './General_lib.js';
 
     var outputLoc = null;
 
-    if (document.getElementById('sci-restore-btn')) {document.getElementById('sci-restore-btn').remove();}
+    if (document.getElementById('sci-restore')) {document.getElementById('sci-restore').remove();}
 
     function initSciHelper(initx = 100, inity = 100) {    
         // Wait for body to be ready
-        if (!document.body || document.getElementById('sci-mainpanel')) return;
+        if (!document.body || document.getElementById('sci-panel')) return;
 
         for (let key in state) { state[key] = false;}
         
         // --- UI Construction ---
         var panel = document.createElement('div');
-        panel.setAttribute('id', 'sci-mainpanel');
+        panel.setAttribute('id', 'sci-panel');
         panel.style.left = initx + 'px';
         panel.style.top = inity + 'px';
 
         var headerContainer = document.createElement('div');
-        headerContainer.setAttribute('id', 'sci-mainpanel-headerContainer');
+        headerContainer.setAttribute('id', 'sci-panel-headercontainer');
         
         var header = document.createElement('div');
-        header.setAttribute('id', 'sci-mainpanel-header');
+        header.setAttribute('id', 'sci-panel-header');
         header.textContent = 'Sci-Helper';
         header.classList.add('no-select');
         
         var closeBtn = document.createElement('button')
-        closeBtn.setAttribute('id', 'sci-mainpanel-closeBtn');
+        closeBtn.setAttribute('id', 'sci-panel-closebtn');
         closeBtn.textContent = "×";
         closeBtn.classList.add('no-select');
 
-        closeBtn.addEventListener('click', function() {
-            closeChemWindow();
-            closeGenWindow();
-            closeInfo();
-            restoreBtn.style.display = 'flex';
-
-            //Record current location for restoration
-            var rect = document.getElementById('sci-mainpanel').getBoundingClientRect();
-            restoreBtn.rcdx = rect.left;
-            restoreBtn.rcdy = rect.top;
-
-            panel.remove();
-        });
+        closeBtn.addEventListener('click', function() {closeSciHelper();});
 
         var btnContainer = document.createElement('div');
-        btnContainer.setAttribute('id', 'sci-mainpanel-btncontainer');
+        btnContainer.setAttribute('id', 'sci-panel-btncontainer');
 
         var outputBox = document.createElement('textarea');
-        outputBox.setAttribute('id', 'sci-mainpanel-output');
+        outputBox.setAttribute('id', 'sci-panel-output');
         outputBox.setAttribute('placeholder', 'Type symbols...');
         outputLoc = outputBox;
 
         var infoBtn = document.createElement('div');
-        infoBtn.setAttribute('id', 'sci-mainpanel-info');
+        infoBtn.setAttribute('id', 'sci-panel-info');
         infoBtn.textContent = "🛈";
         infoBtn.classList.add('no-select');
 
@@ -102,7 +90,7 @@ import { closeGenWindow } from './General_lib.js';
     document.addEventListener("keydown", function(e) {
         // Detect focus conflict
         if (document.activeElement.tagName === 'INPUT' && 
-            document.activeElement.id !== 'sci-mainpanel-output') {
+            document.activeElement.id !== 'sci-panel-output') {
             return;
         }
 
@@ -130,7 +118,7 @@ import { closeGenWindow } from './General_lib.js';
     }, true);
 
     var restoreBtn = document.createElement('div');
-    restoreBtn.id = 'sci-restore-btn';
+    restoreBtn.id = 'sci-restore';
     restoreBtn.textContent = '⌬';
     restoreBtn.classList.add('no-select');
     restoreBtn.rcdx = 100; restoreBtn.rcdy = 100;

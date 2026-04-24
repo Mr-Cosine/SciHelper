@@ -7,33 +7,33 @@
 /* --- Font Import --- */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans&family=Noto+Sans+Math&display=swap');
 
-#sci-mainpanel, 
-#sci-mainpanel *, 
-#sci-infopanel, 
-#sci-infopanel * {
+#sci-panel,
+#sci-panel *,
+#sci-info,
+#sci-info * {
     font-family: 'Noto Sans', 'Noto Sans Math', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
 /* --- Main Panel --- */
-#sci-mainpanel { 
-    position: fixed; 
-    width: auto; 
-    background: white; 
-    border: 2px solid #4a90e2; 
-    z-index: 2147483646; 
-    padding: 10px; 
-    box-shadow: 0 4px 8px black; 
-    display: flex; 
-    flex-direction: column; 
+#sci-panel {
+    position: fixed;
+    width: auto;
+    background: white;
+    border: 2px solid #4a90e2;
+    z-index: 2147483646;
+    padding: 10px;
+    box-shadow: 0 4px 8px black;
+    display: flex;
+    flex-direction: column;
     box-sizing: border-box;
 }
 
-#sci-mainpanel-headerContainer {
+#sci-panel-headercontainer {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Pushes text to left, button to right */
+    justify-content: space-between;
     background: none;
     padding: 5px 10px;
     cursor: move;
@@ -41,18 +41,18 @@
     border-bottom: 1px solid #bcbcbc;
 }
 
-#sci-mainpanel-header {
+#sci-panel-header {
     cursor: move;
     font-size: 24px;
     font-weight: bold;
     color: #4a90e2;
     text-align: left;
-} 
+}
 
-#sci-mainpanel-closeBtn {
+#sci-panel-closebtn {
     background: none;
     border: none;
-    color: #888; /* Gray by default */
+    color: #888;
     cursor: pointer;
     font-size: 24px;
     font-weight: bold;
@@ -61,11 +61,11 @@
     margin-left: 10px;
 }
 
-#sci-mainpanel-closeBtn:hover {
-    color: #ff4242; /* Red on hover */
+#sci-panel-closebtn:hover {
+    color: #ff4242;
 }
 
-#sci-restore-btn {
+#sci-restore {
     position: fixed;
     bottom: 40px;
     right: 64px;
@@ -85,35 +85,35 @@
     transition: transform 0.2s;
 }
 
-#sci-restore-btn:hover {
+#sci-restore:hover {
     transform: scale(1.1);
     background-color: #5d9ce3;
 }
 
-#sci-mainpanel-btncontainer { 
-    display: grid; 
-    grid-template-columns: 1fr 1fr; 
-    gap: 4px; 
-    margin-bottom: 8px; 
+#sci-panel-btncontainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin-bottom: 8px;
     box-sizing: border-box;
 }
 
-.sci-mainpanel-btn { 
+.sci-panel-btn {
     width: 100%;
-    padding: 6px 6px; 
-    font-size: 14px; 
-    cursor: pointer; 
-    border: 1px solid #ccc; 
+    padding: 6px 6px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid #ccc;
 }
 
-.sci-mainpanel-btnsymbol { 
+.sci-panel-btn-symbol {
     font-family: 'Times New Roman', 'Noto Sans Math', serif !important;
-    font-size: 16px; 
+    font-size: 16px;
     font-weight: bold;
-    margin-left: 8px; 
+    margin-left: 8px;
 }
 
-#sci-mainpanel-info {
+#sci-panel-info {
     background: white;
     color: black;
     font-size: 14px;
@@ -121,42 +121,42 @@
     cursor: pointer;
 }
 
-#sci-mainpanel-output {
+#sci-panel-output {
     display: block;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    
+
     margin: 10px 0;
     padding: 8px;
     border: 1px solid #ccc;
     font-size: 16px;
     font-family: 'Times New Roman', 'Noto Sans Math', serif !important;
-    
+
     min-height: 50px;
-    max-height: 250px; 
+    max-height: 250px;
     overflow-y: auto;
-    overflow-x: hidden; 
+    overflow-x: hidden;
     white-space: pre-wrap;
     word-break: break-all;
     overflow-wrap: anywhere;
-    
+
     resize: vertical;
 }
 
-#sci-mainpanel-copybtn { 
-    margin-top: 8px; 
-    padding: 8px; 
-    cursor: pointer; 
-    border: 1px solid #4a90e2; 
-    background: #f9f9f9; 
-    font-weight: bold; 
+#sci-panel-copybtn {
+    margin-top: 8px;
+    padding: 8px;
+    cursor: pointer;
+    border: 1px solid #4a90e2;
+    background: #f9f9f9;
+    font-weight: bold;
 }
 
 /*===========================================================================================================================*/
 /* --- Info Page --- */
-#sci-infopanel, 
-#sci-infopanel-contentpage {
+#sci-info,
+#sci-info-content {
     position: fixed;
     width: 150px;
     background: #fff;
@@ -168,8 +168,8 @@
     font-family: 'Segoe UI', Tahoma, sans-serif;
 }
 
-.sci-infopanel-header, 
-.sci-infopanel-contentpage-header {
+.sci-info-header,
+.sci-info-content-header {
     background: #000;
     color: #fff;
     padding: 6px 8px;
@@ -183,8 +183,8 @@
     height: 18px;
 }
 
-.sci-infopanel-menubtn,
-.sci-infopanel-contentpage-scroll-row {
+.sci-info-menubtn,
+.sci-info-content-scroll-row {
     padding: 10px 8px;
     border: none;
     border-bottom: 1px solid #f0f0f0;
@@ -199,42 +199,42 @@
     text-align: left;
 }
 
-.sci-infopanel-menubtn:hover,
-.sci-infopanel-contentpage-scroll-row:hover {
+.sci-info-menubtn:hover,
+.sci-info-content-scroll-row:hover {
     background: #f5f5f5;
 }
 
-.sci-infopanel-contentpage-scroll {
+.sci-info-content-scroll {
     max-height: 300px;
     overflow-y: auto;
 }
 
- .sci-infopanel-contentpage-scroll-row {
+.sci-info-content-scroll-row {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-around;
     cursor: pointer;
-} 
+}
 
-.sci-infopanel-contentpage-scroll-row-original,
-.sci-infopanel-contentpage-scroll-row-arrow,
-.sci-infopanel-contentpage-scroll-row-mapped {
+.sci-info-content-scroll-row-original,
+.sci-info-content-scroll-row-arrow,
+.sci-info-content-scroll-row-mapped {
     flex: 1;
     text-align: center;
     color: #000;
 }
 
-.sci-infopanel-contentpage-scroll-row-original {
+.sci-info-content-scroll-row-original {
     color: #888;
     font-size: 12px;
 }
-.sci-infopanel-contentpage-scroll-row-mapped {
+.sci-info-content-scroll-row-mapped {
     font-weight: bold;
     font-size: 12px;
 }
 
-.sci-infopanel-contentpage-header-closebtn {
+.sci-info-content-header-closebtn {
     background: none;
     color: #fff;
     border: none;
@@ -243,13 +243,13 @@
     line-height: 1;
 }
 
-.sci-infopanel-contentpage-header-closebtn:hover {
+.sci-info-content-header-closebtn:hover {
     color: #ff4242;
 }
 
 /*===========================================================================================================================*/
 /* --- The Chemistry Toolbox --- */
-#sci-chempanel {
+#sci-chem {
     position: absolute;
     right: 260px;
     top: 150px;
@@ -261,7 +261,7 @@
     padding: 8px;
 }
 
-#sci-chempanel-header {
+#sci-chem-header {
     background: #83c1bb;
     color: white;
     padding: 5px;
@@ -271,7 +271,7 @@
     cursor: move;
 }
 
-.sci-chempanel-btn {
+.sci-chem-btn {
     width: 100%;
     margin-top: 8px;
     padding: 8px;
@@ -284,14 +284,14 @@
     font-size: 14px;
 }
 
-.sci-chempanel-btnsymbol {
+.sci-chem-btn-symbol {
     font-size: 24px;
     font-weight: bold;
     line-height: 1;
     display: block;
 }
 
-.sci-chempanel-subfunction-genericheader {
+.sci-chem-tool-header {
     padding: 8px;
     background: #444;
     color: white;
@@ -300,7 +300,7 @@
     cursor: move;
 }
 
-.sci-chempanel-subfunction-genericresult {
+.sci-chem-tool-result {
     padding: 10px;
     font-size: 14px;
     font-weight: bold;
@@ -311,12 +311,12 @@
     white-space: pre-wrap;
 }
 
-.sci-chempanel-subfunction-genericresult:hover {
+.sci-chem-tool-result:hover {
     background: #f8fffe;
 }
 
 /* --- Element Search Window --- */
-#sci-chempanel-elesearch {
+#sci-chem-elem {
     position: fixed;
     top: 150px;
     right: 560px;
@@ -330,19 +330,19 @@
     flex-direction: column;
 }
 
-#sci-chempanel-elesearch input {
+#sci-chem-elem input {
     margin: 8px;
     padding: 6px;
     border: 1px solid #bbb;
 }
 
-#sci-chempanel-elem-results {
+.sci-chem-elem-results {
     overflow-y: auto;
     flex-grow: 1;
     padding: 5px;
 }
 
-.sci-chempanel-elem-results-row {
+.sci-chem-elem-row {
     display: flex;
     align-items: center;
     padding: 8px 12px;
@@ -351,25 +351,24 @@
     text-align: left;
 }
 
-.sci-chempanel-elem-results-row:hover {
+.sci-chem-elem-row:hover {
     background: #f0f8f7;
 }
 
-.sci-chempanel-elem-results-row-symbol {
-    flex: 1; 
+.sci-chem-elem-row-symbol {
+    flex: 1;
     flex-shrink: 0;
     font-weight: bold;
     color: #83c1bb;
     text-align: center;
 }
 
-.sci-chempanel-elem-results-row-symbol:hover {
+.sci-chem-elem-row-symbol:hover {
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
 }
 
-
-.sci-chempanel-elem-results-row-text {
+.sci-chem-elem-row-text {
     flex: 1;
     text-align: left;
     white-space: nowrap;
@@ -377,12 +376,12 @@
     text-align: center;
 }
 
-.sci-chempanel-elem-results-row-text:hover {
+.sci-chem-elem-row-text:hover {
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
 }
 
-.sci-chempanel-elem-results-row.legend {
+.sci-chem-elem-row.legend {
     background-color: #f8f9fa;
     font-size: 0.9em;
     color: #666;
@@ -390,7 +389,7 @@
 }
 
 /* --- Molar Mass Calculator --- */
-#sci-chempanel-molmcalc {
+#sci-chem-molm {
     position: fixed;
     top: 150px;
     right: 560px;
@@ -405,13 +404,13 @@
     flex-direction: column;
 }
 
-#sci-chempanel-molmcalc input {
+#sci-chem-molm input {
     margin: 8px;
     padding: 6px;
     border: 1px solid #bbb;
 }
 
-.sci-chempanel-molm-results-row {
+.sci-chem-molm-row {
     display: flex;
     align-items: center;
     padding: 8px 12px;
@@ -419,11 +418,11 @@
     text-align: left;
 }
 
-.sci-chempanel-molm-results-row:hover {
+.sci-chem-molm-row:hover {
     background: #f0f8f7;
 }
 
-.sci-chempanel-molm-results-row-symbol {
+.sci-chem-molm-row-symbol {
     flex: 1;
     flex-shrink: 0;
     font-weight: bold;
@@ -431,12 +430,12 @@
     text-align: center;
 }
 
-.sci-chempanel-molm-results-row-symbol:hover {
+.sci-chem-molm-row-symbol:hover {
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
 }
 
-.sci-chempanel-molm-results-row-text {
+.sci-chem-molm-row-text {
     flex: 1;
     text-align: center;
     white-space: nowrap;
@@ -444,12 +443,12 @@
     text-align: center;
 }
 
-.sci-chempanel-molm-results-row-text:hover {
+.sci-chem-molm-row-text:hover {
     border-left: 1px solid #ababab;
     border-right: 1px solid #ccc;
 }
 
-.sci-chempanel-molm-results-row.legend {
+.sci-chem-molm-row.legend {
     background-color: #f8f9fa;
     font-size: 0.9em;
     color: #666;
@@ -457,12 +456,12 @@
 }
 
 /* --- Limiting Reagent Calculator --- */
-#sci-chempanel-limcalc,
-#sci-chempanel-limcalc * {
+#sci-chem-lim,
+#sci-chem-lim * {
     box-sizing: border-box;
 }
 
-#sci-chempanel-limcalc {
+#sci-chem-lim {
     position: fixed;
     top: 150px;
     right: 560px;
@@ -476,7 +475,7 @@
     flex-direction: column;
 }
 
-.sci-chempanel-limcalc-input-row {
+.sci-chem-lim-row {
     width: 100%;
     display: flex;
     flex-wrap: nowrap;
@@ -489,8 +488,8 @@
     box-sizing: border-box;
 }
 
-.sci-chempanel-limcalc-input-row input, 
-.sci-chempanel-limcalc-input-row select {
+.sci-chem-lim-row input,
+.sci-chem-lim-row select {
     padding: 3px;
     border: 1px solid #ccc;
     font-size: 10px;
@@ -500,20 +499,20 @@
     width: 100%;
 }
 
-.sci-chempanel-limcalc-input-row-name {flex: 1; font-weight: bold;}
-.sci-chempanel-limcalc-input-row-concentration {flex: 1;}
-.sci-chempanel-limcalc-input-row-amount {flex: 1;}
-.sci-chempanel-limcalc-input-row-stoic {flex: 0 0 40px;}
-.sci-chempanel-limcalc-input-row select {flex: 0 0 50px;}
+.sci-chem-lim-row-name {flex: 1; font-weight: bold;}
+.sci-chem-lim-row-conc {flex: 1;}
+.sci-chem-lim-row-amount {flex: 1;}
+.sci-chem-lim-row-stoic {flex: 0 0 40px;}
+.sci-chem-lim-row select {flex: 0 0 50px;}
 
 
 input[readonly] {
-    background-color: #f0f0f0; 
+    background-color: #f0f0f0;
     color: #666;
     border: 1px dashed #ccc;
 }
 
-.sci-chempanel-limcalc-input-row-remove {
+.sci-chem-lim-row-remove {
     background: none;
     border: none;
     color: #ff4d4d;
@@ -523,38 +522,38 @@ input[readonly] {
     flex: 0;
 }
 
-#sci-chempanel-limcalc-addrow {
+#sci-chem-lim-addrow {
     width: 24px;
     height: 24px;
     padding-left: 5px;
     font-size: 24px;
     cursor: pointer;
-    
+
     background: none;
     border: none;
     color: black;
 }
 
-#sci-chempanel-limcalc-productratiobox {
+#sci-chem-lim-ratiobox {
     display: flex;
     padding: 10px;
     gap: 10px;
     align-items: center;
 }
 
-#sci-chempanel-limcalc-productratiobox-label {
+#sci-chem-lim-ratiobox-label {
     font-size: 10px;
 }
 
-#sci-chempanel-limcalc-productratiobox-input {
+#sci-chem-lim-ratiobox-input {
     padding: 3px;
     border: 1px solid #ccc;
     font-size: 10px;
-    
+
     width: 40px;
 }
 
-#sci-chempanel-limcalc-confirm {
+#sci-chem-lim-confirm {
     width: auto;
     padding: 5px;
     margin-left: 5px;
@@ -570,12 +569,12 @@ input[readonly] {
 }
 
 /* --- Electrochemistry Calculator --- */
-#sci-chempanel-elecchem, 
-#sci-chempanel-elecchem * {
+#sci-chem-elec,
+#sci-chem-elec * {
     box-sizing: border-box;
 }
 
-#sci-chempanel-elecchem {
+#sci-chem-elec {
     position: fixed;
     top: 150px;
     right: 560px;
@@ -588,18 +587,18 @@ input[readonly] {
     flex-direction: column;
 }
 
-.sci-chempanel-elecchem-container {
+.sci-chem-elec-search {
     padding: 8px 10px 0 10px;
     width: 100%;
 }
 
-.sci-chempanel-elecchem-container-input-container {
+.sci-chem-elec-search-input {
     display: flex;
     align-items: stretch;
     width: 100%;
 }
 
-.sci-chempanel-elecchem-container-input-inputbox {
+.sci-chem-elec-search-inputbox {
     flex: 0.8;
     padding: 4px 6px;
     font-size: 12px;
@@ -609,7 +608,7 @@ input[readonly] {
     outline: none;
 }
 
-.sci-chempanel-elecchem-container-input-redoxlabel {
+.sci-chem-elec-search-redoxlabel {
     flex: 0.2;
     font-size: 12px;
     border: 1px solid #ccc;
@@ -618,7 +617,7 @@ input[readonly] {
     outline: none;
 }
 
-.sci-chempanel-elecchem-container-input-result {
+.sci-chem-elec-search-result {
     position: absolute;
     top: 100%;
     left: 10px;
@@ -633,7 +632,7 @@ input[readonly] {
     display: none;
 }
 
-.sci-chempanel-elecchem-container-input-result-row {
+.sci-chem-elec-search-result-row {
     display: flex;
     justify-content: space-between;
     padding: 6px 8px;
@@ -642,11 +641,11 @@ input[readonly] {
     font-size: 11px;
 }
 
-.sci-chempanel-elecchem-container-input-result-row:hover {
+.sci-chem-elec-search-result-row:hover {
     background-color: #f0f8f7;
 }
 
-#sci-chempanel-elecchem-confirm {
+#sci-chem-elec-confirm {
     width: auto;
     padding: 5px;
     margin-left: 10px;
@@ -665,7 +664,7 @@ input[readonly] {
 
 /*===========================================================================================================================*/
 /* --- The General Toolbox --- */
-#sci-genpanel {
+#sci-gen {
     position: absolute;
     right: 260px;
     top: 150px;
@@ -677,7 +676,7 @@ input[readonly] {
     padding: 8px;
 }
 
-#sci-genpanel-header {
+#sci-gen-header {
     background: #cfe084;
     color: white;
     padding: 5px;
@@ -687,7 +686,7 @@ input[readonly] {
     cursor: move;
 }
 
-.sci-genpanel-btn {
+.sci-gen-btn {
     width: 100%;
     margin-top: 8px;
     padding: 8px;
@@ -700,14 +699,14 @@ input[readonly] {
     font-size: 14px;
 }
 
-.sci-genpanel-btnsymbol {
+.sci-gen-btn-symbol {
     font-size: 24px;
     font-weight: bold;
     line-height: 1;
     display: block;
 }
 
-.sci-genpanel-subfunction-genericheader {
+.sci-gen-tool-header {
     padding: 8px;
     background: #444;
     color: white;
@@ -716,7 +715,7 @@ input[readonly] {
     cursor: move;
 }
 
-.sci-genpanel-subfunction-genericresult {
+.sci-gen-tool-result {
     padding: 10px;
     font-size: 14px;
     font-weight: bold;
@@ -727,17 +726,17 @@ input[readonly] {
     white-space: pre-wrap;
 }
 
-.sci-genpanel-subfunction-genericresult:hover {
+.sci-gen-tool-result:hover {
     background: #ecf2d4;
 }
 
 /* --- Polynomial Solver --- */
-#sci-genpanel-poly,
-#sci-genpanel-poly * {
+#sci-gen-poly,
+#sci-gen-poly * {
     box-sizing: border-box;
 }
 
-#sci-genpanel-poly {
+#sci-gen-poly {
     position: fixed;
     top: 150px;
     right: 560px;
@@ -751,7 +750,7 @@ input[readonly] {
     box-sizing: border-box;
 }
 
-.sci-genpanel-poly-input-row {
+.sci-gen-poly-row {
     width: 100%;
     display: flex;
     flex-wrap: nowrap;
@@ -762,7 +761,7 @@ input[readonly] {
     overflow: hidden;
 }
 
-.sci-genpanel-poly-input-inputsection {
+.sci-gen-poly-row-section {
     display: flex;
     flex: 1 1 auto;
     min-width: 0;
@@ -770,7 +769,7 @@ input[readonly] {
     gap: 2px;
 }
 
-.sci-genpanel-poly-input-inputsection input {
+.sci-gen-poly-row-section input {
     padding: 3px;
     border: 1px solid #ccc;
     font-size: 12px;
@@ -778,17 +777,17 @@ input[readonly] {
     min-width: 0;
 }
 
-.sci-genpanel-poly-input-inputsection-constant { flex: 0 0 50px; }
-.sci-genpanel-poly-input-inputsection-equalsign { flex: 0 0 15px; text-align: center; padding-top: 2px; }
-.sci-genpanel-poly-input-inputsection-coefficient { flex: 1; min-width: 0;}
+.sci-gen-poly-row-section-constant { flex: 0 0 50px; }
+.sci-gen-poly-row-section-equalsign { flex: 0 0 15px; text-align: center; padding-top: 2px; }
+.sci-gen-poly-row-section-coeff { flex: 1; min-width: 0;}
 
-.sci-genpanel-poly-input-inputsection-variable {
+.sci-gen-poly-row-section-variable {
     font-size: 24px;
     font-family: "Times New Roman", serif;
     line-height: 1;
 }
 
-.sci-genpanel-poly-input-inputsection-exponent {
+.sci-gen-poly-row-section-exponent {
     flex: 0 0 25px;
     font-size: 10px;
     height: 16px;
@@ -796,7 +795,7 @@ input[readonly] {
     margin-top: -4px;
 }
 
-.sci-genpanel-poly-input-remove {
+.sci-gen-poly-row-remove {
     background: none;
     border: none;
     color: #ff4d4d;
@@ -806,7 +805,7 @@ input[readonly] {
     padding-top: 0;
 }
 
-#sci-genpanel-poly-addrow {
+#sci-gen-poly-addrow {
     width: 24px;
     height: 24px;
     margin-bottom: 10px;
@@ -818,7 +817,7 @@ input[readonly] {
     color: black;
 }
 
-#sci-genpanel-poly-confirm {
+#sci-gen-poly-confirm {
     width: auto;
     padding: 8px;
     margin: 10px;
@@ -830,6 +829,6 @@ input[readonly] {
     transition: background 0.2s;
 }
 
-#sci-genpanel-poly-confirm:hover {
+#sci-gen-poly-confirm:hover {
     background: #ecf2d4;
 }

@@ -122,22 +122,22 @@ function getRoot(lo, hi, epsi, polynomials) {
 
 // --- Main General submenu ---
 export function openGenWindow(outputLoc, parentWin) {
-    if (document.getElementById('sci-genpanel')) return;
+    if (document.getElementById('sci-gen')) return;
 
     state_gen = {
         polySolver: false
     }
     
     var genWindow = document.createElement('div');
-    genWindow.setAttribute('id', 'sci-genpanel');
+    genWindow.setAttribute('id', 'sci-gen');
     
     var genHeader = document.createElement('div');
-    genHeader.setAttribute('id', 'sci-genpanel-header');
+    genHeader.setAttribute('id', 'sci-gen-header');
     genHeader.textContent = 'General Toolbox';
     genHeader.classList.add('no-select');
 
     var fnButtonContainer = document. createElement('div');
-    fnButtonContainer.setAttribute('class', 'sci-genpanel-btncontainer');
+    fnButtonContainer.setAttribute('class', 'sci-gen-btncontainer');
 
     var btncolor = '#cfe084';
     fnButtonContainer.appendChild(createFnBtn_gen('Polynomial solver', '🧮', btncolor, 'polySolver', state_gen, outputLoc));
@@ -150,16 +150,16 @@ export function openGenWindow(outputLoc, parentWin) {
 }
 
 export function closeGenWindow() {
-    let toolWindow = document.getElementsByClassName('sci-genpanel-tool');
+    let toolWindow = document.getElementsByClassName('sci-gen-tool');
     while (toolWindow.length > 0) {toolWindow[0].remove();}
-    document.getElementById('sci-genpanel')?.remove();
+    document.getElementById('sci-gen')?.remove();
 
     return false;
 }
 
 function createFnBtn_gen(name, symbol, color, id, state_gen, outputLoc) {
     var btn = document.createElement('button');
-    btn.setAttribute('class', 'sci-genpanel-btn');
+    btn.setAttribute('class', 'sci-gen-btn');
     btn.style.backgroundColor = '#f9f9f9';
     btn.id = id;
     btn.color = color;
@@ -168,7 +168,7 @@ function createFnBtn_gen(name, symbol, color, id, state_gen, outputLoc) {
     labelSpan.textContent = name;
         
     var symbolSpan = document.createElement('span');
-    symbolSpan.setAttribute('class', 'sci-genpanel-btnsymbol');
+    symbolSpan.setAttribute('class', 'sci-gen-btn-symbol');
     symbolSpan.style.color = color;
     symbolSpan.textContent = symbol;
 
@@ -176,7 +176,7 @@ function createFnBtn_gen(name, symbol, color, id, state_gen, outputLoc) {
 
     btn.addEventListener('click', function() {
         if (id === 'polySolver') {
-            var existingWindow = document.getElementById('sci-genpanel-poly');
+            var existingWindow = document.getElementById('sci-gen-poly');
             if (!existingWindow) {openPolyWindow(outputLoc); state_gen.polySolver = true;}
             else {existingWindow.remove(); state_gen.polySolver = false;}
         }
@@ -188,26 +188,26 @@ function createFnBtn_gen(name, symbol, color, id, state_gen, outputLoc) {
 
 // --- Polynomials Solver ---
 function openPolyWindow(outputLoc) {
-    if (document.getElementById('sci-genpanel-poly')) return;
+    if (document.getElementById('sci-gen-poly')) return;
 
     var polyWindow = document.createElement('div');
-    polyWindow.setAttribute('id', 'sci-genpanel-poly');
-    polyWindow.setAttribute('class', 'sci-genpanel-tool');
+    polyWindow.setAttribute('id', 'sci-gen-poly');
+    polyWindow.setAttribute('class', 'sci-gen-tool');
 
     var header = document.createElement('div');
-    header.setAttribute('class', 'sci-genpanel-subfunction-genericheader');
+    header.setAttribute('class', 'sci-gen-tool-header');
     header.textContent = 'Polynomial solver';
     header.classList.add('no-select');  
 
     var inputContainer = document.createElement('div');
-    inputContainer.setAttribute('class', 'sci-genpanel-poly-input-container');
+    inputContainer.setAttribute('class', 'sci-gen-poly-input');
     var rowID = 1;
     var row1 = createPolyInput('a' + rowID, 2); rowID++;
     var row2 = createPolyInput('a' + rowID, 1); rowID++;
     inputContainer.append(row1, row2);
 
     var addRowBtn = document.createElement('button');
-    addRowBtn.setAttribute('id', 'sci-genpanel-poly-addrow');
+    addRowBtn.setAttribute('id', 'sci-gen-poly-addrow');
     addRowBtn.textContent = '+';
     addRowBtn.addEventListener('click', function() {
         rowID = document.getElementsByClassName(row1.className).length + 1;
@@ -215,11 +215,11 @@ function openPolyWindow(outputLoc) {
     });
 
     var solveBtn = document.createElement('button');
-    solveBtn.setAttribute('id', 'sci-genpanel-poly-confirm');
+    solveBtn.setAttribute('id', 'sci-gen-poly-confirm');
     solveBtn.textContent = 'Solve polynomials';
 
     var result = document.createElement('div');
-    result.setAttribute('class', 'sci-genpanel-subfunction-genericresult');
+    result.setAttribute('class', 'sci-gen-tool-result');
     result.textContent = '𝑥 =';
 
     solveBtn.addEventListener('click', function() {
@@ -263,39 +263,39 @@ function openPolyWindow(outputLoc) {
 
 function createPolyInput(rowID, defaultExponent = 'n') {
     var row = document.createElement('div');
-    row.setAttribute('class', 'sci-genpanel-poly-input-row');
+    row.setAttribute('class', 'sci-gen-poly-row');
     row.rowID = 'a' + rowID;
 
     var inputSection = document.createElement('div');
-    inputSection.setAttribute('class', 'sci-genpanel-poly-input-inputsection');
+    inputSection.setAttribute('class', 'sci-gen-poly-row-section');
 
     var constant = document.createElement('input');
     constant.setAttribute('type', 'text');
     constant.setAttribute('placeholder', 'c');
-    constant.setAttribute('class', 'sci-genpanel-poly-input-inputsection-constant');
+    constant.setAttribute('class', 'sci-gen-poly-row-section-constant');
     
     var equalSign = document.createElement('span');
     equalSign.textContent = ' = ';
-    equalSign.setAttribute('class', 'sci-genpanel-poly-input-inputsection-equalsign');
+    equalSign.setAttribute('class', 'sci-gen-poly-row-section-equalsign');
 
     var coefficient = document.createElement('input');
     coefficient.setAttribute('type', 'text');
     coefficient.setAttribute('placeholder', rowID);
-    coefficient.setAttribute('class', 'sci-genpanel-poly-input-inputsection-coefficient');
+    coefficient.setAttribute('class', 'sci-gen-poly-row-section-coeff');
 
     var variable = document.createElement('span');
     variable.textContent = '𝑥';
-    variable.setAttribute('class', 'sci-genpanel-poly-input-inputsection-variable');
+    variable.setAttribute('class', 'sci-gen-poly-row-section-variable');
 
     var exponent = document.createElement('input');
     exponent.setAttribute('type', 'text');
     exponent.setAttribute('placeholder', 'n');
-    exponent.setAttribute('class', 'sci-genpanel-poly-input-inputsection-exponent');
+    exponent.setAttribute('class', 'sci-gen-poly-row-section-exponent');
     if (defaultExponent !== 'n') {exponent.value = defaultExponent;}
 
 
     var removeBtn = document.createElement('button');
-    removeBtn.setAttribute('class', 'sci-genpanel-poly-input-remove');
+    removeBtn.setAttribute('class', 'sci-gen-poly-row-remove');
     removeBtn.textContent = '⊝';
     removeBtn.buttonID = 'a' + rowID;
 

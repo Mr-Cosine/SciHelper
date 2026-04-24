@@ -3,6 +3,22 @@ import { openChemWindow, closeChemWindow } from './Chemistry_lib.js';
 import { openGenWindow, closeGenWindow } from './General_lib.js';
 import { openPhysWindow, closePhysWindow } from './Physics_lib.js';
 
+// --- Main SciHelper Window ---
+
+export function closeSciHelper() {            
+    closeChemWindow();
+    closeGenWindow();
+    closeInfo();
+    restoreBtn.style.display = 'flex';
+
+    //Record current location for restoration
+    var rect = document.getElementById('sci-panel').getBoundingClientRect();
+    restoreBtn.rcdx = rect.left;
+    restoreBtn.rcdy = rect.top;
+
+    panel.remove();
+}
+
 // --- Put on textbox ---
 export function insertIntoWindow(target, text) {
     if (!text || !target) return;
@@ -43,7 +59,7 @@ export function refreshBtnDisp(classname, state) {
 
 export function createToggle(label, symbol, id, color, state) {
     var btn = document.createElement('button');
-    btn.setAttribute('class', 'sci-mainpanel-btn');
+    btn.setAttribute('class', 'sci-panel-btn');
     btn.style.backgroundColor = 'white';
     btn.id = id;
     btn.color = color;
@@ -52,7 +68,7 @@ export function createToggle(label, symbol, id, color, state) {
     labelSpan.appendChild(document.createTextNode(label));
         
     var symbolSpan = document.createElement('span');
-    symbolSpan.setAttribute('class', 'sci-mainpanel-btnsymbol');
+    symbolSpan.setAttribute('class', 'sci-panel-btn-symbol');
     symbolSpan.style.color = color;
     symbolSpan.appendChild(document.createTextNode(symbol));
 
@@ -72,7 +88,7 @@ export function createToggle(label, symbol, id, color, state) {
 
 export function createSubMenuToggle(label, symbol, id, color, state, outputLoc, parentPanel) {
     var btn = document.createElement('button');
-    btn.setAttribute('class', 'sci-mainpanel-btn');
+    btn.setAttribute('class', 'sci-panel-btn');
     btn.style.backgroundColor = '#f9f9f9';
     btn.id = id;
     btn.color = color;
@@ -81,7 +97,7 @@ export function createSubMenuToggle(label, symbol, id, color, state, outputLoc, 
     labelSpan.appendChild(document.createTextNode(label));
         
     var symbolSpan = document.createElement('span');
-    symbolSpan.setAttribute('class', 'sci-mainpanel-btnsymbol');
+    symbolSpan.setAttribute('class', 'sci-panel-btn-symbol');
     symbolSpan.style.color = color;
     symbolSpan.appendChild(document.createTextNode(symbol));
 
@@ -105,7 +121,7 @@ export function createSubMenuToggle(label, symbol, id, color, state, outputLoc, 
 
 export function createCopyBtn(target) {
     var copyBtn = document.createElement('button');
-    copyBtn.setAttribute('id', 'sci-mainpanel-copybtn');
+    copyBtn.setAttribute('id', 'sci-panel-copybtn');
     copyBtn.textContent = 'COPY';
 
     copyBtn.addEventListener('click', function() {
@@ -137,18 +153,18 @@ export function createCopyBtn(target) {
 }
 
 export function openInfo(outputLoc, parentpanel) {
-    if (document.getElementById('sci-infopanel')) return;
+    if (document.getElementById('sci-info')) return;
 
-    var infoBtn = document.getElementById('sci-mainpanel-info');
+    var infoBtn = document.getElementById('sci-panel-info');
     var rect = infoBtn.getBoundingClientRect();
 
     var menuWin = document.createElement('div');
-    menuWin.id = 'sci-infopanel'; // Updated ID
+    menuWin.id = 'sci-info'; // Updated ID
     menuWin.style.left = (rect.right + 2) + 'px';
     menuWin.style.top = rect.top + 'px';
 
     var header = document.createElement('div');
-    header.className = 'sci-infopanel-header';
+    header.className = 'sci-info-header';
     header.style.cursor = 'default';
     header.textContent = 'MAPPING';
     
@@ -158,7 +174,7 @@ export function openInfo(outputLoc, parentpanel) {
 
     function createMenuBtn(label, data) {
         var btn = document.createElement('button');
-        btn.className = 'sci-infopanel-menubtn';
+        btn.className = 'sci-info-menubtn';
         btn.textContent = label;
         
         btn.onclick = () => {
@@ -179,24 +195,24 @@ export function openInfo(outputLoc, parentpanel) {
 }
 
 export function openInfoContent(title, mapping, x, y, outputLoc, parentpanel) {
-    var existingPage = document.getElementById('sci-infopanel-contentpage');
+    var existingPage = document.getElementById('sci-info-content');
     if (existingPage) existingPage.remove();
 
     var contentWin = document.createElement('div');
-    contentWin.id = 'sci-infopanel-contentpage';
+    contentWin.id = 'sci-info-content';
     contentWin.style.left = x + 'px';
     contentWin.style.top = y + 'px';
 
     var header = document.createElement('div');
-    header.className = 'sci-infopanel-contentpage-header';
+    header.className = 'sci-info-content-header';
     header.style.cursor = 'move';
     
     var titleSpan = document.createElement('span');
-    titleSpan.className = 'sci-infopanel-contentpage-header-title';
+    titleSpan.className = 'sci-info-content-header-title';
     titleSpan.textContent = title;
 
     var closeBtn = document.createElement('button');
-    closeBtn.className = 'sci-infopanel-contentpage-header-closebtn';
+    closeBtn.className = 'sci-info-content-header-closebtn';
     closeBtn.textContent = '×';
     closeBtn.onclick = () => {
         contentWin.remove(); 
@@ -206,22 +222,22 @@ export function openInfoContent(title, mapping, x, y, outputLoc, parentpanel) {
     header.append(titleSpan, closeBtn);
 
     var displayArea = document.createElement('div');
-    displayArea.className = 'sci-infopanel-contentpage-scroll';
+    displayArea.className = 'sci-info-content-scroll';
 
     mapping.forEach(([key, val]) => {
         var row = document.createElement('div');
-        row.className = 'sci-infopanel-contentpage-scroll-row';
+        row.className = 'sci-info-content-scroll-row';
 
         var originalDiv = document.createElement('div');
-        originalDiv.className = 'sci-infopanel-contentpage-scroll-row-original';
+        originalDiv.className = 'sci-info-content-scroll-row-original';
         originalDiv.textContent = key;
 
         var arrowDiv = document.createElement('div');
-        arrowDiv.className = 'sci-infopanel-contentpage-scroll-row-arrow';
+        arrowDiv.className = 'sci-info-content-scroll-row-arrow';
         arrowDiv.textContent = '→';
 
         var mappedDiv = document.createElement('div');
-        mappedDiv.className = 'sci-infopanel-contentpage-scroll-row-mapped';
+        mappedDiv.className = 'sci-info-content-scroll-row-mapped';
         mappedDiv.textContent = val;
 
         row.appendChild(originalDiv);
@@ -243,6 +259,6 @@ export function openInfoContent(title, mapping, x, y, outputLoc, parentpanel) {
 }
 
 export function closeInfo() {
-    document.getElementById('sci-infopanel-contentpage')?.remove();
-    document.getElementById('sci-infopanel')?.remove();
+    document.getElementById('sci-info-content')?.remove();
+    document.getElementById('sci-info')?.remove();
 }
