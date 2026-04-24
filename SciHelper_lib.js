@@ -3,12 +3,93 @@ import { openChemWindow, closeChemWindow } from './Chemistry_lib.js';
 import { openGenWindow, closeGenWindow } from './General_lib.js';
 import { openPhysWindow, closePhysWindow } from './Physics_lib.js';
 
-// --- Main SciHelper Window ---
+export var state = {
+    greek: false,
+    superscript: false,
+    subscript: false,
+    math: false,
+    chemistry: false,
+    physics: false,
+    general: false,
+    info: false
+};
 
-export function closeSciHelper() {            
+export var outputLoc = null;
+
+// --- Main SciHelper Window ---
+export function initSciHelper(initx = 100, inity = 100) {    
+    if (!document.body || document.getElementById('sci-panel')) return;
+
+    for (let key in state) {state[key] = false;}
+        
+    // --- UI Construction ---
+    var panel = document.createElement('div');
+    panel.setAttribute('id', 'sci-panel');
+    panel.style.left = initx + 'px';
+    panel.style.top = inity + 'px';
+
+    var headerContainer = document.createElement('div');
+    headerContainer.setAttribute('id', 'sci-panel-headercontainer');
+        
+    var header = document.createElement('div');
+    header.setAttribute('id', 'sci-panel-header');
+    header.textContent = 'Sci-Helper';
+    header.classList.add('no-select');
+        
+    var closeBtn = document.createElement('button')
+    closeBtn.setAttribute('id', 'sci-panel-closebtn');
+    closeBtn.textContent = "×";
+    closeBtn.classList.add('no-select');
+
+    closeBtn.addEventListener('click', function() {closeSciHelper();});
+
+    var btnContainer = document.createElement('div');
+    btnContainer.setAttribute('id', 'sci-panel-btncontainer');
+
+    var outputBox = document.createElement('textarea');
+    outputBox.setAttribute('id', 'sci-panel-output');
+    outputBox.setAttribute('placeholder', 'Type symbols...');
+    outputLoc = outputBox;
+
+    var infoBtn = document.createElement('div');
+    infoBtn.setAttribute('id', 'sci-panel-info');
+    infoBtn.textContent = "🛈";
+    infoBtn.classList.add('no-select');
+
+    infoBtn.addEventListener('click', function () {
+        if (state.info) {
+            closeInfo();
+            state.info = false;
+        }
+        else {
+            openInfo(outputLoc, panel);
+            state.info = true;
+        }
+    });
+
+    btnContainer.appendChild(createToggle('Suprscript', 'Xⁿ', 'superscript', '#e57373', state));
+    btnContainer.appendChild(createToggle('Subscript', 'Xₙ', 'subscript', '#ffaf4d', state));
+    btnContainer.appendChild(createToggle('Greek', 'αbγ', 'greek', '#81c784', state)); 
+    btnContainer.appendChild(createToggle('Math', '+-×÷', 'math', '#64b5f6', state)); 
+    btnContainer.appendChild(createSubMenuToggle('Chemistry', 'H₂O', 'chemistry', '#83c1bb', state, outputLoc, panel)); 
+    btnContainer.appendChild(createSubMenuToggle('Physics', 'F=ma', 'physics', '#ba68c8', state, outputLoc, panel));
+    btnContainer.appendChild(createSubMenuToggle('General', '⌬', 'general', '#cfe084', state, outputLoc, panel));
+
+    headerContainer.append(header, closeBtn);
+    panel.append(headerContainer, btnContainer, infoBtn, outputBox, createCopyBtn(outputBox));        
+    document.body.appendChild(panel);
+
+    makeDraggable(header, panel);
+}
+
+export function closeSciHelper() {  
+    panel = document.getElementById('sci-panel');          
     closeChemWindow();
     closeGenWindow();
+    closePhysWindow();
     closeInfo();
+    
+    var restoreBtn = document.getElementById('sci-restore');
     restoreBtn.style.display = 'flex';
 
     //Record current location for restoration
