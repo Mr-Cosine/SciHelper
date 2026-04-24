@@ -1,4 +1,4 @@
-import { insertIntoWindow, makeDraggable } from './SciHelper_lib.js';
+import { insertIntoWindow, makeDraggable, refreshBtnDisp } from './SciHelper_lib.js';
 import { isNum } from './Chemistry_lib.js';
 
 // --- Helper Functions ---
@@ -124,7 +124,7 @@ function getRoot(lo, hi, epsi, polynomials) {
 export function openGenWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-gen')) return;
 
-    state_gen = {
+    let state_gen = {
         polySolver: false
     }
     

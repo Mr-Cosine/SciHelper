@@ -1,5 +1,5 @@
 import { elements, polyions, electroPotentials } from './resources.js';
-import { insertIntoWindow, makeDraggable } from './SciHelper_lib.js';
+import { insertIntoWindow, makeDraggable, refreshBtnDisp } from './SciHelper_lib.js';
 
 // --- Helper Functions ---
 function isLetter(token) {return /[a-zA-Z]/.test(token);}
@@ -254,7 +254,7 @@ function calculate(elementList) {
 export function openChemWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-chem')) return;
 
-    state_chem = {
+    let state_chem = {
         elemSearch: false,
         molmCalc: false,
         limCalc: false,

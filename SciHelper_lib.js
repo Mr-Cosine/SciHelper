@@ -1,7 +1,6 @@
 import { maths, greeks, superscripts, subscripts, degree, equilibium } from './resources.js';
 import { openChemWindow, closeChemWindow } from './Chemistry_lib.js';
 import { openGenWindow, closeGenWindow } from './General_lib.js';
-import { openPhysWindow, closePhysWindow } from './Physics_lib.js';
 
 export var state = {
     greek: false,
@@ -83,13 +82,12 @@ export function initSciHelper(initx = 100, inity = 100) {
 }
 
 export function closeSciHelper() {  
-    panel = document.getElementById('sci-panel');          
+    let panel = document.getElementById('sci-panel');          
     closeChemWindow();
     closeGenWindow();
-    closePhysWindow();
     closeInfo();
     
-    var restoreBtn = document.getElementById('sci-restore');
+    let restoreBtn = document.getElementById('sci-restore');
     restoreBtn.style.display = 'flex';
 
     //Record current location for restoration

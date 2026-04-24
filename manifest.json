@@ -21,9 +21,22 @@
       ],
 
       "css": ["style.css"],
-      "js": ["SciHelper.js"],
-      "type": "module",
+      "js": ["loader.js"],
       "run_at": "document_end"
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "SciHelper.js", 
+        "SciHelper_lib.js", 
+        "resources.js", 
+        "Chemistry_lib.js", 
+        "General_lib.js"
+      ],
+
+      "matches": ["https://docs.google.com/document/*"]
     }
   ],
 
