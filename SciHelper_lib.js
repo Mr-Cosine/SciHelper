@@ -24,7 +24,7 @@ export function initSciHelper(initx = 100, inity = 100) {
     // --- UI Construction ---
     var panel = document.createElement('div');
     panel.setAttribute('id', 'sci-panel');
-    panel.style.left = initx + 'px';
+    panel.style.right = initx + 'px';
     panel.style.top = inity + 'px';
 
     var headerContainer = document.createElement('div');
@@ -92,7 +92,7 @@ export function closeSciHelper() {
 
     //Record current location for restoration
     var rect = document.getElementById('sci-panel').getBoundingClientRect();
-    restoreBtn.rcdx = rect.left;
+    restoreBtn.rcdx = rect.right;
     restoreBtn.rcdy = rect.top;
 
     panel.remove();
