@@ -809,18 +809,16 @@ function openElectroChemWindow(outputLoc) {
     
     confirmBtn.addEventListener('click', () => {
         resultsArea.textContent = "E°cell = -- V\nSpontaneity: --";
-        let reaction1 = inputBox1.redoxLabel == 'reduction' ? inputBox1.redox: -1 * inputBox1.redox;
-        let reaction2 = inputBox2.redoxLabel == 'reduction' ? inputBox2.redox: -1 * inputBox2.redox;
+        let reaction1 = inputBox1.redox;
+        let reaction2 = inputBox2.redox;
 
-        if (reaction1 == null || reaction2 == null) {
-            resultsArea.textContent = "E°cell = -- V\nSpontaneity: --";
-        }
+        if (reaction1 !== null && reaction2 !== null) {
+            reaction1 = inputBox1.redoxLabel == 'reduction' ? reaction1: -1 * reaction1;
+            reaction2 = inputBox2.redoxLabel == 'reduction' ? reaction2: -1 * reaction2;
 
-        else {
             resultsArea.textContent = "E°cell = " + (reaction1 + reaction2).toFixed(3) + " V" + '\n';
             resultsArea.textContent +=  (reaction1 - reaction2).toFixed(3) > 0 ? "Spontaneous" : "Non-spontaneous";
         }
-
     });
 
     resultsArea.addEventListener('click', () => {
@@ -842,6 +840,7 @@ function createSearchInput(placeholderText) {
     container.style.position = 'relative'; 
     container.style.width = '100%';
     container.redox = null;
+    container.redoxLabel = null;
 
     var input = document.createElement('div');
     input.setAttribute('class', 'sci-chem-elec-search-input');
@@ -862,13 +861,14 @@ function createSearchInput(placeholderText) {
         el.text = opt.text;
         redoxLabel.appendChild(el);
     });
+    redoxLabel.addEventListener('change', function() {container.redoxLabel = this.value;});
+    container.redoxLabel = redoxLabel.value;
 
     input.append(inputBox, redoxLabel);
     container.append(input, resultWindow);
 
     inputBox.addEventListener('input', function() {
-        container.redoxLabel = null;
-        container.redox = redoxLabel.value;
+        container.redox = null;
         var query = inputBox.value.toLowerCase();
         while(resultWindow.firstChild) { resultWindow.removeChild(resultWindow.firstChild); }
         
@@ -902,7 +902,6 @@ function createSearchInput(placeholderText) {
                 row.addEventListener('click', () => {
                     inputBox.value = entry.rxn;
                     container.redox = entry.e0;
-                    container.redoxLabel = redoxLabel.value;
                     resultWindow.style.display = 'none';
                 });
 
@@ -914,7 +913,7 @@ function createSearchInput(placeholderText) {
         resultWindow.style.display = resultWindow.firstChild ? 'block' : 'none';
     });
 
-    return container; // Return the container, not just the input
+    return container;
 }
 
 function openFormulaWindow(outputLoc) {
