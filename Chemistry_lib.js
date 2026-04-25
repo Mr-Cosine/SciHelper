@@ -840,7 +840,6 @@ function createSearchInput(placeholderText) {
     container.style.position = 'relative'; 
     container.style.width = '100%';
     container.redox = null;
-    container.redoxLabel = null;
 
     var input = document.createElement('div');
     input.setAttribute('class', 'sci-chem-elec-search-input');
@@ -851,6 +850,7 @@ function createSearchInput(placeholderText) {
 
     var resultWindow = document.createElement('div');
     resultWindow.setAttribute('class', 'sci-chem-elec-search-result');
+    resultWindow.style.display = 'none'; // Ensure it's hidden initially
 
     var redoxLabel = document.createElement('select');
     redoxLabel.setAttribute('class', 'sci-chem-elec-search-redoxlabel');
@@ -861,30 +861,17 @@ function createSearchInput(placeholderText) {
         el.text = opt.text;
         redoxLabel.appendChild(el);
     });
-    redoxLabel.addEventListener('change', function() {container.redoxLabel = this.value;});
-    container.redoxLabel = redoxLabel.value;
 
-    input.append(inputBox, redoxLabel);
-    container.append(input, resultWindow);
-
-    inputBox.addEventListener('input', function() {
-        container.redox = null;
-        var query = inputBox.value.toLowerCase();
+    const updateResults = (query = "") => {
         while(resultWindow.firstChild) { resultWindow.removeChild(resultWindow.firstChild); }
         
-        if (!query) {
-            resultWindow.style.display = 'none';
-            return;
-        }
-
         for (let entry of electroPotentials) {
-            let isMatch = false;
+            let isMatch = !query;
 
-            if (isNum(query) && Math.abs(entry.potential - Number(query)) < 0.025) {
-                isMatch = true;
-            }
-            else if (entry.name.toLowerCase().includes(query) || sanitizeFormula(entry.rxn).includes(query)) {
-                isMatch = true;
+            if (query) {
+                if (isNum(query) && Math.abs(entry.e0 - Number(query)) < 0.025) isMatch = true;
+                else if (   sanitizeFormula(entry.name).toLowerCase().includes(query.toLowerCase()) 
+                            || sanitizeFormula(entry.rxn).toLowerCase().includes(query.toLowerCase())) isMatch = true;
             }
 
             if (isMatch) {
@@ -898,20 +885,34 @@ function createSearchInput(placeholderText) {
                 potential.textContent = entry.e0 + " V";
 
                 row.append(reaction, potential);
-
-                row.addEventListener('click', () => {
+                row.addEventListener('mousedown', (e) => {
                     inputBox.value = entry.rxn;
                     container.redox = entry.e0;
                     resultWindow.style.display = 'none';
+                    e.preventDefault(); 
                 });
 
                 resultWindow.appendChild(row);
-
             }
         }
-        
         resultWindow.style.display = resultWindow.firstChild ? 'block' : 'none';
+    };
+
+    // --- Event Listeners ---
+    inputBox.addEventListener('focus', () => updateResults(inputBox.value.toLowerCase()));
+    
+    inputBox.addEventListener('input', () => {
+        container.redox = null;
+        updateResults(inputBox.value.toLowerCase());
     });
+
+    // Hide dropdown when user clicks away
+    inputBox.addEventListener('blur', () => {
+        resultWindow.style.display = 'none';
+    });
+
+    input.append(inputBox, redoxLabel);
+    container.append(input, resultWindow);
 
     return container;
 }
