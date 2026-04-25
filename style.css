@@ -681,7 +681,42 @@ input[readonly] {
     overflow-y: auto;
 }
 
+.sci-chem-frml-category{
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+}
+
 .sci-chem-frml-row {
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+    gap: 10px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.sci-chem-frml-row:hover {
+    background: #f0f8f7;
+}
+
+#sci-chem-frml-calc{
+    position: absolute;
+    top: 150px;
+    right: 560px;
+    width: 320px;
+    max-height: 400px;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px black;
+    z-index: 2147483647;
+    display: flex;
+    flex-direction: column;
+}
+
+.sci-chem-frml-calc-input {
+    display: flex;
     align-items: center;
     padding: 8px 12px;
     border-bottom: 1px solid #eee;
@@ -689,9 +724,26 @@ input[readonly] {
     text-align: left;
 }
 
-.sci-chem-frml-row:hover {
-    background: #f0f8f7;
+.sci-chem-frml-calc-solve {
+    padding: 6px 10px;
+    border: none;
+    background: #83c1bb;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
 }
+
+.sci-chem-frml-calc-alert {
+    padding: 6px 10px;
+    border: none;
+    background: #ff4d4d;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+}
+
 
 /*===========================================================================================================================*/
 /* --- The General Toolbox --- */

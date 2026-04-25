@@ -314,15 +314,15 @@ export const chemFormulas = [
             { symbol: "P", name: "Pressure", unit: "atm" },
             { symbol: "V", name: "Volume", unit: "L" },
             { symbol: "n", name: "Amount of substance", unit: "mol" },
-            { symbol: "R", name: "Gas constant", unit: "L·atm/(mol·K)", constant: 0.0821 },
+            { symbol: "R", name: "Gas constant", unit: "L·kPa/(mol·K)", constant: 8.314 },
             { symbol: "T", name: "Temperature", unit: "K" }
         ],
         solve: {
-            P: "(n * R * T) / V",
-            V: "(n * R * T) / P",
-            n: "(P * V) / (R * T)",
-            T: "(P * V) / (n * R)",
-            R: "(P * V) / (n * T)"
+            P: "( n * R * T ) / V",
+            V: "( n * R * T ) / P",
+            n: "( P * V ) / ( R * T )",
+            T: "( P * V ) / ( n * R )",
+            R: "( P * V ) / ( n * T )"
         }
     },
     {
@@ -339,12 +339,12 @@ export const chemFormulas = [
             { symbol: "T2", name: "Final temperature", unit: "K" }
         ],
         solve: {
-            P1: "(P2 * V2 * T1) / (T2 * V1)",
-            V1: "(P2 * V2 * T1) / (T2 * P1)",
-            T1: "(P1 * V1 * T2) / (P2 * V2)",
-            P2: "(P1 * V1 * T2) / (T1 * V2)",
-            V2: "(P1 * V1 * T2) / (T1 * P2)",
-            T2: "(P2 * V2 * T1) / (P1 * V1)"
+            P1: "( P2 * V2 * T1 ) / ( T2 * V1 )",
+            V1: "( P2 * V2 * T1 ) / ( T2 * P1 )",
+            T1: "( P1 * V1 * T2 ) / ( P2 * V2 )",
+            P2: "( P1 * V1 * T2 ) / ( T1 * V2 )",
+            V2: "( P1 * V1 * T2 ) / ( T1 * P2 )",
+            T2: "( P2 * V2 * T1 ) / ( P1 * V1 )"
         }
     },
     {
@@ -359,10 +359,10 @@ export const chemFormulas = [
             { symbol: "M2", name: "Molar mass (gas 2)", unit: "g/mol" }
         ],
         solve: {
-            r1: "r2 * sqrt(M2 / M1)",
-            r2: "r1 * sqrt(M1 / M2)",
-            M1: "M2 * pow(r2 / r1, 2)",
-            M2: "M1 * pow(r1 / r2, 2)"
+            r1: "r2 * ( M2 / M1 ) ^ 0.5",
+            r2: "r1 * ( M1 / M2 ) ^ 0.5",
+            M1: "M2 * ( r2 / r1 ) ^ 2",
+            M2: "M1 * ( r1 / r2 ) ^ 2"
         }
     },
  
@@ -396,10 +396,10 @@ export const chemFormulas = [
             { symbol: "V2", name: "Final volume", unit: "L" }
         ],
         solve: {
-            C1: "(C2 * V2) / V1",
-            V1: "(C2 * V2) / C1",
-            C2: "(C1 * V1) / V2",
-            V2: "(C1 * V1) / C2"
+            C1: "( C2 * V2 ) / V1",
+            V1: "( C2 * V2 ) / C1",
+            C2: "( C1 * V1 ) / V2",
+            V2: "( C1 * V1 ) / C2"
         }
     },
     {
@@ -413,9 +413,9 @@ export const chemFormulas = [
             { symbol: "mSolution", name: "Mass of solution", unit: "g" }
         ],
         solve: {
-            massPercent: "(mSolute / mSolution) * 100",
-            mSolute: "(massPercent / 100) * mSolution",
-            mSolution: "mSolute / (massPercent / 100)"
+            massPercent: "( mSolute / mSolution ) * 100",
+            mSolute: "( massPercent / 100 ) * mSolution",
+            mSolution: "mSolute / ( massPercent / 100 )"
         }
     },
  
@@ -434,9 +434,9 @@ export const chemFormulas = [
         ],
         solve: {
             q:      "m * c * deltaT",
-            m:      "q / (c * deltaT)",
-            c:      "q / (m * deltaT)",
-            deltaT: "q / (m * c)"
+            m:      "q / ( c * deltaT )",
+            c:      "q / ( m * deltaT )",
+            deltaT: "q / ( m * c )"
         }
     },
     {
@@ -455,6 +455,31 @@ export const chemFormulas = [
             deltaH: "q / n"
         }
     },
+
+    // ── Equilibrium ───────────────────────────────────
+
+    {
+        name: "Equilibrium Constant",
+        category: "Equilibrium",
+        formula: "K = [A]^a[B]^b / [C]^c[D]^d",
+        latex: "K = \\frac{[\\text{A}]^a[\\text{B}]^b}{[\\text{C}]^c[\\text{D}]^d}",
+        variables: [
+            { symbol: "K", name: "Equilibrium constant", unit: "" },
+            { symbol: "A", name: "Concentration of A", unit: "mol/L" },
+            { symbol: "a", name: "Stoichiometric coefficient of A", unit: "" },
+            { symbol: "B", name: "Concentration of B", unit: "mol/L" },
+            { symbol: "b", name: "Stoichiometric coefficient of B", unit: "" },
+            { symbol: "C", name: "Concentration of C", unit: "mol/L" },
+            { symbol: "c", name: "Stoichiometric coefficient of C", unit: "" },
+            { symbol: "D", name: "Concentration of D", unit: "mol/L" },
+            { symbol: "d", name: "Stoichiometric coefficient of D", unit: "" }
+        ],
+        solve: {
+            K:   "products / reactants",
+            products: "K * reactants",
+            reactants: "products / K"
+        }
+    },
  
     // ── Acids & Bases ────────────────────────────────────────
  
@@ -468,8 +493,8 @@ export const chemFormulas = [
             { symbol: "H", name: "Hydrogen ion concentration", unit: "mol/L" }
         ],
         solve: {
-            pH: "-log10(H)",
-            H:  "pow(10, -pH)"
+            pH: "-1 * log10 ( H )",
+            H:  "10 ^ ( -1 * pH )"
         }
     },
     {
@@ -482,8 +507,8 @@ export const chemFormulas = [
             { symbol: "OH", name: "Hydroxide ion concentration", unit: "mol/L" }
         ],
         solve: {
-            pOH: "-log10(OH)",
-            OH:  "pow(10, -pOH)"
+            pOH: "-1 * log10 ( OH )",
+            OH:  "10 ^ ( -1 * pOH )"
         }
     },
     {
@@ -528,10 +553,10 @@ export const chemFormulas = [
             { symbol: "HA", name: "Weak acid concentration [HA]", unit: "mol/L" }
         ],
         solve: {
-            pH:  "pKa + log10(A / HA)",
-            pKa: "pH - log10(A / HA)",
-            A:   "HA * pow(10, pH - pKa)",
-            HA:  "A / pow(10, pH - pKa)"
+            pH:  "pKa + log10 ( A / HA )",
+            pKa: "pH - log10 ( A / HA )",
+            A:   "HA * 10 ^ ( pH - pKa )",
+            HA:  "A / 10 ^ ( pH - pKa )"
         }
     },
     {
@@ -546,13 +571,13 @@ export const chemFormulas = [
             { symbol: "B", name: "Weak base concentration [B]", unit: "mol/L" }
         ],
         solve: {
-            pOH: "pKb + log10(BH / B)",
-            pKb: "pOH - log10(BH / B)",
-            BH:  "B * pow(10, pOH - pKb)",
-            B:   "BH / pow(10, pOH - pKb)"
+            pOH: "pKb + log10 ( BH / B )",
+            pKb: "pOH - log10 ( BH / B )",
+            BH:  "B * 10 ^ ( pOH - pKb )",
+            B:   "BH / 10 ^ ( pOH - pKb )"
         }
     },
- 
+  
     // ── Electrochemistry ────────────────────────────────────
  
     {
@@ -618,8 +643,8 @@ export const chemFormulas = [
         solve: {
             A:  "A0 - k * t",
             A0: "A + k * t",
-            k:  "(A0 - A) / t",
-            t:  "(A0 - A) / k"
+            k:  "( A0 - A ) / t",
+            t:  "( A0 - A ) / k"
         }
     },
     {
@@ -633,9 +658,9 @@ export const chemFormulas = [
             { symbol: "k", name: "Rate constant", unit: "mol/(L·s)" }
         ],
         solve: {
-            tHalf: "A0 / (2 * k)",
+            tHalf: "A0 / ( 2 * k )",
             A0:    "2 * k * tHalf",
-            k:     "A0 / (2 * tHalf)"
+            k:     "A0 / ( 2 * tHalf )"
         }
     },
     {
@@ -666,10 +691,10 @@ export const chemFormulas = [
             { symbol: "t", name: "Time", unit: "s" }
         ],
         solve: {
-            A:  "A0 * exp(-k * t)",
-            A0: "A / exp(-k * t)",
-            k:  "log(A0 / A) / t",
-            t:  "log(A0 / A) / k"
+            A:  "A0 * 2.718 ^ ( -1 * k * t )",
+            A0: "A / 2.718 ^ ( -1 * k * t )",
+            k:  "ln ( A0 / A ) / t",
+            t:  "ln ( A0 / A ) / k"
         }
     },
     {
@@ -682,8 +707,8 @@ export const chemFormulas = [
             { symbol: "k", name: "Rate constant", unit: "s⁻¹" }
         ],
         solve: {
-            tHalf: "log(2) / k",
-            k:     "log(2) / tHalf"
+            tHalf: "ln ( 2 ) / k",
+            k:     "ln ( 2 ) / tHalf"
         }
     },
     {
@@ -698,8 +723,8 @@ export const chemFormulas = [
         ],
         solve: {
             rate: "k * A * A",
-            k:    "rate / (A * A)",
-            A:    "sqrt(rate / k)"
+            k:    "rate / ( A * A )",
+            A:    "sqrt ( rate / k )"
         }
     },
     {
@@ -714,10 +739,10 @@ export const chemFormulas = [
             { symbol: "t", name: "Time", unit: "s" }
         ],
         solve: {
-            A:  "1 / (1 / A0 + k * t)",
-            A0: "1 / (1 / A - k * t)",
-            k:  "(1 / A - 1 / A0) / t",
-            t:  "(1 / A - 1 / A0) / k"
+            A:  "1 / ( 1 / A0 + k * t )",
+            A0: "1 / ( 1 / A - k * t )",
+            k:  "( 1 / A - 1 / A0 ) / t",
+            t:  "( 1 / A - 1 / A0 ) / k"
         }
     },
     {
@@ -731,9 +756,9 @@ export const chemFormulas = [
             { symbol: "A0", name: "Initial concentration", unit: "mol/L" }
         ],
         solve: {
-            tHalf: "1 / (k * A0)",
-            k:     "1 / (tHalf * A0)",
-            A0:    "1 / (k * tHalf)"
+            tHalf: "1 / ( k * A0 )",
+            k:     "1 / ( tHalf * A0 )",
+            A0:    "1 / ( k * tHalf )"
         }
     },
     {
@@ -743,17 +768,17 @@ export const chemFormulas = [
         latex: "k = Ae^{-E_a / RT}",
         variables: [
             { symbol: "k", name: "Rate constant", unit: "varies" },
-            { symbol: "Ap", name: "Pre-exponential factor (A)", unit: "varies" },
+            { symbol: "A", name: "Pre-exponential factor (A)", unit: "varies" },
             { symbol: "Ea", name: "Activation energy", unit: "J/mol" },
             { symbol: "R", name: "Gas constant", unit: "J/(mol·K)", constant: 8.314 },
             { symbol: "T", name: "Temperature", unit: "K" }
         ],
         solve: {
-            k:  "Ap * exp(-Ea / (R * T))",
-            Ap: "k / exp(-Ea / (R * T))",
-            Ea: "-R * T * log(k / Ap)",
-            T:  "-Ea / (R * log(k / Ap))",
-            R:  "-Ea / (T * log(k / Ap))"
+            k:  "A * 2.718 ^ ( -Ea / ( R * T ) )",
+            A:  "k / 2.718 ^ ( -Ea / ( R * T ) )",
+            Ea: "-1 * R * T * log ( k / A )",
+            T:  "-1 * Ea / ( R * log ( k / A ) )",
+            R:  "-1 * Ea / ( T * log ( k / A ) )"
         }
     },
     {
@@ -770,49 +795,12 @@ export const chemFormulas = [
             { symbol: "T2", name: "Temperature 2", unit: "K" }
         ],
         solve: {
-            k1: "k2 / exp((Ea / R) * (1 / T1 - 1 / T2))",
-            k2: "k1 * exp((Ea / R) * (1 / T1 - 1 / T2))",
-            Ea: "R * log(k2 / k1) / (1 / T1 - 1 / T2)",
-            T1: "1 / (log(k2 / k1) * R / Ea + 1 / T2)",
-            T2: "1 / (1 / T1 - log(k2 / k1) * R / Ea)",
-            R:  "Ea * (1 / T1 - 1 / T2) / log(k2 / k1)"
-        }
-    },
- 
-    // ── Nuclear Chemistry ───────────────────────────────────
- 
-    {
-        name: "Half-Life Decay",
-        category: "Nuclear Chemistry",
-        formula: "N = N₀ × (1/2)^(t / t½)",
-        latex: "N = N_0 \\times \\left(\\frac{1}{2}\\right)^{t / t_{1/2}}",
-        variables: [
-            { symbol: "N", name: "Remaining amount", unit: "g" },
-            { symbol: "N0", name: "Initial amount", unit: "g" },
-            { symbol: "t", name: "Elapsed time", unit: "s" },
-            { symbol: "tHalf", name: "Half-life", unit: "s" }
-        ],
-        solve: {
-            N:     "N0 * pow(0.5, t / tHalf)",
-            N0:    "N / pow(0.5, t / tHalf)",
-            t:     "tHalf * log(N0 / N) / log(2)",
-            tHalf: "t * log(2) / log(N0 / N)"
-        }
-    },
-    {
-        name: "Mass–Energy Equivalence",
-        category: "Nuclear Chemistry",
-        formula: "E = mc²",
-        latex: "E = mc^2",
-        variables: [
-            { symbol: "E", name: "Energy", unit: "J" },
-            { symbol: "m", name: "Mass defect", unit: "kg" },
-            { symbol: "c", name: "Speed of light", unit: "m/s", constant: 3.0e8 }
-        ],
-        solve: {
-            E: "m * c * c",
-            m: "E / (c * c)",
-            c: "sqrt(E / m)"
+            k1: "k2 / 2.718 ^ ( ( Ea / R ) * ( 1 / T1 - 1 / T2 ) )",
+            k2: "k1 * 2.718 ^ ( ( Ea / R ) * ( 1 / T1 - 1 / T2 ) )",
+            Ea: "R * log ( k2 / k1 ) / ( 1 / T1 - 1 / T2 )",
+            T1: "1 / ( log ( k2 / k1 ) * R / Ea + 1 / T2 )",
+            T2: "1 / ( 1 / T1 - log ( k2 / k1 ) * R / Ea )",
+            R:  "Ea * ( 1 / T1 - 1 / T2 ) / log ( k2 / k1 )"
         }
     }
 ];
@@ -838,8 +826,8 @@ export const physFormulas = [
         solve: {
             v:  "v0 + a * t",
             v0: "v - a * t",
-            a:  "(v - v0) / t",
-            t:  "(v - v0) / a"
+            a:  "( v - v0 ) / t",
+            t:  "( v - v0 ) / a"
         }
     },
     {
@@ -855,9 +843,9 @@ export const physFormulas = [
         ],
         solve: {
             d:  "v0 * t + 0.5 * a * t * t",
-            v0: "(d - 0.5 * a * t * t) / t",
-            a:  "2 * (d - v0 * t) / (t * t)",
-            t:  "(-v0 + sqrt(v0 * v0 + 2 * a * d)) / a"
+            v0: "( d - 0.5 * a * t * t ) / t",
+            a:  "2 * ( d - v0 * t ) / ( t * t )",
+            t:  "( -1 * v0 + ( v0 * v0 + 2 * a * d ) ^ 0.5 ) / a"
         }
     },
     {
@@ -872,10 +860,10 @@ export const physFormulas = [
             { symbol: "d", name: "Displacement", unit: "m" }
         ],
         solve: {
-            v:  "sqrt(v0 * v0 + 2 * a * d)",
-            v0: "sqrt(v * v - 2 * a * d)",
-            a:  "(v * v - v0 * v0) / (2 * d)",
-            d:  "(v * v - v0 * v0) / (2 * a)"
+            v:  "( v0 * v0 + 2 * a * d ) ^ 0.5",
+            v0: "( v * v - 2 * a * d ) ^ 0.5",
+            a:  "( v * v - v0 * v0 ) / ( 2 * d )",
+            d:  "( v * v - v0 * v0 ) / ( 2 * a )"
         }
     },
     {
@@ -958,11 +946,11 @@ export const physFormulas = [
             { symbol: "r", name: "Distance between centres", unit: "m" }
         ],
         solve: {
-            F:  "(G * m1 * m2) / (r * r)",
-            m1: "(F * r * r) / (G * m2)",
-            m2: "(F * r * r) / (G * m1)",
-            r:  "sqrt((G * m1 * m2) / F)",
-            G:  "(F * r * r) / (m1 * m2)"
+            F:  "( G * m1 * m2 ) / ( r * r )",
+            m1: "( F * r * r ) / ( G * m2 )",
+            m2: "( F * r * r ) / ( G * m1 )",
+            r:  "( G * m1 * m2 ) / F ) ^ 0.5",
+            G:  "( F * r * r ) / ( m1 * m2 )"
         }
     },
     {
@@ -976,9 +964,9 @@ export const physFormulas = [
             { symbol: "x", name: "Displacement from equilibrium", unit: "m" }
         ],
         solve: {
-            Fs: "-k * x",
-            k:  "-Fs / x",
-            x:  "-Fs / k"
+            Fs: "-1 * k * x",
+            k:  "-1 * Fs / x",
+            x:  "-1 * Fs / k"
         }
     },
  
@@ -996,10 +984,10 @@ export const physFormulas = [
             { symbol: "theta", name: "Angle (θ)", unit: "°" }
         ],
         solve: {
-            W:     "F * d * cos(theta * PI / 180)",
-            F:     "W / (d * cos(theta * PI / 180))",
-            d:     "W / (F * cos(theta * PI / 180))",
-            theta: "acos(W / (F * d)) * 180 / PI"
+            W:     "F * d * cos ( theta * PI / 180 )",
+            F:     "W / (d * cos ( theta * PI / 180 ) )",
+            d:     "W / (F * cos ( theta * PI / 180 ) )",
+            theta: "acos ( W / ( F * d ) ) * 180 / PI"
         }
     },
     {
@@ -1014,8 +1002,8 @@ export const physFormulas = [
         ],
         solve: {
             KE: "0.5 * m * v * v",
-            m:  "(2 * KE) / (v * v)",
-            v:  "sqrt((2 * KE) / m)"
+            m:  "( 2 * KE ) / ( v * v )",
+            v:  "( ( 2 * KE ) / m ) ^ 0.5"
         }
     },
     {
@@ -1031,9 +1019,9 @@ export const physFormulas = [
         ],
         solve: {
             PE: "m * g * h",
-            m:  "PE / (g * h)",
-            g:  "PE / (m * h)",
-            h:  "PE / (m * g)"
+            m:  "PE / ( g * h )",
+            g:  "PE / ( m * h )",
+            h:  "PE / ( m * g )"
         }
     },
     {
@@ -1048,8 +1036,8 @@ export const physFormulas = [
         ],
         solve: {
             PE: "0.5 * k * x * x",
-            k:  "(2 * PE) / (x * x)",
-            x:  "sqrt((2 * PE) / k)"
+            k:  "( 2 * PE ) / ( x * x )",
+            x:  "( ( 2 * PE ) / k ) ^ 0.5"
         }
     },
     {
@@ -1066,22 +1054,6 @@ export const physFormulas = [
             P: "W / t",
             W: "P * t",
             t: "W / P"
-        }
-    },
-    {
-        name: "Efficiency",
-        category: "Energy",
-        formula: "η = (useful energy out / total energy in) × 100",
-        latex: "\\eta = \\frac{E_{\\text{out}}}{E_{\\text{in}}} \\times 100",
-        variables: [
-            { symbol: "eta", name: "Efficiency", unit: "%" },
-            { symbol: "Eout", name: "Useful energy output", unit: "J" },
-            { symbol: "Ein", name: "Total energy input", unit: "J" }
-        ],
-        solve: {
-            eta:  "(Eout / Ein) * 100",
-            Eout: "(eta / 100) * Ein",
-            Ein:  "Eout / (eta / 100)"
         }
     },
  
@@ -1133,9 +1105,9 @@ export const physFormulas = [
             { symbol: "r", name: "Radius", unit: "m" }
         ],
         solve: {
-            ac: "(v * v) / r",
-            v:  "sqrt(ac * r)",
-            r:  "(v * v) / ac"
+            ac: "( v * v ) / r",
+            v:  "( ac * r ) ^ 0.5",
+            r:  "( v * v ) / ac"
         }
     },
     {
@@ -1150,10 +1122,10 @@ export const physFormulas = [
             { symbol: "r", name: "Radius", unit: "m" }
         ],
         solve: {
-            Fc: "(m * v * v) / r",
-            m:  "(Fc * r) / (v * v)",
-            v:  "sqrt((Fc * r) / m)",
-            r:  "(m * v * v) / Fc"
+            Fc: "( m * v * v ) / r",
+            m:  "( Fc * r ) / ( v * v )",
+            v:  "(( Fc * r ) / m ) ^ 0.5",
+            r:  "( m * v * v ) / Fc"
         }
     },
     {
@@ -1167,9 +1139,9 @@ export const physFormulas = [
             { symbol: "v", name: "Tangential velocity", unit: "m/s" }
         ],
         solve: {
-            T: "(2 * PI * r) / v",
-            r: "(T * v) / (2 * PI)",
-            v: "(2 * PI * r) / T"
+            T: "( 2 * PI * r ) / v",
+            r: "( T * v ) / ( 2 * PI )",
+            v: "( 2 * PI * r ) / T"
         }
     },
     {
@@ -1217,10 +1189,10 @@ export const physFormulas = [
             { symbol: "theta2", name: "Angle of refraction (θ₂)", unit: "°" }
         ],
         solve: {
-            n1:     "(n2 * sin(theta2 * PI / 180)) / sin(theta1 * PI / 180)",
-            theta1: "asin((n2 * sin(theta2 * PI / 180)) / n1) * 180 / PI",
-            n2:     "(n1 * sin(theta1 * PI / 180)) / sin(theta2 * PI / 180)",
-            theta2: "asin((n1 * sin(theta1 * PI / 180)) / n2) * 180 / PI"
+            n1:     "( n2 * sin ( theta2 * PI / 180 ) ) / sin ( theta1 * PI / 180 )",
+            theta1: "asin ( ( n2 * sin ( theta2 * PI / 180 ) ) / n1 ) * 180 / PI",
+            n2:     "( n1 * sin ( theta1 * PI / 180 ) ) / sin ( theta2 * PI / 180 )",
+            theta2: "asin ( ( n1 * sin ( theta1 * PI / 180 ) ) / n2 ) * 180 / PI"
         }
     },
  
@@ -1270,8 +1242,8 @@ export const physFormulas = [
         ],
         solve: {
             P: "I * I * R",
-            I: "sqrt(P / R)",
-            R: "P / (I * I)"
+            I: "( P / R ) ^ 0.5",
+            R: "P / ( I * I )"
         }
     },
     {
@@ -1319,11 +1291,11 @@ export const physFormulas = [
             { symbol: "r", name: "Distance", unit: "m" }
         ],
         solve: {
-            F:  "(k * q1 * q2) / (r * r)",
-            q1: "(F * r * r) / (k * q2)",
-            q2: "(F * r * r) / (k * q1)",
-            r:  "sqrt((k * q1 * q2) / F)",
-            k:  "(F * r * r) / (q1 * q2)"
+            F:  "( k * q1 * q2 ) / ( r * r )",
+            q1: "( F * r * r ) / ( k * q2 )",
+            q2: "( F * r * r ) / ( k * q1 )",
+            r:  "( ( k * q1 * q2 ) / F ) ^ 0.5",
+            k:  "( F * r * r ) / ( q1 * q2 )"
         }
     },
  
@@ -1341,10 +1313,10 @@ export const physFormulas = [
             { symbol: "theta", name: "Angle (θ)", unit: "°" }
         ],
         solve: {
-            tau:   "r * F * sin(theta * PI / 180)",
-            r:     "tau / (F * sin(theta * PI / 180))",
-            F:     "tau / (r * sin(theta * PI / 180))",
-            theta: "asin(tau / (r * F)) * 180 / PI"
+            tau:   "r * F * sin ( theta * PI / 180 )",
+            r:     "tau / (F * sin ( theta * PI / 180 ) )",
+            F:     "tau / (r * sin ( theta * PI / 180 ) )",
+            theta: "asin ( tau / ( r * F ) ) * 180 / PI"
         }
     },
  
@@ -1363,9 +1335,9 @@ export const physFormulas = [
         ],
         solve: {
             Q:      "m * c * deltaT",
-            m:      "Q / (c * deltaT)",
-            c:      "Q / (m * deltaT)",
-            deltaT: "Q / (m * c)"
+            m:      "Q / ( c * deltaT )",
+            c:      "Q / ( m * deltaT )",
+            deltaT: "Q / ( m * c )"
         }
     },
     {
@@ -1398,9 +1370,9 @@ export const physFormulas = [
             { symbol: "g", name: "Gravitational acceleration", unit: "m/s²", constant: 9.81 }
         ],
         solve: {
-            T: "2 * PI * sqrt(L / g)",
-            L: "g * pow(T / (2 * PI), 2)",
-            g: "L / pow(T / (2 * PI), 2)"
+            T: "2 * PI * ( L / g ) ^ 0.5",
+            L: "g * ( T / (2 * PI) ) ^ 2",
+            g: "L / ( T / (2 * PI) ) ^ 2"
         }
     },
     {
@@ -1414,9 +1386,9 @@ export const physFormulas = [
             { symbol: "k", name: "Spring constant", unit: "N/m" }
         ],
         solve: {
-            T: "2 * PI * sqrt(m / k)",
-            m: "k * pow(T / (2 * PI), 2)",
-            k: "m / pow(T / (2 * PI), 2)"
+            T: "2 * PI * ( m / k ) ^ 0.5",
+            m: "k * ( T / (2 * PI) ) ^ 2",
+            k: "m / ( T / (2 * PI) ) ^ 2"
         }
     },
  

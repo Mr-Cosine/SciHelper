@@ -933,13 +933,22 @@ function openFormulaWindow(outputLoc) {
     var formulaContainer = document.createElement('div');
     formulaContainer.setAttribute('id', 'sci-chem-frml-content');
     
+    let prevcategory = "";
     chemFormulas.forEach((entry, i) => {
+        if (entry.category !== prevcategory) {
+            var categoryHeader = document.createElement('div');
+            categoryHeader.setAttribute('class', 'sci-chem-frml-category');
+            categoryHeader.textContent = entry.category + ":";
+            formulaContainer.appendChild(categoryHeader);
+            prevcategory = entry.category;
+        }
+
         var row = document.createElement('div');
         row.setAttribute('class', 'sci-chem-frml-row');
         katex.render(entry.latex, row, { throwOnError: false, displayMode: false });
         row.rowID = i;
         row.addEventListener('click', () => {
-            //openCalculatorWindow(formulaWindow, entry.formula, outputLoc);
+            openCalculatorWindow(formulaWindow, entry, outputLoc);
         });
         formulaContainer.appendChild(row);
     });
@@ -951,18 +960,108 @@ function openFormulaWindow(outputLoc) {
     return formulaWindow;
 }
 
-/*
-openCalculatorWindow = (parentWindow, formula, outputLoc) => {
+function openCalculatorWindow (parentWindow, formula, outputLoc) {
+    while(document.getElementById('sci-chem-frml-calc')) {document.getElementById('sci-chem-frml-calc').remove();}
     var calcWindow = document.createElement('div');
-    calcWindow.setAttribute('class', 'sci-chem-frml-calc');
-    formula.
-    var inputBox = document.createElement('input');
-    inputBox.value = formula;
-    var result = document.createElement('div');
-    result.setAttribute('class', 'sci-chem-frml-calc-result');
-    result.textContent = "Molar Mass: --";
-    calcWindow.appendChild(inputBox);
-    calcWindow.appendChild(result);
+    calcWindow.setAttribute('id', 'sci-chem-frml-calc');
+
+    var calcHeader = document.createElement('div');
+    calcHeader.setAttribute('class', 'sci-chem-tool-header');
+    calcHeader.textContent = formula.name;
+
+    formula.variables.forEach(variable => {
+        var input = document.createElement('input');
+        input.placeholder = variable.symbol;
+        input.setAttribute('class', 'sci-chem-frml-calc-input');
+        calcWindow.appendChild(input);
+    });
+    
+    var solveBtn = document.createElement('button');
+    solveBtn.textContent = 'Solve';
+    solveBtn.setAttribute('class', 'sci-chem-frml-calc-solve');
+    solveBtn.addEventListener('click', () => {
+        if (document.querySelector('.sci-chem-frml-calc-alert')) document.querySelector('.sci-chem-frml-calc-alert').remove();
+        let inputs = document.querySelectorAll('.sci-chem-frml-calc-input');
+
+        let varValues = {};
+        let emptyValues = {};
+
+        inputs.forEach(input => {
+            if (input.value === "") {
+                emptyValues[input.placeholder] = null;
+                varValues[input.placeholder] = null;
+            }
+            else {
+                varValues[input.placeholder] = parseFloat(input.value);
+            }
+        });
+
+        if (Object.keys(emptyValues).length > 0 && Object.keys(emptyValues).length < 2) {
+            let result = solve(varValues, formula.solve);
+            document.querySelector(`input[placeholder="${Object.keys(emptyValues)[0]}"]`).value = result;
+        }
+        else {
+            var alert = document.createElement('div');
+            alert.setAttribute('class', 'sci-chem-frml-calc-alert');
+            alert.textContent = "Please fill in exactly one variable to solve for.";
+            calcWindow.appendChild(alert);
+        }
+    });
+    calcWindow.appendChild(solveBtn);
     parentWindow.appendChild(calcWindow);
 }
-    */
+
+function solve(variables, expressions) {
+    let emptyVar = null;
+    for (let key of Object.keys(variables)) {
+        if (variables[key] === null) {
+            emptyVar = key;
+        }
+    }
+
+    let equation = expressions[emptyVar].split(' ');
+
+    console.log("Initial equation tokens:", equation);
+
+    for (let token of equation) {
+        for (let varName of Object.keys(variables)) {
+            if (token === varName) {
+                equation[equation.indexOf(token)] = variables[varName];
+            }
+        }
+    }
+
+    console.log("Input values for solving:", equation);
+    const mathSetup = "const {sqrt,log,log10,pow,exp,sin,cos,asin,acos,tan,atan,PI,abs} = Math;";
+    return 'pseudo-result';
+}
+
+function shuntingYard(tokens) {
+    const precedence = { '+': 2, '-': 2, '*': 3, '/': 3, '^': 4 };
+    const output = [];
+    const stack = [];
+
+    tokens.forEach(token => {
+        if (!isNaN(parseFloat(token))) {
+            output.push(parseFloat(token));
+        } else if (token === '(') {
+            stack.push(token);
+        } else if (token === ')') {
+            while (stack.length > 0 && stack[stack.length - 1] !== '(') {
+                output.push(stack.pop());
+            }
+            stack.pop(); // Remove '('
+        } else {
+            // It's an operator
+            while (stack.length > 0 && 
+                   stack[stack.length - 1] !== '(' && 
+                   precedence[stack[stack.length - 1]] >= precedence[token]) {
+                output.push(stack.pop());
+            }
+            stack.push(token);
+        }
+    });
+
+    while (stack.length > 0) output.push(stack.pop());
+    return output;
+}
