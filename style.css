@@ -755,6 +755,8 @@ input[readonly] {
     min-height: 20px;
     color: #333;
     white-space: pre-wrap;
+    display: flex;
+    justify-content: space-between;
 }
 
 .sci-gen-tool-result:hover {
@@ -862,4 +864,15 @@ input[readonly] {
 
 #sci-gen-poly-confirm:hover {
     background: #ecf2d4;
+}
+
+.sci-gen-poly-result-changeform {
+    font-size: 14px;
+    font-weight: bold;
+    background: none;
+    cursor: pointer;
+}
+
+.sci-gen-poly-result-changeform:hover {
+    color: #666;
 }

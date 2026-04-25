@@ -28,50 +28,53 @@ function ddx(polynomials) {
     return derivedPoly.filter(term => term.exp !== -1 && term.coeff !== 0);
 }
 
-function solve(rawPolynomials) {
+function solve(rawPolynomials, mandatoryNum = false) {
     const epsi = 0.000001;
     let result = [];
     let polynomials = [];
+    let exactRoot = false;
 
-    if (rawPolynomials.length === 0) return ['blnk'];
+    if (rawPolynomials.length === 0) return {'roots': ['blnk'], 'exactRoot': false};
     for (let term of rawPolynomials) {
-        if (term.coeff === null || term.exp === null || term.coeff === "" || term.exp === "") return ['blnk'];
+        if (term.coeff === null || term.exp === null || term.coeff === "" || term.exp === "") return {'roots': ['blnk'], 'exactRoot': false};
 
         let c = parseFloat(term.coeff);
         let e = parseInt(term.exp);
 
-        if (isNaN(c) || isNaN(e)) return ['ilgl'];
-        if (e > 40) return ['big'];
+        if (isNaN(c) || isNaN(e)) return {'roots': ['ilgl'], 'exactRoot': false};
+        if (e > 40) return {'roots': ['big'], 'exactRoot': false};
         if (c !== 0) polynomials.push({ coeff: c, exp: e });
     }
 
     polynomials.sort((a, b) => b.exp - a.exp);
-    const range = getBound(polynomials);
 
-    let derivative = ddx(polynomials);
-
-    let x = -range; 
-    let rangeCheck = [];
-    while (x <= range) {
-        let stepCoeff = Math.abs(f(x, derivative));
-        let stepSize = 0.05/((stepCoeff < 0.5)? 0.5 : stepCoeff);
-        let y1 = f(x, polynomials);
-        let y2 = f(x + stepSize, polynomials);
-        
-        if (y1 * y2 <= 0) {
-            rangeCheck.push({ lower: x, upper: x + stepSize });
-        }
-        x += stepSize;
-    }
-
-    if (polynomials[0].exp === 1) result = getExactRoot(polynomials);
-    else if (polynomials[0].exp === 2) result = getExactRoot(polynomials);
+    if (polynomials[0].exp === 1 && !mandatoryNum) {result = getExactRoot(polynomials); exactRoot = true;}
+    else if (polynomials[0].exp === 2 && !mandatoryNum) {result = getExactRoot(polynomials); exactRoot = true;}
     else {
+        const range = getBound(polynomials);
+        let derivative = ddx(polynomials);
+
+        let x = -range; 
+        let rangeCheck = [];
+        while (x <= range) {
+            let stepCoeff = Math.abs(f(x, derivative));
+            let stepSize = 0.05/((stepCoeff < 0.5)? 0.5 : stepCoeff);
+            let y1 = f(x, polynomials);
+            let y2 = f(x + stepSize, polynomials);
+            
+            if (y1 * y2 <= 0) {
+                rangeCheck.push({ lower: x, upper: x + stepSize });
+            }
+            x += stepSize;
+        }
+
         for (let range of rangeCheck) {
             result.push(getRoot(range.lower, range.upper, epsi, polynomials));
         }
+        exactRoot = false;
     }
-    return result;
+
+    return {'roots': result, 'exactRoot': exactRoot};
 }
 
 function getExactRoot(polynomials) {
@@ -232,7 +235,7 @@ function openPolyWindow(outputLoc) {
             polynomials.push({ coeff: coefficient, exp: exponent });
         }
 
-        let roots = solve(polynomials);
+        let {roots, exactRoot} = solve(polynomials);
         roots = roots.map(root => {
             if (isNum(root)) {
                 let rounded = Math.round(root);
@@ -250,7 +253,33 @@ function openPolyWindow(outputLoc) {
         else if (roots[0] == 'ilgl') result.textContent = 'Illegal characters present.';
         else if (roots[0] == 'big') result.textContent = 'Exponent too big.';
         else if (roots[0] == 'blnk') result.textContent = 'Incomplete expression, fill all blank spaces.';
-        else result.textContent = '𝑥 = ' + roots.join(', ');
+        else {
+            result.innerHTML = ''; 
+
+            let textSpan = document.createElement('span');
+            textSpan.textContent = '𝑥 = ' + roots.join(', ');
+            result.appendChild(textSpan);
+
+            if (exactRoot) {
+                let changeform = document.createElement('div');
+                changeform.setAttribute('class', 'sci-gen-poly-result-changeform');
+                changeform.textContent = 'Num';
+                
+                let showingExact = true;
+
+                changeform.addEventListener('click', function() {
+                    showingExact = !showingExact;
+
+                    let nextResponse = solve(polynomials, !showingExact);
+                    let nextRoots = nextResponse.roots.map(r => isNum(r) ? r.toFixed(3) : r);
+
+                    textSpan.textContent = '𝑥 = ' + nextRoots.join(', ');
+                    changeform.textContent = showingExact ? 'Num' : 'Exact';
+                });
+
+                result.appendChild(changeform);
+            }
+}
     });
 
     polyWindow.append(header, inputContainer, addRowBtn, solveBtn, result);
