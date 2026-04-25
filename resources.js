@@ -1,3 +1,6 @@
+//============================================================================
+// Special characters mapping
+
 export const superscripts = Object.freeze({
     "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴",
     "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹",
@@ -238,3 +241,1212 @@ export const electroPotentials = Object.freeze([
     { name: "Potassium",         symbol: "K⁺",       rxn: "K⁺ + e⁻ → K",                                e0: -2.93 },
     { name: "Lithium",           symbol: "Li⁺",      rxn: "Li⁺ + e⁻ → Li",                              e0: -3.04 },
 ]);
+
+export const chemFormulas = [
+ 
+    // ── Stoichiometry & Moles ────────────────────────────────
+ 
+    {
+        name: "Molar Mass Relationship",
+        category: "Stoichiometry",
+        formula: "n = m / M",
+        latex: "n = \\frac{m}{M}",
+        variables: [
+            { symbol: "n", name: "Amount of substance", unit: "mol" },
+            { symbol: "m", name: "Mass", unit: "g" },
+            { symbol: "M", name: "Molar mass", unit: "g/mol" }
+        ],
+        solve: {
+            n: "m / M",
+            m: "n * M",
+            M: "m / n"
+        }
+    },
+    {
+        name: "Number of Particles",
+        category: "Stoichiometry",
+        formula: "N = n × Nₐ",
+        latex: "N = n \\times N_A",
+        variables: [
+            { symbol: "N", name: "Number of particles", unit: "" },
+            { symbol: "n", name: "Amount of substance", unit: "mol" },
+            { symbol: "Na", name: "Avogadro's number", unit: "mol⁻¹", constant: 6.022e23 }
+        ],
+        solve: {
+            N:  "n * Na",
+            n:  "N / Na",
+            Na: "N / n"
+        }
+    },
+ 
+    // ── Gas Laws ─────────────────────────────────────────────
+ 
+    {
+        name: "Ideal Gas Law",
+        category: "Gas Laws",
+        formula: "PV = nRT",
+        latex: "PV = nRT",
+        variables: [
+            { symbol: "P", name: "Pressure", unit: "atm" },
+            { symbol: "V", name: "Volume", unit: "L" },
+            { symbol: "n", name: "Amount of substance", unit: "mol" },
+            { symbol: "R", name: "Gas constant", unit: "L·atm/(mol·K)", constant: 0.0821 },
+            { symbol: "T", name: "Temperature", unit: "K" }
+        ],
+        solve: {
+            P: "(n * R * T) / V",
+            V: "(n * R * T) / P",
+            n: "(P * V) / (R * T)",
+            T: "(P * V) / (n * R)",
+            R: "(P * V) / (n * T)"
+        }
+    },
+    {
+        name: "Combined Gas Law",
+        category: "Gas Laws",
+        formula: "P₁V₁/T₁ = P₂V₂/T₂",
+        latex: "\\frac{P_1 V_1}{T_1} = \\frac{P_2 V_2}{T_2}",
+        variables: [
+            { symbol: "P1", name: "Initial pressure", unit: "atm" },
+            { symbol: "V1", name: "Initial volume", unit: "L" },
+            { symbol: "T1", name: "Initial temperature", unit: "K" },
+            { symbol: "P2", name: "Final pressure", unit: "atm" },
+            { symbol: "V2", name: "Final volume", unit: "L" },
+            { symbol: "T2", name: "Final temperature", unit: "K" }
+        ],
+        solve: {
+            P1: "(P2 * V2 * T1) / (T2 * V1)",
+            V1: "(P2 * V2 * T1) / (T2 * P1)",
+            T1: "(P1 * V1 * T2) / (P2 * V2)",
+            P2: "(P1 * V1 * T2) / (T1 * V2)",
+            V2: "(P1 * V1 * T2) / (T1 * P2)",
+            T2: "(P2 * V2 * T1) / (P1 * V1)"
+        }
+    },
+    {
+        name: "Dalton's Law of Partial Pressures",
+        category: "Gas Laws",
+        formula: "Pₜₒₜₐₗ = P₁ + P₂ + P₃",
+        latex: "P_{\\text{total}} = P_1 + P_2 + P_3",
+        variables: [
+            { symbol: "Ptotal", name: "Total pressure", unit: "atm" },
+            { symbol: "P1", name: "Partial pressure 1", unit: "atm" },
+            { symbol: "P2", name: "Partial pressure 2", unit: "atm" },
+            { symbol: "P3", name: "Partial pressure 3", unit: "atm" }
+        ],
+        solve: {
+            Ptotal: "P1 + P2 + P3",
+            P1: "Ptotal - P2 - P3",
+            P2: "Ptotal - P1 - P3",
+            P3: "Ptotal - P1 - P2"
+        }
+    },
+    {
+        name: "Graham's Law of Effusion",
+        category: "Gas Laws",
+        formula: "r₁/r₂ = √(M₂/M₁)",
+        latex: "\\frac{r_1}{r_2} = \\sqrt{\\frac{M_2}{M_1}}",
+        variables: [
+            { symbol: "r1", name: "Rate of effusion (gas 1)", unit: "mol/s" },
+            { symbol: "r2", name: "Rate of effusion (gas 2)", unit: "mol/s" },
+            { symbol: "M1", name: "Molar mass (gas 1)", unit: "g/mol" },
+            { symbol: "M2", name: "Molar mass (gas 2)", unit: "g/mol" }
+        ],
+        solve: {
+            r1: "r2 * sqrt(M2 / M1)",
+            r2: "r1 * sqrt(M1 / M2)",
+            M1: "M2 * pow(r2 / r1, 2)",
+            M2: "M1 * pow(r1 / r2, 2)"
+        }
+    },
+ 
+    // ── Solutions & Concentration ────────────────────────────
+ 
+    {
+        name: "Molarity",
+        category: "Solutions",
+        formula: "C = n / V",
+        latex: "C = \\frac{n}{V}",
+        variables: [
+            { symbol: "C", name: "Molarity (concentration)", unit: "mol/L" },
+            { symbol: "n", name: "Moles of solute", unit: "mol" },
+            { symbol: "V", name: "Volume of solution", unit: "L" }
+        ],
+        solve: {
+            C: "n / V",
+            n: "C * V",
+            V: "n / C"
+        }
+    },
+    {
+        name: "Dilution Equation",
+        category: "Solutions",
+        formula: "C₁V₁ = C₂V₂",
+        latex: "C_1 V_1 = C_2 V_2",
+        variables: [
+            { symbol: "C1", name: "Initial concentration", unit: "mol/L" },
+            { symbol: "V1", name: "Initial volume", unit: "L" },
+            { symbol: "C2", name: "Final concentration", unit: "mol/L" },
+            { symbol: "V2", name: "Final volume", unit: "L" }
+        ],
+        solve: {
+            C1: "(C2 * V2) / V1",
+            V1: "(C2 * V2) / C1",
+            C2: "(C1 * V1) / V2",
+            V2: "(C1 * V1) / C2"
+        }
+    },
+    {
+        name: "Mass Percent",
+        category: "Solutions",
+        formula: "mass% = (m_solute / m_solution) × 100",
+        latex: "\\text{mass\\%} = \\frac{m_{\\text{solute}}}{m_{\\text{solution}}} \\times 100",
+        variables: [
+            { symbol: "massPercent", name: "Mass percent", unit: "%" },
+            { symbol: "mSolute", name: "Mass of solute", unit: "g" },
+            { symbol: "mSolution", name: "Mass of solution", unit: "g" }
+        ],
+        solve: {
+            massPercent: "(mSolute / mSolution) * 100",
+            mSolute: "(massPercent / 100) * mSolution",
+            mSolution: "mSolute / (massPercent / 100)"
+        }
+    },
+ 
+    // ── Thermochemistry ──────────────────────────────────────
+ 
+    {
+        name: "Heat Energy (q = mcΔT)",
+        category: "Thermochemistry",
+        formula: "q = mcΔT",
+        latex: "q = mc\\Delta T",
+        variables: [
+            { symbol: "q", name: "Heat energy", unit: "J" },
+            { symbol: "m", name: "Mass", unit: "g" },
+            { symbol: "c", name: "Specific heat capacity", unit: "J/(g·°C)" },
+            { symbol: "deltaT", name: "Temperature change", unit: "°C" }
+        ],
+        solve: {
+            q:      "m * c * deltaT",
+            m:      "q / (c * deltaT)",
+            c:      "q / (m * deltaT)",
+            deltaT: "q / (m * c)"
+        }
+    },
+    {
+        name: "Enthalpy from Moles",
+        category: "Thermochemistry",
+        formula: "q = nΔH",
+        latex: "q = n\\Delta H",
+        variables: [
+            { symbol: "q", name: "Heat energy", unit: "kJ" },
+            { symbol: "n", name: "Moles", unit: "mol" },
+            { symbol: "deltaH", name: "Molar enthalpy change", unit: "kJ/mol" }
+        ],
+        solve: {
+            q:      "n * deltaH",
+            n:      "q / deltaH",
+            deltaH: "q / n"
+        }
+    },
+ 
+    // ── Acids & Bases ────────────────────────────────────────
+ 
+    {
+        name: "pH Definition",
+        category: "Acids & Bases",
+        formula: "pH = −log[H⁺]",
+        latex: "\\text{pH} = -\\log[H^+]",
+        variables: [
+            { symbol: "pH", name: "pH", unit: "" },
+            { symbol: "H", name: "Hydrogen ion concentration", unit: "mol/L" }
+        ],
+        solve: {
+            pH: "-log10(H)",
+            H:  "pow(10, -pH)"
+        }
+    },
+    {
+        name: "pOH Definition",
+        category: "Acids & Bases",
+        formula: "pOH = −log[OH⁻]",
+        latex: "\\text{pOH} = -\\log[OH^-]",
+        variables: [
+            { symbol: "pOH", name: "pOH", unit: "" },
+            { symbol: "OH", name: "Hydroxide ion concentration", unit: "mol/L" }
+        ],
+        solve: {
+            pOH: "-log10(OH)",
+            OH:  "pow(10, -pOH)"
+        }
+    },
+    {
+        name: "pH + pOH Relationship",
+        category: "Acids & Bases",
+        formula: "pH + pOH = 14",
+        latex: "\\text{pH} + \\text{pOH} = 14",
+        variables: [
+            { symbol: "pH", name: "pH", unit: "" },
+            { symbol: "pOH", name: "pOH", unit: "" }
+        ],
+        solve: {
+            pH:  "14 - pOH",
+            pOH: "14 - pH"
+        }
+    },
+    {
+        name: "Water Autoionization (Kw)",
+        category: "Acids & Bases",
+        formula: "Kw = [H⁺][OH⁻]",
+        latex: "K_w = [H^+][OH^-]",
+        variables: [
+            { symbol: "Kw", name: "Ion product of water", unit: "", constant: 1.0e-14 },
+            { symbol: "H", name: "Hydrogen ion concentration", unit: "mol/L" },
+            { symbol: "OH", name: "Hydroxide ion concentration", unit: "mol/L" }
+        ],
+        solve: {
+            Kw: "H * OH",
+            H:  "Kw / OH",
+            OH: "Kw / H"
+        }
+    },
+    {
+        name: "Henderson-Hasselbalch (Acid Buffer)",
+        category: "Acids & Bases",
+        formula: "pH = pKa + log([A⁻]/[HA])",
+        latex: "\\text{pH} = \\text{p}K_a + \\log\\frac{[A^-]}{[HA]}",
+        variables: [
+            { symbol: "pH", name: "pH", unit: "" },
+            { symbol: "pKa", name: "Acid dissociation constant (pKa)", unit: "" },
+            { symbol: "A", name: "Conjugate base concentration [A⁻]", unit: "mol/L" },
+            { symbol: "HA", name: "Weak acid concentration [HA]", unit: "mol/L" }
+        ],
+        solve: {
+            pH:  "pKa + log10(A / HA)",
+            pKa: "pH - log10(A / HA)",
+            A:   "HA * pow(10, pH - pKa)",
+            HA:  "A / pow(10, pH - pKa)"
+        }
+    },
+    {
+        name: "Henderson-Hasselbalch (Base Buffer)",
+        category: "Acids & Bases",
+        formula: "pOH = pKb + log([BH⁺]/[B])",
+        latex: "\\text{pOH} = \\text{p}K_b + \\log\\frac{[BH^+]}{[B]}",
+        variables: [
+            { symbol: "pOH", name: "pOH", unit: "" },
+            { symbol: "pKb", name: "Base dissociation constant (pKb)", unit: "" },
+            { symbol: "BH", name: "Conjugate acid concentration [BH⁺]", unit: "mol/L" },
+            { symbol: "B", name: "Weak base concentration [B]", unit: "mol/L" }
+        ],
+        solve: {
+            pOH: "pKb + log10(BH / B)",
+            pKb: "pOH - log10(BH / B)",
+            BH:  "B * pow(10, pOH - pKb)",
+            B:   "BH / pow(10, pOH - pKb)"
+        }
+    },
+ 
+    // ── Electrochemistry ────────────────────────────────────
+ 
+    {
+        name: "Standard Cell Potential",
+        category: "Electrochemistry",
+        formula: "E°cell = E°cathode − E°anode",
+        latex: "E^\\circ_{\\text{cell}} = E^\\circ_{\\text{cathode}} - E^\\circ_{\\text{anode}}",
+        variables: [
+            { symbol: "Ecell", name: "Standard cell potential", unit: "V" },
+            { symbol: "Ecathode", name: "Cathode reduction potential", unit: "V" },
+            { symbol: "Eanode", name: "Anode reduction potential", unit: "V" }
+        ],
+        solve: {
+            Ecell:    "Ecathode - Eanode",
+            Ecathode: "Ecell + Eanode",
+            Eanode:   "Ecathode - Ecell"
+        }
+    },
+ 
+    // ── Reaction Rates ──────────────────────────────────────
+ 
+    {
+        name: "Average Rate of Reaction",
+        category: "Kinetics",
+        formula: "rate = Δ[concentration] / Δt",
+        latex: "\\text{rate} = \\frac{\\Delta[\\text{conc}]}{\\Delta t}",
+        variables: [
+            { symbol: "rate", name: "Average rate", unit: "mol/(L·s)" },
+            { symbol: "deltaC", name: "Change in concentration", unit: "mol/L" },
+            { symbol: "deltaT", name: "Change in time", unit: "s" }
+        ],
+        solve: {
+            rate:   "deltaC / deltaT",
+            deltaC: "rate * deltaT",
+            deltaT: "deltaC / rate"
+        }
+    },
+    {
+        name: "Zero-Order Rate Law (Differential)",
+        category: "Kinetics",
+        formula: "rate = k",
+        latex: "\\text{rate} = k",
+        variables: [
+            { symbol: "rate", name: "Reaction rate", unit: "mol/(L·s)" },
+            { symbol: "k", name: "Rate constant", unit: "mol/(L·s)" }
+        ],
+        solve: {
+            rate: "k",
+            k:    "rate"
+        }
+    },
+    {
+        name: "Zero-Order Integrated Rate Law",
+        category: "Kinetics",
+        formula: "[A] = [A]₀ − kt",
+        latex: "[A] = [A]_0 - kt",
+        variables: [
+            { symbol: "A", name: "Concentration at time t", unit: "mol/L" },
+            { symbol: "A0", name: "Initial concentration", unit: "mol/L" },
+            { symbol: "k", name: "Rate constant", unit: "mol/(L·s)" },
+            { symbol: "t", name: "Time", unit: "s" }
+        ],
+        solve: {
+            A:  "A0 - k * t",
+            A0: "A + k * t",
+            k:  "(A0 - A) / t",
+            t:  "(A0 - A) / k"
+        }
+    },
+    {
+        name: "Zero-Order Half-Life",
+        category: "Kinetics",
+        formula: "t½ = [A]₀ / 2k",
+        latex: "t_{1/2} = \\frac{[A]_0}{2k}",
+        variables: [
+            { symbol: "tHalf", name: "Half-life", unit: "s" },
+            { symbol: "A0", name: "Initial concentration", unit: "mol/L" },
+            { symbol: "k", name: "Rate constant", unit: "mol/(L·s)" }
+        ],
+        solve: {
+            tHalf: "A0 / (2 * k)",
+            A0:    "2 * k * tHalf",
+            k:     "A0 / (2 * tHalf)"
+        }
+    },
+    {
+        name: "First-Order Rate Law (Differential)",
+        category: "Kinetics",
+        formula: "rate = k[A]",
+        latex: "\\text{rate} = k[A]",
+        variables: [
+            { symbol: "rate", name: "Reaction rate", unit: "mol/(L·s)" },
+            { symbol: "k", name: "Rate constant", unit: "s⁻¹" },
+            { symbol: "A", name: "Concentration [A]", unit: "mol/L" }
+        ],
+        solve: {
+            rate: "k * A",
+            k:    "rate / A",
+            A:    "rate / k"
+        }
+    },
+    {
+        name: "First-Order Integrated Rate Law",
+        category: "Kinetics",
+        formula: "ln[A] = ln[A]₀ − kt",
+        latex: "\\ln[A] = \\ln[A]_0 - kt",
+        variables: [
+            { symbol: "A", name: "Concentration at time t", unit: "mol/L" },
+            { symbol: "A0", name: "Initial concentration", unit: "mol/L" },
+            { symbol: "k", name: "Rate constant", unit: "s⁻¹" },
+            { symbol: "t", name: "Time", unit: "s" }
+        ],
+        solve: {
+            A:  "A0 * exp(-k * t)",
+            A0: "A / exp(-k * t)",
+            k:  "log(A0 / A) / t",
+            t:  "log(A0 / A) / k"
+        }
+    },
+    {
+        name: "First-Order Half-Life",
+        category: "Kinetics",
+        formula: "t½ = ln(2) / k",
+        latex: "t_{1/2} = \\frac{\\ln 2}{k}",
+        variables: [
+            { symbol: "tHalf", name: "Half-life", unit: "s" },
+            { symbol: "k", name: "Rate constant", unit: "s⁻¹" }
+        ],
+        solve: {
+            tHalf: "log(2) / k",
+            k:     "log(2) / tHalf"
+        }
+    },
+    {
+        name: "Second-Order Rate Law (Differential)",
+        category: "Kinetics",
+        formula: "rate = k[A]²",
+        latex: "\\text{rate} = k[A]^2",
+        variables: [
+            { symbol: "rate", name: "Reaction rate", unit: "mol/(L·s)" },
+            { symbol: "k", name: "Rate constant", unit: "L/(mol·s)" },
+            { symbol: "A", name: "Concentration [A]", unit: "mol/L" }
+        ],
+        solve: {
+            rate: "k * A * A",
+            k:    "rate / (A * A)",
+            A:    "sqrt(rate / k)"
+        }
+    },
+    {
+        name: "Second-Order Integrated Rate Law",
+        category: "Kinetics",
+        formula: "1/[A] = 1/[A]₀ + kt",
+        latex: "\\frac{1}{[A]} = \\frac{1}{[A]_0} + kt",
+        variables: [
+            { symbol: "A", name: "Concentration at time t", unit: "mol/L" },
+            { symbol: "A0", name: "Initial concentration", unit: "mol/L" },
+            { symbol: "k", name: "Rate constant", unit: "L/(mol·s)" },
+            { symbol: "t", name: "Time", unit: "s" }
+        ],
+        solve: {
+            A:  "1 / (1 / A0 + k * t)",
+            A0: "1 / (1 / A - k * t)",
+            k:  "(1 / A - 1 / A0) / t",
+            t:  "(1 / A - 1 / A0) / k"
+        }
+    },
+    {
+        name: "Second-Order Half-Life",
+        category: "Kinetics",
+        formula: "t½ = 1 / (k[A]₀)",
+        latex: "t_{1/2} = \\frac{1}{k[A]_0}",
+        variables: [
+            { symbol: "tHalf", name: "Half-life", unit: "s" },
+            { symbol: "k", name: "Rate constant", unit: "L/(mol·s)" },
+            { symbol: "A0", name: "Initial concentration", unit: "mol/L" }
+        ],
+        solve: {
+            tHalf: "1 / (k * A0)",
+            k:     "1 / (tHalf * A0)",
+            A0:    "1 / (k * tHalf)"
+        }
+    },
+    {
+        name: "Arrhenius Equation",
+        category: "Kinetics",
+        formula: "k = Ae^(−Ea/RT)",
+        latex: "k = Ae^{-E_a / RT}",
+        variables: [
+            { symbol: "k", name: "Rate constant", unit: "varies" },
+            { symbol: "Ap", name: "Pre-exponential factor (A)", unit: "varies" },
+            { symbol: "Ea", name: "Activation energy", unit: "J/mol" },
+            { symbol: "R", name: "Gas constant", unit: "J/(mol·K)", constant: 8.314 },
+            { symbol: "T", name: "Temperature", unit: "K" }
+        ],
+        solve: {
+            k:  "Ap * exp(-Ea / (R * T))",
+            Ap: "k / exp(-Ea / (R * T))",
+            Ea: "-R * T * log(k / Ap)",
+            T:  "-Ea / (R * log(k / Ap))",
+            R:  "-Ea / (T * log(k / Ap))"
+        }
+    },
+    {
+        name: "Arrhenius Two-Temperature Form",
+        category: "Kinetics",
+        formula: "ln(k₂/k₁) = (Ea/R)(1/T₁ − 1/T₂)",
+        latex: "\\ln\\frac{k_2}{k_1} = \\frac{E_a}{R}\\left(\\frac{1}{T_1} - \\frac{1}{T_2}\\right)",
+        variables: [
+            { symbol: "k1", name: "Rate constant at T₁", unit: "varies" },
+            { symbol: "k2", name: "Rate constant at T₂", unit: "varies" },
+            { symbol: "Ea", name: "Activation energy", unit: "J/mol" },
+            { symbol: "R", name: "Gas constant", unit: "J/(mol·K)", constant: 8.314 },
+            { symbol: "T1", name: "Temperature 1", unit: "K" },
+            { symbol: "T2", name: "Temperature 2", unit: "K" }
+        ],
+        solve: {
+            k1: "k2 / exp((Ea / R) * (1 / T1 - 1 / T2))",
+            k2: "k1 * exp((Ea / R) * (1 / T1 - 1 / T2))",
+            Ea: "R * log(k2 / k1) / (1 / T1 - 1 / T2)",
+            T1: "1 / (log(k2 / k1) * R / Ea + 1 / T2)",
+            T2: "1 / (1 / T1 - log(k2 / k1) * R / Ea)",
+            R:  "Ea * (1 / T1 - 1 / T2) / log(k2 / k1)"
+        }
+    },
+ 
+    // ── Nuclear Chemistry ───────────────────────────────────
+ 
+    {
+        name: "Half-Life Decay",
+        category: "Nuclear Chemistry",
+        formula: "N = N₀ × (1/2)^(t / t½)",
+        latex: "N = N_0 \\times \\left(\\frac{1}{2}\\right)^{t / t_{1/2}}",
+        variables: [
+            { symbol: "N", name: "Remaining amount", unit: "g" },
+            { symbol: "N0", name: "Initial amount", unit: "g" },
+            { symbol: "t", name: "Elapsed time", unit: "s" },
+            { symbol: "tHalf", name: "Half-life", unit: "s" }
+        ],
+        solve: {
+            N:     "N0 * pow(0.5, t / tHalf)",
+            N0:    "N / pow(0.5, t / tHalf)",
+            t:     "tHalf * log(N0 / N) / log(2)",
+            tHalf: "t * log(2) / log(N0 / N)"
+        }
+    },
+    {
+        name: "Mass–Energy Equivalence",
+        category: "Nuclear Chemistry",
+        formula: "E = mc²",
+        latex: "E = mc^2",
+        variables: [
+            { symbol: "E", name: "Energy", unit: "J" },
+            { symbol: "m", name: "Mass defect", unit: "kg" },
+            { symbol: "c", name: "Speed of light", unit: "m/s", constant: 3.0e8 }
+        ],
+        solve: {
+            E: "m * c * c",
+            m: "E / (c * c)",
+            c: "sqrt(E / m)"
+        }
+    }
+];
+
+//============================================================================
+// Physics
+ 
+export const physFormulas = [
+
+    // ── Kinematics ──────────────────────────────────────────
+ 
+    {
+        name: "Velocity (constant acceleration)",
+        category: "Kinematics",
+        formula: "v = v₀ + at",
+        latex: "v = v_0 + at",
+        variables: [
+            { symbol: "v", name: "Final velocity", unit: "m/s" },
+            { symbol: "v0", name: "Initial velocity", unit: "m/s" },
+            { symbol: "a", name: "Acceleration", unit: "m/s²" },
+            { symbol: "t", name: "Time", unit: "s" }
+        ],
+        solve: {
+            v:  "v0 + a * t",
+            v0: "v - a * t",
+            a:  "(v - v0) / t",
+            t:  "(v - v0) / a"
+        }
+    },
+    {
+        name: "Displacement (constant acceleration)",
+        category: "Kinematics",
+        formula: "d = v₀t + ½at²",
+        latex: "d = v_0 t + \\frac{1}{2}at^2",
+        variables: [
+            { symbol: "d", name: "Displacement", unit: "m" },
+            { symbol: "v0", name: "Initial velocity", unit: "m/s" },
+            { symbol: "a", name: "Acceleration", unit: "m/s²" },
+            { symbol: "t", name: "Time", unit: "s" }
+        ],
+        solve: {
+            d:  "v0 * t + 0.5 * a * t * t",
+            v0: "(d - 0.5 * a * t * t) / t",
+            a:  "2 * (d - v0 * t) / (t * t)",
+            t:  "(-v0 + sqrt(v0 * v0 + 2 * a * d)) / a"
+        }
+    },
+    {
+        name: "Velocity–Displacement (no time)",
+        category: "Kinematics",
+        formula: "v² = v₀² + 2ad",
+        latex: "v^2 = v_0^2 + 2ad",
+        variables: [
+            { symbol: "v", name: "Final velocity", unit: "m/s" },
+            { symbol: "v0", name: "Initial velocity", unit: "m/s" },
+            { symbol: "a", name: "Acceleration", unit: "m/s²" },
+            { symbol: "d", name: "Displacement", unit: "m" }
+        ],
+        solve: {
+            v:  "sqrt(v0 * v0 + 2 * a * d)",
+            v0: "sqrt(v * v - 2 * a * d)",
+            a:  "(v * v - v0 * v0) / (2 * d)",
+            d:  "(v * v - v0 * v0) / (2 * a)"
+        }
+    },
+    {
+        name: "Average Velocity",
+        category: "Kinematics",
+        formula: "v_avg = d / t",
+        latex: "v_{\\text{avg}} = \\frac{d}{t}",
+        variables: [
+            { symbol: "vAvg", name: "Average velocity", unit: "m/s" },
+            { symbol: "d", name: "Displacement", unit: "m" },
+            { symbol: "t", name: "Time", unit: "s" }
+        ],
+        solve: {
+            vAvg: "d / t",
+            d:    "vAvg * t",
+            t:    "d / vAvg"
+        }
+    },
+ 
+    // ── Forces (Newton's Laws) ──────────────────────────────
+ 
+    {
+        name: "Newton's Second Law",
+        category: "Forces",
+        formula: "F = ma",
+        latex: "F = ma",
+        variables: [
+            { symbol: "F", name: "Net force", unit: "N" },
+            { symbol: "m", name: "Mass", unit: "kg" },
+            { symbol: "a", name: "Acceleration", unit: "m/s²" }
+        ],
+        solve: {
+            F: "m * a",
+            m: "F / a",
+            a: "F / m"
+        }
+    },
+    {
+        name: "Weight",
+        category: "Forces",
+        formula: "Fg = mg",
+        latex: "F_g = mg",
+        variables: [
+            { symbol: "Fg", name: "Weight (gravitational force)", unit: "N" },
+            { symbol: "m", name: "Mass", unit: "kg" },
+            { symbol: "g", name: "Gravitational acceleration", unit: "m/s²", constant: 9.81 }
+        ],
+        solve: {
+            Fg: "m * g",
+            m:  "Fg / g",
+            g:  "Fg / m"
+        }
+    },
+    {
+        name: "Friction Force",
+        category: "Forces",
+        formula: "f = μFₙ",
+        latex: "f = \\mu F_n",
+        variables: [
+            { symbol: "f", name: "Friction force", unit: "N" },
+            { symbol: "mu", name: "Coefficient of friction", unit: "" },
+            { symbol: "Fn", name: "Normal force", unit: "N" }
+        ],
+        solve: {
+            f:  "mu * Fn",
+            mu: "f / Fn",
+            Fn: "f / mu"
+        }
+    },
+    {
+        name: "Universal Gravitation",
+        category: "Forces",
+        formula: "F = Gm₁m₂ / r²",
+        latex: "F = \\frac{Gm_1 m_2}{r^2}",
+        variables: [
+            { symbol: "F", name: "Gravitational force", unit: "N" },
+            { symbol: "G", name: "Gravitational constant", unit: "N·m²/kg²", constant: 6.674e-11 },
+            { symbol: "m1", name: "Mass 1", unit: "kg" },
+            { symbol: "m2", name: "Mass 2", unit: "kg" },
+            { symbol: "r", name: "Distance between centres", unit: "m" }
+        ],
+        solve: {
+            F:  "(G * m1 * m2) / (r * r)",
+            m1: "(F * r * r) / (G * m2)",
+            m2: "(F * r * r) / (G * m1)",
+            r:  "sqrt((G * m1 * m2) / F)",
+            G:  "(F * r * r) / (m1 * m2)"
+        }
+    },
+    {
+        name: "Hooke's Law (Spring Force)",
+        category: "Forces",
+        formula: "Fs = −kx",
+        latex: "F_s = -kx",
+        variables: [
+            { symbol: "Fs", name: "Spring force", unit: "N" },
+            { symbol: "k", name: "Spring constant", unit: "N/m" },
+            { symbol: "x", name: "Displacement from equilibrium", unit: "m" }
+        ],
+        solve: {
+            Fs: "-k * x",
+            k:  "-Fs / x",
+            x:  "-Fs / k"
+        }
+    },
+ 
+    // ── Work, Energy & Power ────────────────────────────────
+ 
+    {
+        name: "Work",
+        category: "Energy",
+        formula: "W = Fd cos(θ)",
+        latex: "W = Fd\\cos\\theta",
+        variables: [
+            { symbol: "W", name: "Work", unit: "J" },
+            { symbol: "F", name: "Force", unit: "N" },
+            { symbol: "d", name: "Displacement", unit: "m" },
+            { symbol: "theta", name: "Angle (θ)", unit: "°" }
+        ],
+        solve: {
+            W:     "F * d * cos(theta * PI / 180)",
+            F:     "W / (d * cos(theta * PI / 180))",
+            d:     "W / (F * cos(theta * PI / 180))",
+            theta: "acos(W / (F * d)) * 180 / PI"
+        }
+    },
+    {
+        name: "Kinetic Energy",
+        category: "Energy",
+        formula: "KE = ½mv²",
+        latex: "KE = \\frac{1}{2}mv^2",
+        variables: [
+            { symbol: "KE", name: "Kinetic energy", unit: "J" },
+            { symbol: "m", name: "Mass", unit: "kg" },
+            { symbol: "v", name: "Velocity", unit: "m/s" }
+        ],
+        solve: {
+            KE: "0.5 * m * v * v",
+            m:  "(2 * KE) / (v * v)",
+            v:  "sqrt((2 * KE) / m)"
+        }
+    },
+    {
+        name: "Gravitational Potential Energy",
+        category: "Energy",
+        formula: "PE = mgh",
+        latex: "PE = mgh",
+        variables: [
+            { symbol: "PE", name: "Potential energy", unit: "J" },
+            { symbol: "m", name: "Mass", unit: "kg" },
+            { symbol: "g", name: "Gravitational acceleration", unit: "m/s²", constant: 9.81 },
+            { symbol: "h", name: "Height", unit: "m" }
+        ],
+        solve: {
+            PE: "m * g * h",
+            m:  "PE / (g * h)",
+            g:  "PE / (m * h)",
+            h:  "PE / (m * g)"
+        }
+    },
+    {
+        name: "Elastic Potential Energy",
+        category: "Energy",
+        formula: "PE = ½kx²",
+        latex: "PE = \\frac{1}{2}kx^2",
+        variables: [
+            { symbol: "PE", name: "Elastic potential energy", unit: "J" },
+            { symbol: "k", name: "Spring constant", unit: "N/m" },
+            { symbol: "x", name: "Displacement", unit: "m" }
+        ],
+        solve: {
+            PE: "0.5 * k * x * x",
+            k:  "(2 * PE) / (x * x)",
+            x:  "sqrt((2 * PE) / k)"
+        }
+    },
+    {
+        name: "Power",
+        category: "Energy",
+        formula: "P = W / t",
+        latex: "P = \\frac{W}{t}",
+        variables: [
+            { symbol: "P", name: "Power", unit: "W" },
+            { symbol: "W", name: "Work (or energy)", unit: "J" },
+            { symbol: "t", name: "Time", unit: "s" }
+        ],
+        solve: {
+            P: "W / t",
+            W: "P * t",
+            t: "W / P"
+        }
+    },
+    {
+        name: "Efficiency",
+        category: "Energy",
+        formula: "η = (useful energy out / total energy in) × 100",
+        latex: "\\eta = \\frac{E_{\\text{out}}}{E_{\\text{in}}} \\times 100",
+        variables: [
+            { symbol: "eta", name: "Efficiency", unit: "%" },
+            { symbol: "Eout", name: "Useful energy output", unit: "J" },
+            { symbol: "Ein", name: "Total energy input", unit: "J" }
+        ],
+        solve: {
+            eta:  "(Eout / Ein) * 100",
+            Eout: "(eta / 100) * Ein",
+            Ein:  "Eout / (eta / 100)"
+        }
+    },
+ 
+    // ── Momentum & Impulse ──────────────────────────────────
+ 
+    {
+        name: "Momentum",
+        category: "Momentum",
+        formula: "p = mv",
+        latex: "p = mv",
+        variables: [
+            { symbol: "p", name: "Momentum", unit: "kg·m/s" },
+            { symbol: "m", name: "Mass", unit: "kg" },
+            { symbol: "v", name: "Velocity", unit: "m/s" }
+        ],
+        solve: {
+            p: "m * v",
+            m: "p / v",
+            v: "p / m"
+        }
+    },
+    {
+        name: "Impulse",
+        category: "Momentum",
+        formula: "J = FΔt = Δp",
+        latex: "J = F\\Delta t = \\Delta p",
+        variables: [
+            { symbol: "J", name: "Impulse", unit: "N·s" },
+            { symbol: "F", name: "Average force", unit: "N" },
+            { symbol: "deltaT", name: "Time interval", unit: "s" }
+        ],
+        solve: {
+            J:      "F * deltaT",
+            F:      "J / deltaT",
+            deltaT: "J / F"
+        }
+    },
+ 
+    // ── Circular Motion ─────────────────────────────────────
+ 
+    {
+        name: "Centripetal Acceleration",
+        category: "Circular Motion",
+        formula: "ac = v² / r",
+        latex: "a_c = \\frac{v^2}{r}",
+        variables: [
+            { symbol: "ac", name: "Centripetal acceleration", unit: "m/s²" },
+            { symbol: "v", name: "Tangential velocity", unit: "m/s" },
+            { symbol: "r", name: "Radius", unit: "m" }
+        ],
+        solve: {
+            ac: "(v * v) / r",
+            v:  "sqrt(ac * r)",
+            r:  "(v * v) / ac"
+        }
+    },
+    {
+        name: "Centripetal Force",
+        category: "Circular Motion",
+        formula: "Fc = mv² / r",
+        latex: "F_c = \\frac{mv^2}{r}",
+        variables: [
+            { symbol: "Fc", name: "Centripetal force", unit: "N" },
+            { symbol: "m", name: "Mass", unit: "kg" },
+            { symbol: "v", name: "Tangential velocity", unit: "m/s" },
+            { symbol: "r", name: "Radius", unit: "m" }
+        ],
+        solve: {
+            Fc: "(m * v * v) / r",
+            m:  "(Fc * r) / (v * v)",
+            v:  "sqrt((Fc * r) / m)",
+            r:  "(m * v * v) / Fc"
+        }
+    },
+    {
+        name: "Period of Circular Motion",
+        category: "Circular Motion",
+        formula: "T = 2πr / v",
+        latex: "T = \\frac{2\\pi r}{v}",
+        variables: [
+            { symbol: "T", name: "Period", unit: "s" },
+            { symbol: "r", name: "Radius", unit: "m" },
+            { symbol: "v", name: "Tangential velocity", unit: "m/s" }
+        ],
+        solve: {
+            T: "(2 * PI * r) / v",
+            r: "(T * v) / (2 * PI)",
+            v: "(2 * PI * r) / T"
+        }
+    },
+    {
+        name: "Frequency",
+        category: "Circular Motion",
+        formula: "f = 1 / T",
+        latex: "f = \\frac{1}{T}",
+        variables: [
+            { symbol: "f", name: "Frequency", unit: "Hz" },
+            { symbol: "T", name: "Period", unit: "s" }
+        ],
+        solve: {
+            f: "1 / T",
+            T: "1 / f"
+        }
+    },
+ 
+    // ── Waves ───────────────────────────────────────────────
+ 
+    {
+        name: "Wave Speed",
+        category: "Waves",
+        formula: "v = fλ",
+        latex: "v = f\\lambda",
+        variables: [
+            { symbol: "v", name: "Wave speed", unit: "m/s" },
+            { symbol: "f", name: "Frequency", unit: "Hz" },
+            { symbol: "lambda", name: "Wavelength (λ)", unit: "m" }
+        ],
+        solve: {
+            v:      "f * lambda",
+            f:      "v / lambda",
+            lambda: "v / f"
+        }
+    },
+    {
+        name: "Snell's Law",
+        category: "Waves",
+        formula: "n₁ sin(θ₁) = n₂ sin(θ₂)",
+        latex: "n_1 \\sin\\theta_1 = n_2 \\sin\\theta_2",
+        variables: [
+            { symbol: "n1", name: "Refractive index (medium 1)", unit: "" },
+            { symbol: "theta1", name: "Angle of incidence (θ₁)", unit: "°" },
+            { symbol: "n2", name: "Refractive index (medium 2)", unit: "" },
+            { symbol: "theta2", name: "Angle of refraction (θ₂)", unit: "°" }
+        ],
+        solve: {
+            n1:     "(n2 * sin(theta2 * PI / 180)) / sin(theta1 * PI / 180)",
+            theta1: "asin((n2 * sin(theta2 * PI / 180)) / n1) * 180 / PI",
+            n2:     "(n1 * sin(theta1 * PI / 180)) / sin(theta2 * PI / 180)",
+            theta2: "asin((n1 * sin(theta1 * PI / 180)) / n2) * 180 / PI"
+        }
+    },
+ 
+    // ── Electricity ─────────────────────────────────────────
+ 
+    {
+        name: "Ohm's Law",
+        category: "Electricity",
+        formula: "V = IR",
+        latex: "V = IR",
+        variables: [
+            { symbol: "V", name: "Voltage", unit: "V" },
+            { symbol: "I", name: "Current", unit: "A" },
+            { symbol: "R", name: "Resistance", unit: "Ω" }
+        ],
+        solve: {
+            V: "I * R",
+            I: "V / R",
+            R: "V / I"
+        }
+    },
+    {
+        name: "Electrical Power",
+        category: "Electricity",
+        formula: "P = IV",
+        latex: "P = IV",
+        variables: [
+            { symbol: "P", name: "Power", unit: "W" },
+            { symbol: "I", name: "Current", unit: "A" },
+            { symbol: "V", name: "Voltage", unit: "V" }
+        ],
+        solve: {
+            P: "I * V",
+            I: "P / V",
+            V: "P / I"
+        }
+    },
+    {
+        name: "Electrical Power (resistance form)",
+        category: "Electricity",
+        formula: "P = I²R",
+        latex: "P = I^2 R",
+        variables: [
+            { symbol: "P", name: "Power", unit: "W" },
+            { symbol: "I", name: "Current", unit: "A" },
+            { symbol: "R", name: "Resistance", unit: "Ω" }
+        ],
+        solve: {
+            P: "I * I * R",
+            I: "sqrt(P / R)",
+            R: "P / (I * I)"
+        }
+    },
+    {
+        name: "Electrical Energy",
+        category: "Electricity",
+        formula: "E = Pt",
+        latex: "E = Pt",
+        variables: [
+            { symbol: "E", name: "Electrical energy", unit: "J" },
+            { symbol: "P", name: "Power", unit: "W" },
+            { symbol: "t", name: "Time", unit: "s" }
+        ],
+        solve: {
+            E: "P * t",
+            P: "E / t",
+            t: "E / P"
+        }
+    },
+    {
+        name: "Charge",
+        category: "Electricity",
+        formula: "Q = It",
+        latex: "Q = It",
+        variables: [
+            { symbol: "Q", name: "Charge", unit: "C" },
+            { symbol: "I", name: "Current", unit: "A" },
+            { symbol: "t", name: "Time", unit: "s" }
+        ],
+        solve: {
+            Q: "I * t",
+            I: "Q / t",
+            t: "Q / I"
+        }
+    },
+    {
+        name: "Coulomb's Law",
+        category: "Electricity",
+        formula: "F = kq₁q₂ / r²",
+        latex: "F = \\frac{kq_1 q_2}{r^2}",
+        variables: [
+            { symbol: "F", name: "Electrostatic force", unit: "N" },
+            { symbol: "k", name: "Coulomb's constant", unit: "N·m²/C²", constant: 8.99e9 },
+            { symbol: "q1", name: "Charge 1", unit: "C" },
+            { symbol: "q2", name: "Charge 2", unit: "C" },
+            { symbol: "r", name: "Distance", unit: "m" }
+        ],
+        solve: {
+            F:  "(k * q1 * q2) / (r * r)",
+            q1: "(F * r * r) / (k * q2)",
+            q2: "(F * r * r) / (k * q1)",
+            r:  "sqrt((k * q1 * q2) / F)",
+            k:  "(F * r * r) / (q1 * q2)"
+        }
+    },
+ 
+    // ── Torque & Rotational ─────────────────────────────────
+ 
+    {
+        name: "Torque",
+        category: "Rotational Motion",
+        formula: "τ = rF sin(θ)",
+        latex: "\\tau = rF\\sin\\theta",
+        variables: [
+            { symbol: "tau", name: "Torque", unit: "N·m" },
+            { symbol: "r", name: "Lever arm length", unit: "m" },
+            { symbol: "F", name: "Force", unit: "N" },
+            { symbol: "theta", name: "Angle (θ)", unit: "°" }
+        ],
+        solve: {
+            tau:   "r * F * sin(theta * PI / 180)",
+            r:     "tau / (F * sin(theta * PI / 180))",
+            F:     "tau / (r * sin(theta * PI / 180))",
+            theta: "asin(tau / (r * F)) * 180 / PI"
+        }
+    },
+ 
+    // ── Thermal Physics ─────────────────────────────────────
+ 
+    {
+        name: "Heat Transfer (Q = mcΔT)",
+        category: "Thermal Physics",
+        formula: "Q = mcΔT",
+        latex: "Q = mc\\Delta T",
+        variables: [
+            { symbol: "Q", name: "Heat transferred", unit: "J" },
+            { symbol: "m", name: "Mass", unit: "kg" },
+            { symbol: "c", name: "Specific heat capacity", unit: "J/(kg·°C)" },
+            { symbol: "deltaT", name: "Temperature change", unit: "°C" }
+        ],
+        solve: {
+            Q:      "m * c * deltaT",
+            m:      "Q / (c * deltaT)",
+            c:      "Q / (m * deltaT)",
+            deltaT: "Q / (m * c)"
+        }
+    },
+    {
+        name: "Latent Heat",
+        category: "Thermal Physics",
+        formula: "Q = mL",
+        latex: "Q = mL",
+        variables: [
+            { symbol: "Q", name: "Heat for phase change", unit: "J" },
+            { symbol: "m", name: "Mass", unit: "kg" },
+            { symbol: "L", name: "Specific latent heat", unit: "J/kg" }
+        ],
+        solve: {
+            Q: "m * L",
+            m: "Q / L",
+            L: "Q / m"
+        }
+    },
+ 
+    // ── Simple Harmonic Motion ──────────────────────────────
+ 
+    {
+        name: "Period of a Pendulum",
+        category: "Simple Harmonic Motion",
+        formula: "T = 2π√(L/g)",
+        latex: "T = 2\\pi\\sqrt{\\frac{L}{g}}",
+        variables: [
+            { symbol: "T", name: "Period", unit: "s" },
+            { symbol: "L", name: "Length of pendulum", unit: "m" },
+            { symbol: "g", name: "Gravitational acceleration", unit: "m/s²", constant: 9.81 }
+        ],
+        solve: {
+            T: "2 * PI * sqrt(L / g)",
+            L: "g * pow(T / (2 * PI), 2)",
+            g: "L / pow(T / (2 * PI), 2)"
+        }
+    },
+    {
+        name: "Period of a Mass-Spring System",
+        category: "Simple Harmonic Motion",
+        formula: "T = 2π√(m/k)",
+        latex: "T = 2\\pi\\sqrt{\\frac{m}{k}}",
+        variables: [
+            { symbol: "T", name: "Period", unit: "s" },
+            { symbol: "m", name: "Mass", unit: "kg" },
+            { symbol: "k", name: "Spring constant", unit: "N/m" }
+        ],
+        solve: {
+            T: "2 * PI * sqrt(m / k)",
+            m: "k * pow(T / (2 * PI), 2)",
+            k: "m / pow(T / (2 * PI), 2)"
+        }
+    },
+ 
+    // ── Modern Physics ──────────────────────────────────────
+ 
+    {
+        name: "Photon Energy",
+        category: "Modern Physics",
+        formula: "E = hf",
+        latex: "E = hf",
+        variables: [
+            { symbol: "E", name: "Energy of photon", unit: "J" },
+            { symbol: "h", name: "Planck's constant", unit: "J·s", constant: 6.626e-34 },
+            { symbol: "f", name: "Frequency", unit: "Hz" }
+        ],
+        solve: {
+            E: "h * f",
+            h: "E / f",
+            f: "E / h"
+        }
+    },
+    {
+        name: "de Broglie Wavelength",
+        category: "Modern Physics",
+        formula: "λ = h / p",
+        latex: "\\lambda = \\frac{h}{p}",
+        variables: [
+            { symbol: "lambda", name: "Wavelength (λ)", unit: "m" },
+            { symbol: "h", name: "Planck's constant", unit: "J·s", constant: 6.626e-34 },
+            { symbol: "p", name: "Momentum", unit: "kg·m/s" }
+        ],
+        solve: {
+            lambda: "h / p",
+            h:      "lambda * p",
+            p:      "h / lambda"
+        }
+    }
+];
+

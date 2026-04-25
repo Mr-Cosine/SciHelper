@@ -1,4 +1,4 @@
-import { elements, polyions, electroPotentials } from './resources.js';
+import { elements, polyions, electroPotentials, chemFormulas } from './resources.js';
 import { insertIntoWindow, makeDraggable, refreshBtnDisp } from './SciHelper_lib.js';
 
 // --- Helper Functions ---
@@ -908,4 +908,23 @@ function createSearchInput(placeholderText) {
     });
 
     return container; // Return the container, not just the input
+}
+
+function openFormulaWindow(outputLoc) {
+    if (document.getElementById('sci-chem-frml')) return;
+
+    var formulaWindow = document.createElement('div');
+    formulaWindow.setAttribute('id', 'sci-chem-frml');
+    formulaWindow.setAttribute('class', 'sci-chem-tool');
+
+    var formulaHeader = document.createElement('div');
+    formulaHeader.setAttribute('class', 'sci-chem-tool-header');
+    formulaHeader.textContent = 'Electrochemistry Info';
+    formulaHeader.classList.add('no-select');
+
+    
+    document.body.appendChild(electroChemWindow);
+    makeDraggable(ElectroChemHeader, electroChemWindow);
+
+    return electroChemWindow;
 }
