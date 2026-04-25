@@ -258,7 +258,8 @@ export function openChemWindow(outputLoc, parentWin) {
         elemSearch: false,
         molmCalc: false,
         limCalc: false,
-        electroChem: false
+        electroChem: false,
+        formulas: false
     }
     
     var chemWindow = document.createElement('div');
@@ -273,11 +274,12 @@ export function openChemWindow(outputLoc, parentWin) {
     fnButtonContainer.setAttribute('class', 'sci-chem-btncontainer');
 
     var btncolor = '#83c1bb';
+    fnButtonContainer.appendChild(createFnBtn_chem('Formula Sheet', '📝', btncolor, 'formulas', state_chem, outputLoc));
     fnButtonContainer.appendChild(createFnBtn_chem('Element Look-Up', '🔎', btncolor, 'elemSearch', state_chem, outputLoc));
     fnButtonContainer.appendChild(createFnBtn_chem('Molar Mass Calculator', '🧮', btncolor, 'molmCalc', state_chem, outputLoc));
     fnButtonContainer.appendChild(createFnBtn_chem('Limiting Reagent Calculator', '🧪', btncolor, 'limCalc', state_chem, outputLoc));
     fnButtonContainer.appendChild(createFnBtn_chem('Electrochemistry', '⚡', btncolor, 'electroChem', state_chem, outputLoc));
-
+    
     chemWindow.appendChild(chemHeader);
     chemWindow.appendChild(fnButtonContainer);
     parentWin.appendChild(chemWindow);
@@ -331,6 +333,11 @@ function createFnBtn_chem(name, symbol, color, id, state_chem, outputLoc) {
             var existingWindow = document.getElementById('sci-chem-elec');
             if (!existingWindow) {openElectroChemWindow(outputLoc); state_chem.electroChem = true;}
             else {existingWindow.remove(); state_chem.electroChem = false;}
+        }
+        else if (id === 'formulas') {
+            var existingWindow = document.getElementById('sci-chem-frml');
+            if (!existingWindow) {openFormulaWindow(outputLoc); state_chem.formulas = true;}
+            else {existingWindow.remove(); state_chem.formulas = false;}
         }
         refreshBtnDisp(btn.className, state_chem);
     });
@@ -919,12 +926,43 @@ function openFormulaWindow(outputLoc) {
 
     var formulaHeader = document.createElement('div');
     formulaHeader.setAttribute('class', 'sci-chem-tool-header');
-    formulaHeader.textContent = 'Electrochemistry Info';
+    formulaHeader.textContent = 'Formula Sheet';
     formulaHeader.classList.add('no-select');
+    formulaWindow.appendChild(formulaHeader);
 
+    var formulaContainer = document.createElement('div');
+    formulaContainer.setAttribute('id', 'sci-chem-frml-content');
     
-    document.body.appendChild(electroChemWindow);
-    makeDraggable(ElectroChemHeader, electroChemWindow);
+    chemFormulas.forEach((entry, i) => {
+        var row = document.createElement('div');
+        row.setAttribute('class', 'sci-chem-frml-row');
+        katex.render(entry.latex, row, { throwOnError: false, displayMode: false });
+        row.rowID = i;
+        row.addEventListener('click', () => {
+            //openCalculatorWindow(formulaWindow, entry.formula, outputLoc);
+        });
+        formulaContainer.appendChild(row);
+    });
 
-    return electroChemWindow;
+    formulaWindow.appendChild(formulaContainer);
+    document.body.appendChild(formulaWindow);
+    makeDraggable(formulaHeader, formulaWindow);
+
+    return formulaWindow;
 }
+
+/*
+openCalculatorWindow = (parentWindow, formula, outputLoc) => {
+    var calcWindow = document.createElement('div');
+    calcWindow.setAttribute('class', 'sci-chem-frml-calc');
+    formula.
+    var inputBox = document.createElement('input');
+    inputBox.value = formula;
+    var result = document.createElement('div');
+    result.setAttribute('class', 'sci-chem-frml-calc-result');
+    result.textContent = "Molar Mass: --";
+    calcWindow.appendChild(inputBox);
+    calcWindow.appendChild(result);
+    parentWindow.appendChild(calcWindow);
+}
+    */

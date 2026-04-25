@@ -1,9 +1,6 @@
 import { superscripts, subscripts, greeks, maths, degree, equilibium } from './resources.js';
 import { state, outputLoc, initSciHelper, closeSciHelper, insertIntoWindow, makeDraggable, refreshBtnDisp, createToggle, createSubMenuToggle, createCopyBtn, openInfo, closeInfo } from './SciHelper_lib.js';
 
-initSciHelper();
-
-
 // --- Keydown Logic ---
 document.addEventListener("keydown", function(e) {
     // Detect focus conflict

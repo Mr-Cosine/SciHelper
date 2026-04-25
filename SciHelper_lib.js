@@ -327,7 +327,6 @@ export function openInfoContent(title, mapping, x, y, outputLoc, parentpanel) {
                 insertIntoWindow(outputLoc, val);
         };
 
-        // Hover effects handled via CSS or JS (optional)
         displayArea.appendChild(row);
     });
 

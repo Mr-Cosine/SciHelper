@@ -324,24 +324,6 @@ export const chemFormulas = [
         }
     },
     {
-        name: "Dalton's Law of Partial Pressures",
-        category: "Gas Laws",
-        formula: "Pₜₒₜₐₗ = P₁ + P₂ + P₃",
-        latex: "P_{\\text{total}} = P_1 + P_2 + P_3",
-        variables: [
-            { symbol: "Ptotal", name: "Total pressure", unit: "atm" },
-            { symbol: "P1", name: "Partial pressure 1", unit: "atm" },
-            { symbol: "P2", name: "Partial pressure 2", unit: "atm" },
-            { symbol: "P3", name: "Partial pressure 3", unit: "atm" }
-        ],
-        solve: {
-            Ptotal: "P1 + P2 + P3",
-            P1: "Ptotal - P2 - P3",
-            P2: "Ptotal - P1 - P3",
-            P3: "Ptotal - P1 - P2"
-        }
-    },
-    {
         name: "Graham's Law of Effusion",
         category: "Gas Laws",
         formula: "r₁/r₂ = √(M₂/M₁)",

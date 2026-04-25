@@ -320,7 +320,7 @@
     position: fixed;
     top: 150px;
     right: 560px;
-    width: 300px;
+    width: 320px;
     max-height: 400px;
     background: white;
     border: 1px solid #ccc;
@@ -393,7 +393,7 @@
     position: fixed;
     top: 150px;
     right: 560px;
-    width: 300px;
+    width: 320px;
     max-width: 500px;
     max-height: 400px;
     background: white;
@@ -660,6 +660,37 @@ input[readonly] {
     font-size: 16px;
     font-weight: bold;
     box-sizing: border-box;
+}
+
+/* --- Formula Sheet --- */
+#sci-chem-frml {
+    position: fixed;
+    top: 150px;
+    right: 560px;
+    width: 320px;
+    max-height: 400px;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px black;
+    z-index: 2147483647;
+    display: flex;
+    flex-direction: column;
+}
+
+#sci-chem-frml-content {
+    overflow-y: auto;
+}
+
+.sci-chem-frml-row {
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+    gap: 10px;
+    text-align: left;
+}
+
+.sci-chem-frml-row:hover {
+    background: #f0f8f7;
 }
 
 /*===========================================================================================================================*/

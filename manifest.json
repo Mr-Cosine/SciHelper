@@ -20,8 +20,16 @@
         "https://docs.google.com/document/*"
       ],
 
-      "css": ["style.css"],
-      "js": ["loader.js"],
+      "css": 
+      [
+        "style.css",
+        "katex/katex.min.css"
+      ],
+      "js": 
+      [ 
+        "katex/katex.min.js",
+        "loader.js"
+      ],
       "run_at": "document_end"
     }
   ],
@@ -33,7 +41,8 @@
         "SciHelper_lib.js", 
         "resources.js", 
         "Chemistry_lib.js", 
-        "General_lib.js"
+        "General_lib.js",
+        "katex/fonts/*"
       ],
 
       "matches": ["https://docs.google.com/document/*"]
