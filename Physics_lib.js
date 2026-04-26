@@ -264,18 +264,45 @@ function openVectorCalcWindow(outputLoc) {
     vectorHeader.textContent = 'Vector Calculator';
     vectorHeader.classList.add('no-select');
 
+    var modeContainer = document.createElement('div');
+    modeContainer.setAttribute('class', 'sci-phys-vect-modecontainer');
+    var modeLabel = document.createElement('span');
+    modeLabel.setAttribute('class', 'sci-phys-vect-modecontainer-modelabel');
+    modeLabel.textContent = "Coordinate System: ";
+    modeContainer.appendChild(modeLabel);
+
     var mode = document.createElement('select');
     mode.append(new Option('Cartesian', 'cartesian'));
     mode.append(new Option('Polar(2D)', 'polar'));
-    mode.setAttribute('class', 'sci-phys-vect-select');
-    
+    mode.setAttribute('class', 'sci-phys-vect-modecontainer-mode');
+    modeContainer.appendChild(mode);
+
+    var vectorContainer1 = document.createElement('div');
+    vectorContainer1.setAttribute('class', 'sci-phys-vect-vectcontainer');
+    var vector1Label = document.createElement('span');
+    vector1Label.setAttribute('class', 'sci-phys-vect-vectcontainer-vectlabel');
+    vector1Label.textContent = "Vector 1: ";
+    vectorContainer1.appendChild(vector1Label);
+
     var vector1 = document.createElement('input');
-    vector1.placeholder = "Vector 1: (x1, x2, x3 ...)";
-    vector1.setAttribute('class', 'sci-phys-vect-input');
+    vector1.placeholder = "(x1, x2, x3 ...)";
+    vector1.setAttribute('class', 'sci-phys-vect-vectcontainer-vectinput');
+    vectorContainer1.appendChild(vector1);
+
+    var vectorContainer2 = document.createElement('div');
+    vectorContainer2.setAttribute('class', 'sci-phys-vect-vectcontainer');
+    vectorContainer2.style.borderBottom = "1px solid #ccc";
+    vectorContainer2.style.marginBottom = "8px";
+    vectorContainer2.style.paddingBottom = "16px";
+    var vector2Label = document.createElement('span');
+    vector2Label.setAttribute('class', 'sci-phys-vect-vectcontainer-vectlabel');
+    vector2Label.textContent = "Vector 2: ";
+    vectorContainer2.appendChild(vector2Label);
 
     var vector2 = document.createElement('input');
-    vector2.placeholder = "Vector 2: (y1, y2, y3 ...)";
-    vector2.setAttribute('class', 'sci-phys-vect-input');
+    vector2.placeholder = "(y1, y2, y3 ...)";
+    vector2.setAttribute('class', 'sci-phys-vect-vectcontainer-vectinput');
+    vectorContainer2.appendChild(vector2);
 
     var results = document.createElement('div');
     results.setAttribute('class', 'sci-phys-tool-result');
@@ -283,8 +310,8 @@ function openVectorCalcWindow(outputLoc) {
 
     var operationBox = document.createElement('div');
     operationBox.setAttribute('class', 'sci-phys-vect-opcontainer');
-
     var add = document.createElement('div');
+    add.setAttribute('class', 'sci-phys-vect-opcontainer-op');
     add.textContent = 'A + B';
     operationBox.appendChild(add);
     add.addEventListener('click', () => {
@@ -300,6 +327,7 @@ function openVectorCalcWindow(outputLoc) {
     });
 
     var subtract = document.createElement('div');
+    subtract.setAttribute('class', 'sci-phys-vect-opcontainer-op');
     subtract.textContent = 'A - B';
     operationBox.appendChild(subtract);
     subtract.addEventListener('click', () => {
@@ -315,6 +343,7 @@ function openVectorCalcWindow(outputLoc) {
     });
 
     var dotProduct = document.createElement('div');
+    dotProduct.setAttribute('class', 'sci-phys-vect-opcontainer-op');
     dotProduct.textContent = 'A ⋅ B';
     operationBox.appendChild(dotProduct);
     dotProduct.addEventListener('click', () => {
@@ -330,6 +359,7 @@ function openVectorCalcWindow(outputLoc) {
     });
 
     var crossProduct = document.createElement('div');
+    crossProduct.setAttribute('class', 'sci-phys-vect-opcontainer-op');
     crossProduct.textContent = 'A × B';
     operationBox.appendChild(crossProduct);
     crossProduct.addEventListener('click', () => {
@@ -346,7 +376,7 @@ function openVectorCalcWindow(outputLoc) {
 
     operationBox.append(add, subtract, dotProduct, crossProduct);
 
-    vectorWindow.append(vectorHeader, mode, vector1, vector2, operationBox, results); 
+    vectorWindow.append(vectorHeader, modeContainer, vectorContainer1, vectorContainer2, operationBox, results); 
 
     document.body.appendChild(vectorWindow);
     makeDraggable(vectorHeader, vectorWindow);

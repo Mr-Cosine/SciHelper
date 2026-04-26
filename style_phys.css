@@ -174,12 +174,65 @@
     flex-direction: column;
 }
 
+.sci-phys-vect-modecontainer {
+    display: flex;
+    flex-direction: row;
+    padding: 8px 12px;
+    gap: 10px;
+    align-items: center;
+}
+
+.sci-phys-vect-modecontainer-modelabel {
+    font-weight: bold;
+    font-size: 14px;
+    color: #444;
+}
+
+.sci-phys-vect-modecontainer-mode {
+    width: auto;
+    border-radius: 0;
+    border: 1px solid #ccc;
+    padding: 6px 10px;
+    background: #f8f9fa;
+}
+
+.sci-phys-vect-vectcontainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 12px;
+}
+
+.sci-phys-vect-vectcontainer-vectinput {
+    flex: 1;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+}
+
+.sci-phys-vect-vectcontainer-vectlabel {
+    font-weight: bold;
+    font-size: 14px;
+    color: #444;
+}
+
 .sci-phys-vect-opcontainer {
     display: flex;
     flex-direction: row;
     padding: 8px 12px;
-    border-top: 1px solid #ccc;
     justify-content: space-between;
     gap: 10px;
 }
 
+
+.sci-phys-vect-opcontainer-op {
+    display: flex;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    background: white;
+    color: black;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
