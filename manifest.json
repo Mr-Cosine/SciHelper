@@ -42,6 +42,7 @@
         "resources.js", 
         "Chemistry_lib.js", 
         "General_lib.js",
+        "Physics_lib.js",
         "katex/fonts/*"
       ],
 

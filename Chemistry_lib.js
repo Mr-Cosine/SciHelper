@@ -247,7 +247,7 @@ function calculate(elementList) {
     return returnList;
 }
 
-function solve(variables, expressions) {
+export function solveEq(variables, expressions) {
     let emptyVar = null;
     for (let key of Object.keys(variables)) {
         if (variables[key] === null) {
@@ -273,7 +273,7 @@ function solve(variables, expressions) {
     return isNaN(finalResult) ? "Error" : finalResult;
 }
 
-function infixToPostfix(tokens) {
+export function infixToPostfix(tokens) {
     const precedence = 
     {   '(': 1, ')': 1, 
         '+': 2, '-': 2, 
@@ -327,7 +327,7 @@ function infixToPostfix(tokens) {
     return outputQueue;
 }
 
-function evaluate(postfix) {
+export function evaluate(postfix) {
     let stack = [];
 
     for (let token of postfix) {
@@ -1119,7 +1119,7 @@ function openCalculatorWindow (parentWindow, formula, outputLoc) {
         });
 
         if (Object.keys(emptyValues).length > 0 && Object.keys(emptyValues).length < 2) {
-            let result = solve(varValues, formula.solve);
+            let result = solveEq(varValues, formula.solve);
             let targetVar = Array.from(inputs).find(input => input.symbol === Object.keys(emptyValues)[0]);
             targetVar.value = result;
             targetVar.style.backgroundColor = '#f0f8f7';
