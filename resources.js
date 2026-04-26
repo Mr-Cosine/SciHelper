@@ -311,7 +311,7 @@ export const chemFormulas = [
         formula: "PV = nRT",
         latex: "PV = nRT",
         variables: [
-            { symbol: "P", name: "Pressure", unit: "atm" },
+            { symbol: "P", name: "Pressure", unit: "kPa" },
             { symbol: "V", name: "Volume", unit: "L" },
             { symbol: "n", name: "Amount of substance", unit: "mol" },
             { symbol: "R", name: "Gas constant", unit: "L·kPa/(mol·K)", constant: 8.314 },

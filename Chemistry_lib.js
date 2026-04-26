@@ -258,12 +258,14 @@ function solve(variables, expressions) {
     if (!emptyVar || !expressions[emptyVar]) return "Error";
 
     let tokens = expressions[emptyVar].split(' ').map(token => {
-        // If the token is a variable name, replace it with the value
+  
         if (variables.hasOwnProperty(token) && variables[token] !== null) {
             return variables[token];
         }
         return token;
     });
+
+    console.log(tokens);
 
     let postfix = infixToPostfix(tokens);
     let finalResult = evaluate(postfix);
@@ -1080,12 +1082,19 @@ function openCalculatorWindow (parentWindow, formula, outputLoc) {
 
     var calcHeader = document.createElement('div');
     calcHeader.setAttribute('class', 'sci-chem-tool-header');
-    calcHeader.textContent = formula.name;
+    calcHeader.textContent = formula.name + " Express Calculation";
+
+    calcWindow.appendChild(calcHeader);
 
     formula.variables.forEach(variable => {
         var input = document.createElement('input');
-        input.placeholder = variable.symbol;
+        input.symbol = variable.symbol;
+        input.placeholder = variable.symbol + (variable.unit ? " (" + variable.unit + ")" : "");
+        if (variable.constant) {input.value = variable.constant;}
         input.setAttribute('class', 'sci-chem-frml-calc-input');
+        input.addEventListener('input', () => {
+            input.style.backgroundColor = 'white';
+        });
         calcWindow.appendChild(input);
     });
     
@@ -1101,17 +1110,17 @@ function openCalculatorWindow (parentWindow, formula, outputLoc) {
 
         inputs.forEach(input => {
             if (input.value === "") {
-                emptyValues[input.placeholder] = null;
-                varValues[input.placeholder] = null;
+                emptyValues[input.symbol] = null;
+                varValues[input.symbol] = null;
             }
             else {
-                varValues[input.placeholder] = parseFloat(input.value);
+                varValues[input.symbol] = parseFloat(input.value);
             }
         });
 
         if (Object.keys(emptyValues).length > 0 && Object.keys(emptyValues).length < 2) {
             let result = solve(varValues, formula.solve);
-            let targetVar = document.querySelector(`input[placeholder="${Object.keys(emptyValues)[0]}"]`);
+            let targetVar = Array.from(inputs).find(input => input.symbol === Object.keys(emptyValues)[0]);
             targetVar.value = result;
             targetVar.style.backgroundColor = '#f0f8f7';
         }

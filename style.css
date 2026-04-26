@@ -703,10 +703,9 @@ input[readonly] {
 
 #sci-chem-frml-calc{
     position: absolute;
-    top: 150px;
-    right: 560px;
-    width: 320px;
-    max-height: 400px;
+    top: 0px;
+    right: 320px;
+    width: 240px;
     background: white;
     border: 1px solid #ccc;
     box-shadow: 0 4px 8px black;
@@ -717,10 +716,8 @@ input[readonly] {
 
 .sci-chem-frml-calc-input {
     display: flex;
-    align-items: center;
     padding: 8px 12px;
-    border-bottom: 1px solid #eee;
-    gap: 10px;
+    border: 1px solid #eee;
     text-align: left;
 }
 
