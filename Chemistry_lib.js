@@ -1082,7 +1082,7 @@ function openCalculatorWindow (parentWindow, formula, outputLoc) {
 
     var calcHeader = document.createElement('div');
     calcHeader.setAttribute('class', 'sci-chem-tool-header');
-    calcHeader.textContent = formula.name + " Express Calculation";
+    calcHeader.textContent = formula.name;
 
     calcWindow.appendChild(calcHeader);
 

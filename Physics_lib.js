@@ -1,4 +1,4 @@
-import { elements, polyions, electroPotentials, chemFormulas } from './resources.js';
+import { physFormulas } from './resources.js';
 import { insertIntoWindow, makeDraggable, refreshBtnDisp } from './SciHelper_lib.js';
 import { solveEq, infixToPostfix, evaluate } from './Chemistry_lib.js';
 
@@ -85,7 +85,7 @@ function openFormulaWindow(outputLoc) {
     formulaContainer.setAttribute('id', 'sci-phys-frml-content');
     
     let prevcategory = "";
-    chemFormulas.forEach((entry, i) => {
+    physFormulas.forEach((entry, i) => {
         if (entry.category !== prevcategory) {
             var categoryHeader = document.createElement('div');
             categoryHeader.setAttribute('class', 'sci-phys-frml-category');
@@ -118,7 +118,7 @@ function openCalculatorWindow (parentWindow, formula, outputLoc) {
 
     var calcHeader = document.createElement('div');
     calcHeader.setAttribute('class', 'sci-phys-tool-header');
-    calcHeader.textContent = formula.name + " Express Calculation";
+    calcHeader.textContent = formula.name;
 
     calcWindow.appendChild(calcHeader);
 
