@@ -1,6 +1,5 @@
 import { superscripts, subscripts, greeks, maths, degree, equilibium } from './resources.js';
 import { state, outputLoc, initSciHelper, closeSciHelper, insertIntoWindow, makeDraggable, refreshBtnDisp, createToggle, createSubMenuToggle, createCopyBtn, openInfo, closeInfo } from './SciHelper_lib.js';
-import { openPhysWindow, closePhysWindow } from './Physics_lib.js';
 
 // --- Keydown Logic ---
 document.addEventListener("keydown", function(e) {
