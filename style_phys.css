@@ -13,14 +13,14 @@
     top: 150px;
     width: 180px;
     background: #fff;
-    border: 1px solid #83c1bb;
+    border: 1px solid #ba68c8;
     box-shadow: 0 2px 8px black;
     z-index: 2147483645;
     padding: 8px;
 }
 
 #sci-phys-header {
-    background: #83c1bb;
+    background: #ba68c8;
     color: white;
     padding: 5px;
     font-size: 16px;
@@ -62,13 +62,13 @@
     padding: 10px;
     font-size: 14px;
     font-weight: bold;
-    background: #f0f8f7;
-    border-left: 4px solid #83c1bb;
+    background: #f3e8f7;
+    border-left: 4px solid #ba68c8;
     min-height: 20px;
     color: #333;
     white-space: pre-wrap;
 }
 
 .sci-phys-tool-result:hover {
-    background: #f8fffe;
+    background: #fdf8ff;
 }
