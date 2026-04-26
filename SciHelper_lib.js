@@ -1,6 +1,7 @@
 import { maths, greeks, superscripts, subscripts, degree, equilibium } from './resources.js';
 import { openChemWindow, closeChemWindow } from './Chemistry_lib.js';
 import { openGenWindow, closeGenWindow } from './General_lib.js';
+import { openPhysWindow, closePhysWindow } from './Physics_lib.js';
 
 export var state = {
     greek: false,
