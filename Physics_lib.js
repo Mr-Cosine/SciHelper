@@ -6,7 +6,8 @@ export function openPhysWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-phys')) return;
 
     let state_phys = {
-        formulas: false
+        formulas: false,
+        vectorCalc: false
     }
     
     var physWindow = document.createElement('div');
@@ -22,6 +23,7 @@ export function openPhysWindow(outputLoc, parentWin) {
 
     var btncolor = '#ba68c8';
     fnButtonContainer.appendChild(createFnBtn_phys('Formula Sheet', '📝', btncolor, "formulas", state_phys, outputLoc));
+    fnButtonContainer.appendChild(createFnBtn_phys('Vector Calculations', '↗️', btncolor, "vectorCalc", state_phys, outputLoc));
 
     physWindow.appendChild(physHeader);
     physWindow.appendChild(fnButtonContainer);
@@ -61,7 +63,11 @@ function createFnBtn_phys(name, symbol, color, id, state_phys, outputLoc) {
             if (!existingWindow) {openFormulaWindow(outputLoc); state_phys.formulaSheet = true;}
             else {existingWindow.remove(); state_phys.formulaSheet = false;}
         }
-        
+        if (id === 'vectorCalc') {
+            var existingWindow = document.getElementById('sci-phys-vec');
+            if (!existingWindow) {openVectorWindow(outputLoc); state_phys.vectorCalc = true;}
+            else {existingWindow.remove(); state_phys.vectorCalc = false;}
+        }
         refreshBtnDisp(btn.className, state_phys);
     });
 
@@ -169,4 +175,83 @@ function openCalculatorWindow (parentWindow, formula, outputLoc) {
     });
     calcWindow.appendChild(solveBtn);
     parentWindow.appendChild(calcWindow);
+}
+
+function openVectorWindow(outputLoc) {
+    if (document.getElementById('sci-phys-vec')) return;
+    var vectorWindow = document.createElement('div');
+    vectorWindow.setAttribute('id', 'sci-phys-vect');
+
+    var vectorHeader = document.createElement('div');
+    vectorHeader.setAttribute('class', 'sci-phys-tool-header');
+    vectorHeader.textContent = 'Vector Calculator';
+    vectorHeader.classList.add('no-select');
+
+    var mode = document.createElement('select');
+    mode.append(new Option('Cartesian', 'cartesian'));
+    mode.append(new Option('Polar', 'polar'));
+    mode.setAttribute('class', 'sci-phys-vect-select');
+    
+    var vector1 = document.createElement('input');
+    vector1.placeholder = "Vector 1: (x1, x2, x3 ...)";
+    vector1.setAttribute('class', 'sci-phys-vect-input');
+
+    var vector2 = document.createElement('input');
+    vector2.placeholder = "Vector 2: (y1, y2, y3 ...)";
+    vector2.setAttribute('class', 'sci-phys-vect-input');
+
+    var results = document.createElement('div');
+    results.setAttribute('id', 'sci-phys-tool-results');
+    results.textContent = "R = (r1, r2, r3...)";
+
+    var operationBox = document.createElement('div');
+    operationBox.setAttribute('class', 'sci-phys-vect-opcontainer');
+
+    var add = document.createElement('div');
+    add.textContent = 'A + B';
+    operationBox.appendChild(add);
+    add.addEventListener('click', () => {
+        if (vector1.value === "" || vector2.value === "") {
+            results.textContent = "Please enter both vectors.";
+            return;
+        }
+        results.textContent = "R = (" + vectorAdd(vector1.value, vector2.value, mode.value).join(', ') + ")";
+    });
+
+    var subtract = document.createElement('div');
+    subtract.textContent = 'A - B';
+    operationBox.appendChild(subtract);
+    subtract.addEventListener('click', () => {
+        if (vector1.value === "" || vector2.value === "") {
+            results.textContent = "Please enter both vectors.";
+            return;
+        }
+        results.textContent = "R = (" + vectorSubtract(vector1.value, vector2.value, mode.value).join(', ') + ")";
+    });
+
+    var dotProduct = document.createElement('div');
+    dotProduct.textContent = 'A ⋅ B';
+    operationBox.appendChild(dotProduct);
+    dotProduct.addEventListener('click', () => {
+        if (vector1.value === "" || vector2.value === "") {
+            results.textContent = "Please enter both vectors.";
+            return;
+        }
+        results.textContent = "R = (" + vectorDot(vector1.value, vector2.value, mode.value).join(', ') + ")";
+    });
+
+    var crossProduct = document.createElement('div');
+    crossProduct.textContent = 'A × B';
+    operationBox.appendChild(crossProduct);
+    crossProduct.addEventListener('click', () => {
+        if (vector1.value === "" || vector2.value === "") {
+            results.textContent = "Please enter both vectors.";
+            return;
+        }
+        results.textContent = "R = (" + vectorCross(vector1.value, vector2.value, mode.value).join(', ') + ")";
+    });
+
+    operationBox.append(add, subtract, dotProduct, crossProduct);
+
+    vectorWindow.append(vectorHeader, mode, vector1, vector2, operationBox, results); 
 }
