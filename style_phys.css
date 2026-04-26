@@ -1,0 +1,74 @@
+.no-select {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none;     /* IE 10 and 11 */
+    user-select: none;         /* Standard syntax (Chrome, Firefox, Edge) */
+}
+
+/*===========================================================================================================================*/
+/* --- The Physics Toolbox Styling --- */
+
+#sci-phys {
+    position: absolute;
+    left: 260px;
+    top: 150px;
+    width: 180px;
+    background: #fff;
+    border: 1px solid #83c1bb;
+    box-shadow: 0 2px 8px black;
+    z-index: 2147483645;
+    padding: 8px;
+}
+
+#sci-phys-header {
+    background: #83c1bb;
+    color: white;
+    padding: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    cursor: move;
+}
+
+.sci-phys-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+    font-size: 14px;
+}
+
+.sci-phys-btn-symbol {
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 1;
+    display: block;
+}
+
+.sci-phys-tool-header {
+    padding: 8px;
+    background: #444;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: move;
+}
+
+.sci-phys-tool-result {
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    background: #f0f8f7;
+    border-left: 4px solid #83c1bb;
+    min-height: 20px;
+    color: #333;
+    white-space: pre-wrap;
+}
+
+.sci-phys-tool-result:hover {
+    background: #f8fffe;
+}

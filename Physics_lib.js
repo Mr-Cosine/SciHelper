@@ -1,6 +1,6 @@
 import { elements, polyions, electroPotentials, chemFormulas } from './resources.js';
 import { insertIntoWindow, makeDraggable, refreshBtnDisp } from './SciHelper_lib.js';
-import { solveEq, infixToPostfix, evaluate } from './Chemistry_lib';
+import { solveEq, infixToPostfix, evaluate } from './Chemistry_lib.js';
 
 export function openPhysWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-phys')) return;
@@ -21,7 +21,7 @@ export function openPhysWindow(outputLoc, parentWin) {
     fnButtonContainer.setAttribute('class', 'sci-phys-btncontainer');
 
     var btncolor = '#ba68c8';
-    fnButtonContainer.appendChild(Btn('Formula Sheet', '🔎', btncolor, "formulas", state_phys, outputLoc));
+    fnButtonContainer.appendChild(createFnBtn_phys('Formula Sheet', '🔎', btncolor, "formulas", state_phys, outputLoc));
 
     physWindow.appendChild(physHeader);
     physWindow.appendChild(fnButtonContainer);
@@ -38,7 +38,7 @@ export function closePhysWindow() {
     return false;
 }
 
-function createFnBtn_chem(name, symbol, color, id, state_phys, outputLoc) {
+function createFnBtn_phys(name, symbol, color, id, state_phys, outputLoc) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'sci-phys-btn');
     btn.style.backgroundColor = '#f9f9f9'; // Default state
