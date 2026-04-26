@@ -461,8 +461,8 @@ export const chemFormulas = [
     {
         name: "Equilibrium Constant",
         category: "Equilibrium",
-        formula: "K = [A]^a[B]^b / [C]^c[D]^d",
-        latex: "K = \\frac{[\\text{A}]^a[\\text{B}]^b}{[\\text{C}]^c[\\text{D}]^d}",
+        formula: "K = [C]^c[D]^d / [A]^a[B]^b",
+        latex: "K = \\frac{[\\text{C}]^c[\\text{D}]^d}{[\\text{A}]^a[\\text{B}]^b}",
         variables: [
             { symbol: "K", name: "Equilibrium constant", unit: "" },
             { symbol: "A", name: "Concentration of A", unit: "mol/L" },
@@ -475,9 +475,9 @@ export const chemFormulas = [
             { symbol: "d", name: "Stoichiometric coefficient of D", unit: "" }
         ],
         solve: {
-            K:   "products / reactants",
-            products: "K * reactants",
-            reactants: "products / K"
+            K:   "( C ^ c * D ^ d ) / ( A ^ a * B ^ b )",
+            products: "K * ( A ^ a * B ^ b )",
+            reactants: "( C ^ c * D ^ d ) / K"
         }
     },
  

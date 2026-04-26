@@ -247,6 +247,119 @@ function calculate(elementList) {
     return returnList;
 }
 
+function solve(variables, expressions) {
+    let emptyVar = null;
+    for (let key of Object.keys(variables)) {
+        if (variables[key] === null) {
+            emptyVar = key;
+        }
+    }
+
+    if (!emptyVar || !expressions[emptyVar]) return "Error";
+
+    let tokens = expressions[emptyVar].split(' ').map(token => {
+        // If the token is a variable name, replace it with the value
+        if (variables.hasOwnProperty(token) && variables[token] !== null) {
+            return variables[token];
+        }
+        return token;
+    });
+
+    let postfix = infixToPostfix(tokens);
+    let finalResult = evaluate(postfix);
+
+    return isNaN(finalResult) ? "Error" : finalResult;
+}
+
+function infixToPostfix(tokens) {
+    const precedence = 
+    {   '(': 1, ')': 1, 
+        '+': 2, '-': 2, 
+        '*': 3, '/': 3, 
+        '^': 4, 
+        'log10': 5, 'ln': 5, 'sin': 5, 'cos': 5, 'tan': 5, 'asin': 5, 'acos': 5, 'atan': 5 
+    };
+
+    let outputQueue = [];
+    let operatorStack = [];
+    
+    for (let token of tokens) {
+        if (isNum(token)) {
+            outputQueue.push(parseFloat(token));
+        }
+        else if (token === '(') {
+            operatorStack.push(token);
+        }
+        else if (token === ')') {
+            while (operatorStack.length > 0 && operatorStack[operatorStack.length - 1] !== '(') {
+                outputQueue.push(operatorStack.pop());
+            }
+            operatorStack.pop();
+        
+            let top = operatorStack[operatorStack.length - 1];
+            if (top && precedence[top] === 5) {
+                outputQueue.push(operatorStack.pop());
+            }
+        }
+        else if (precedence[token]) {
+            while (operatorStack.length > 0) {
+                let operator = operatorStack[operatorStack.length - 1];
+                if (operator === '(') break;
+                if ((precedence[operator] > precedence[token]) ||
+                    (precedence[operator] === precedence[token] && token !== '^')) {
+                    outputQueue.push(operatorStack.pop());
+                }
+                else {
+                    break;
+                }
+            }
+            operatorStack.push(token);
+        }
+        else {
+            return 'error';
+        }
+    }
+    while (operatorStack.length > 0) {
+        outputQueue.push(operatorStack.pop());
+    }
+    return outputQueue;
+}
+
+function evaluate(postfix) {
+    let stack = [];
+
+    for (let token of postfix) {
+        if (isNum(token)) {
+            stack.push(token);
+        }
+        else if (['+', '-', '*', '/', '^'].includes(token)) {
+            let b = stack.pop();
+            let a = stack.pop();
+            switch (token) {
+                case '+': stack.push(a + b); break;
+                case '-': stack.push(a - b); break;
+                case '*': stack.push(a * b); break;
+                case '/': stack.push(a / b); break;
+                case '^': stack.push(Math.pow(a, b)); break;
+            }
+        }
+        else {
+            let a = stack.pop();
+            switch (token) {
+                case 'log10': stack.push(Math.log10(a)); break;
+                case 'ln': stack.push(Math.log(a)); break;
+                case 'sin': stack.push(Math.sin(a)); break;
+                case 'cos': stack.push(Math.cos(a)); break;
+                case 'tan': stack.push(Math.tan(a)); break;
+                case 'asin': stack.push(Math.asin(a)); break;
+                case 'acos': stack.push(Math.acos(a)); break;
+                case 'atan': stack.push(Math.atan(a)); break;
+            }
+        }
+    }
+    return stack[0];
+}
+
 //============================================================================
 // --- UI builders ---
 
@@ -998,7 +1111,9 @@ function openCalculatorWindow (parentWindow, formula, outputLoc) {
 
         if (Object.keys(emptyValues).length > 0 && Object.keys(emptyValues).length < 2) {
             let result = solve(varValues, formula.solve);
-            document.querySelector(`input[placeholder="${Object.keys(emptyValues)[0]}"]`).value = result;
+            let targetVar = document.querySelector(`input[placeholder="${Object.keys(emptyValues)[0]}"]`);
+            targetVar.value = result;
+            targetVar.style.backgroundColor = '#f0f8f7';
         }
         else {
             var alert = document.createElement('div');
@@ -1009,59 +1124,4 @@ function openCalculatorWindow (parentWindow, formula, outputLoc) {
     });
     calcWindow.appendChild(solveBtn);
     parentWindow.appendChild(calcWindow);
-}
-
-function solve(variables, expressions) {
-    let emptyVar = null;
-    for (let key of Object.keys(variables)) {
-        if (variables[key] === null) {
-            emptyVar = key;
-        }
-    }
-
-    let equation = expressions[emptyVar].split(' ');
-
-    console.log("Initial equation tokens:", equation);
-
-    for (let token of equation) {
-        for (let varName of Object.keys(variables)) {
-            if (token === varName) {
-                equation[equation.indexOf(token)] = variables[varName];
-            }
-        }
-    }
-
-    console.log("Input values for solving:", equation);
-    const mathSetup = "const {sqrt,log,log10,pow,exp,sin,cos,asin,acos,tan,atan,PI,abs} = Math;";
-    return 'pseudo-result';
-}
-
-function shuntingYard(tokens) {
-    const precedence = { '+': 2, '-': 2, '*': 3, '/': 3, '^': 4 };
-    const output = [];
-    const stack = [];
-
-    tokens.forEach(token => {
-        if (!isNaN(parseFloat(token))) {
-            output.push(parseFloat(token));
-        } else if (token === '(') {
-            stack.push(token);
-        } else if (token === ')') {
-            while (stack.length > 0 && stack[stack.length - 1] !== '(') {
-                output.push(stack.pop());
-            }
-            stack.pop(); // Remove '('
-        } else {
-            // It's an operator
-            while (stack.length > 0 && 
-                   stack[stack.length - 1] !== '(' && 
-                   precedence[stack[stack.length - 1]] >= precedence[token]) {
-                output.push(stack.pop());
-            }
-            stack.push(token);
-        }
-    });
-
-    while (stack.length > 0) output.push(stack.pop());
-    return output;
 }
