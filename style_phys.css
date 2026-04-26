@@ -158,3 +158,28 @@
     cursor: pointer;
     font-size: 14px;
 }
+
+/* --- Vector Calculation --- */
+#sci-phys-vect {
+    position: fixed;
+    top: 150px;
+    right: 560px;
+    width: 320px;
+    max-height: 400px;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px black;
+    z-index: 2147483647;
+    display: flex;
+    flex-direction: column;
+}
+
+.sci-phys-vect-opcontainer {
+    display: flex;
+    flex-direction: row;
+    padding: 8px 12px;
+    border-top: 1px solid #ccc;
+    justify-content: space-between;
+    gap: 10px;
+}
+

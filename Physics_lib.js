@@ -137,7 +137,7 @@ function createFnBtn_phys(name, symbol, color, id, state_phys, outputLoc) {
             else {existingWindow.remove(); state_phys.formulas = false;}
         }
         if (id === 'vectorCalc') {
-            var existingWindow = document.getElementById('sci-phys-vec');
+            var existingWindow = document.getElementById('sci-phys-vect');
             if (!existingWindow) {openVectorWindow(outputLoc); state_phys.vectorCalc = true;}
             else {existingWindow.remove(); state_phys.vectorCalc = false;}
         }
@@ -146,6 +146,8 @@ function createFnBtn_phys(name, symbol, color, id, state_phys, outputLoc) {
 
     return btn;
 }
+
+/* --- Formula Sheet --- */
 
 function openFormulaWindow(outputLoc) {
     if (document.getElementById('sci-phys-frml')) return;
@@ -250,8 +252,10 @@ function openCalculatorWindow (parentWindow, formula, outputLoc) {
     parentWindow.appendChild(calcWindow);
 }
 
+/* --- Vector Calculation --- */
+
 function openVectorWindow(outputLoc) {
-    if (document.getElementById('sci-phys-vec')) return;
+    if (document.getElementById('sci-phys-vect')) return;
     var vectorWindow = document.createElement('div');
     vectorWindow.setAttribute('id', 'sci-phys-vect');
 
@@ -274,7 +278,7 @@ function openVectorWindow(outputLoc) {
     vector2.setAttribute('class', 'sci-phys-vect-input');
 
     var results = document.createElement('div');
-    results.setAttribute('id', 'sci-phys-tool-results');
+    results.setAttribute('class', 'sci-phys-tool-result');
     results.textContent = "R = (r1, r2, r3...)";
 
     var operationBox = document.createElement('div');
@@ -335,4 +339,8 @@ function openVectorWindow(outputLoc) {
     operationBox.append(add, subtract, dotProduct, crossProduct);
 
     vectorWindow.append(vectorHeader, mode, vector1, vector2, operationBox, results); 
+
+    document.body.appendChild(vectorWindow);
+    makeDraggable(vectorHeader, vectorWindow);
 }
+
