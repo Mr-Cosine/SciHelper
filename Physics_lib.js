@@ -294,7 +294,9 @@ function openVectorCalcWindow(outputLoc) {
         }
         let v1 = vector1.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
         let v2 = vector2.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
-        results.textContent = "R = (" + vectorAdd(v1, v2, mode.value).join(', ') + ")";
+        let R = vectorAdd(v1, v2, mode.value);
+        if (Array.isArray(R)) results.textContent = "R = (" + R.join(', ') + ")";
+        else results.textContent = "Error";
     });
 
     var subtract = document.createElement('div');
@@ -307,7 +309,9 @@ function openVectorCalcWindow(outputLoc) {
         }
         let v1 = vector1.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
         let v2 = vector2.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
-        results.textContent = "R = (" + vectorSubtract(v1, v2, mode.value).join(', ') + ")";
+        let R = vectorSubtract(v1, v2, mode.value);
+        if (Array.isArray(R)) results.textContent = "R = (" + R.join(', ') + ")";
+        else results.textContent = "Error";
     });
 
     var dotProduct = document.createElement('div');
@@ -320,7 +324,9 @@ function openVectorCalcWindow(outputLoc) {
         }
         let v1 = vector1.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
         let v2 = vector2.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
-        results.textContent = "R = (" + vectorDot(v1, v2, mode.value).join(', ') + ")";
+        let R = vectorDot(v1, v2, mode.value);
+        if (typeof(R) === 'number') results.textContent = "R = " + R;
+        else results.textContent = "Error";
     });
 
     var crossProduct = document.createElement('div');
@@ -333,7 +339,9 @@ function openVectorCalcWindow(outputLoc) {
         }
         let v1 = vector1.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
         let v2 = vector2.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
-        results.textContent = "R = (" + vectorCross(v1, v2, mode.value).join(', ') + ")";
+        let R = vectorCross(v1, v2, mode.value);
+        if (Array.isArray(R)) results.textContent = "R = (" + R.join(', ') + ")";
+        else results.textContent = "Error";
     });
 
     operationBox.append(add, subtract, dotProduct, crossProduct);
