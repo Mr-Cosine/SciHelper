@@ -2,6 +2,79 @@ import { physFormulas } from './resources.js';
 import { insertIntoWindow, makeDraggable, refreshBtnDisp } from './SciHelper_lib.js';
 import { solveEq, infixToPostfix, evaluate } from './Chemistry_lib.js';
 
+// --- Helper Functions ---
+function vectorAdd(v1, v2, mode) {
+    if (v1.length !== v2.length) return "Error";
+    if (mode === 'polar') {
+        if(v1.length !== 2 || v2.length !== 2) return "Error";
+        else return [   
+                        Math.sqrt((v1[0]*Math.cos(v1[1]) + v2[0]*Math.cos(v2[1]))**2 + (v1[0]*Math.sin(v1[1]) + v2[0]*Math.sin(v2[1]))**2), 
+                        Math.atan2(v1[0]*Math.sin(v1[1]) + v2[0]*Math.sin(v2[1]), v1[0]*Math.cos(v1[1]) + v2[0]*Math.cos(v2[1]))
+                    ];
+    }
+    else {
+        let r = [];
+        for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
+            r.push((v1[i] || 0) + (v2[i] || 0));
+        }
+        return r;
+    }
+}
+
+function vectorSubtract(v1, v2, mode) {
+    if (v1.length !== v2.length) return "Error";
+    if (mode === 'polar') {
+        if(v1.length !== 2 || v2.length !== 2) return "Error";
+        else return [   
+                        Math.sqrt((v1[0]*Math.cos(v1[1]) - v2[0]*Math.cos(v2[1]))**2 + (v1[0]*Math.sin(v1[1]) - v2[0]*Math.sin(v2[1]))**2), 
+                        Math.atan2(v1[0]*Math.sin(v1[1]) - v2[0]*Math.sin(v2[1]), v1[0]*Math.cos(v1[1]) - v2[0]*Math.cos(v2[1]))
+                    ];
+    }
+    else {
+        let r = [];
+        for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
+            r.push((v1[i] || 0) - (v2[i] || 0));
+        }
+        return r;
+    }
+}
+
+function vectorDot(v1, v2, mode) {
+    if (v1.length !== v2.length) return "Error";
+    if (mode === 'polar') {
+        if(v1.length !== 2 || v2.length !== 2) return "Error";
+        else return v1[0]*v2[0]*Math.cos(v1[1] - v2[1]);
+    }
+    else {
+        let r = 0;
+        for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
+            r += (v1[i] || 0) * (v2[i] || 0);
+        }
+        return r;
+    }
+}
+
+function vectorCross(v1, v2, mode) {
+    if (v1.length > 3 || v2.length > 3 || v1.length !== v2.length) return "Error";
+    if (mode === 'polar') {
+        if(v1.length !== 2 || v2.length !== 2) return "Error";
+        else return [0, 0, v1[0]*v2[0]*Math.sin(v2[1] - v1[1])];
+    }
+    else {
+        if (v1.length !== v2.length) return "Error";
+        else if(v1.length === 2 && v2.length === 2) return [0, 0, v1[0] * v2[1] - v1[1] * v2[0]];
+        else return [
+                        v1[1] * v2[2] - v1[2] * v2[1],
+                        v1[2] * v2[0] - v1[0] * v2[2],
+                        v1[0] * v2[1] - v1[1] * v2[0]
+                    ];
+    }
+}
+
+//============================================================================
+// --- UI builders ---
+
+// --- Main Physics Window ---
 export function openPhysWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-phys')) return;
 
@@ -189,7 +262,7 @@ function openVectorWindow(outputLoc) {
 
     var mode = document.createElement('select');
     mode.append(new Option('Cartesian', 'cartesian'));
-    mode.append(new Option('Polar', 'polar'));
+    mode.append(new Option('Polar(2D)', 'polar'));
     mode.setAttribute('class', 'sci-phys-vect-select');
     
     var vector1 = document.createElement('input');
@@ -215,7 +288,9 @@ function openVectorWindow(outputLoc) {
             results.textContent = "Please enter both vectors.";
             return;
         }
-        results.textContent = "R = (" + vectorAdd(vector1.value, vector2.value, mode.value).join(', ') + ")";
+        let v1 = vector1.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
+        let v2 = vector2.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
+        results.textContent = "R = (" + vectorAdd(v1, v2, mode.value).join(', ') + ")";
     });
 
     var subtract = document.createElement('div');
@@ -226,7 +301,9 @@ function openVectorWindow(outputLoc) {
             results.textContent = "Please enter both vectors.";
             return;
         }
-        results.textContent = "R = (" + vectorSubtract(vector1.value, vector2.value, mode.value).join(', ') + ")";
+        let v1 = vector1.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
+        let v2 = vector2.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
+        results.textContent = "R = (" + vectorSubtract(v1, v2, mode.value).join(', ') + ")";
     });
 
     var dotProduct = document.createElement('div');
@@ -237,7 +314,9 @@ function openVectorWindow(outputLoc) {
             results.textContent = "Please enter both vectors.";
             return;
         }
-        results.textContent = "R = (" + vectorDot(vector1.value, vector2.value, mode.value).join(', ') + ")";
+        let v1 = vector1.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
+        let v2 = vector2.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
+        results.textContent = "R = (" + vectorDot(v1, v2, mode.value).join(', ') + ")";
     });
 
     var crossProduct = document.createElement('div');
@@ -248,7 +327,9 @@ function openVectorWindow(outputLoc) {
             results.textContent = "Please enter both vectors.";
             return;
         }
-        results.textContent = "R = (" + vectorCross(vector1.value, vector2.value, mode.value).join(', ') + ")";
+        let v1 = vector1.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
+        let v2 = vector2.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
+        results.textContent = "R = (" + vectorCross(v1, v2, mode.value).join(', ') + ")";
     });
 
     operationBox.append(add, subtract, dotProduct, crossProduct);
