@@ -60,8 +60,8 @@ function createFnBtn_phys(name, symbol, color, id, state_phys, outputLoc) {
     btn.addEventListener('click', function() {
         if (id === 'formulas') {
             var existingWindow = document.getElementById('sci-phys-frml');
-            if (!existingWindow) {openFormulaWindow(outputLoc); state_phys.formulaSheet = true;}
-            else {existingWindow.remove(); state_phys.formulaSheet = false;}
+            if (!existingWindow) {openFormulaWindow(outputLoc); state_phys.formula = true;}
+            else {existingWindow.remove(); state_phys.formula = false;}
         }
         if (id === 'vectorCalc') {
             var existingWindow = document.getElementById('sci-phys-vec');
