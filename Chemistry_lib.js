@@ -374,7 +374,7 @@ export function openChemWindow(outputLoc, parentWin) {
         molmCalc: false,
         limCalc: false,
         electroChem: false,
-        formulas: false
+        formula: false
     }
     
     var chemWindow = document.createElement('div');
@@ -389,7 +389,7 @@ export function openChemWindow(outputLoc, parentWin) {
     fnButtonContainer.setAttribute('class', 'sci-chem-btncontainer');
 
     var btncolor = '#83c1bb';
-    fnButtonContainer.appendChild(createFnBtn_chem('Formula Sheet', '📝', btncolor, 'formulas', state_chem, outputLoc));
+    fnButtonContainer.appendChild(createFnBtn_chem('Formula Sheet', '📝', btncolor, 'formula', state_chem, outputLoc));
     fnButtonContainer.appendChild(createFnBtn_chem('Element Look-Up', '🔎', btncolor, 'elemSearch', state_chem, outputLoc));
     fnButtonContainer.appendChild(createFnBtn_chem('Molar Mass Calculator', '🧮', btncolor, 'molmCalc', state_chem, outputLoc));
     fnButtonContainer.appendChild(createFnBtn_chem('Limiting Reagent Calculator', '🧪', btncolor, 'limCalc', state_chem, outputLoc));
@@ -449,7 +449,7 @@ function createFnBtn_chem(name, symbol, color, id, state_chem, outputLoc) {
             if (!existingWindow) {openElectroChemWindow(outputLoc); state_chem.electroChem = true;}
             else {existingWindow.remove(); state_chem.electroChem = false;}
         }
-        else if (id === 'formulas') {
+        else if (id === 'formula') {
             var existingWindow = document.getElementById('sci-chem-frml');
             if (!existingWindow) {openFormulaWindow(outputLoc); state_chem.formulas = true;}
             else {existingWindow.remove(); state_chem.formulas = false;}

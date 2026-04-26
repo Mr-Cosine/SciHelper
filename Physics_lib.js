@@ -79,7 +79,7 @@ export function openPhysWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-phys')) return;
 
     let state_phys = {
-        formulas: false,
+        formula: false,
         vectorCalc: false
     }
     
@@ -95,7 +95,7 @@ export function openPhysWindow(outputLoc, parentWin) {
     fnButtonContainer.setAttribute('class', 'sci-phys-btncontainer');
 
     var btncolor = '#ba68c8';
-    fnButtonContainer.appendChild(createFnBtn_phys('Formula Sheet', '📝', btncolor, "formulas", state_phys, outputLoc));
+    fnButtonContainer.appendChild(createFnBtn_phys('Formula Sheet', '📝', btncolor, "formula", state_phys, outputLoc));
     fnButtonContainer.appendChild(createFnBtn_phys('Vector Calculations', '↗️', btncolor, "vectorCalc", state_phys, outputLoc));
 
     physWindow.appendChild(physHeader);
@@ -131,14 +131,14 @@ function createFnBtn_phys(name, symbol, color, id, state_phys, outputLoc) {
     btn.append(labelSpan, symbolSpan);
 
     btn.addEventListener('click', function() {
-        if (id === 'formulas') {
+        if (id === 'formula') {
             var existingWindow = document.getElementById('sci-phys-frml');
             if (!existingWindow) {openFormulaWindow(outputLoc); state_phys.formulas = true;}
             else {existingWindow.remove(); state_phys.formulas = false;}
         }
         if (id === 'vectorCalc') {
             var existingWindow = document.getElementById('sci-phys-vect');
-            if (!existingWindow) {openVectorWindow(outputLoc); state_phys.vectorCalc = true;}
+            if (!existingWindow) {openVectorCalcWindow(outputLoc); state_phys.vectorCalc = true;}
             else {existingWindow.remove(); state_phys.vectorCalc = false;}
         }
         refreshBtnDisp(btn.className, state_phys);
@@ -254,7 +254,7 @@ function openCalculatorWindow (parentWindow, formula, outputLoc) {
 
 /* --- Vector Calculation --- */
 
-function openVectorWindow(outputLoc) {
+function openVectorCalcWindow(outputLoc) {
     if (document.getElementById('sci-phys-vect')) return;
     var vectorWindow = document.createElement('div');
     vectorWindow.setAttribute('id', 'sci-phys-vect');
