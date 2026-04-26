@@ -114,6 +114,7 @@
 }
 
 #sci-panel-info {
+    position: relative;
     background: white;
     color: black;
     font-size: 14px;
@@ -155,9 +156,8 @@
 
 /*===========================================================================================================================*/
 /* --- Info Page --- */
-#sci-info,
-#sci-info-content {
-    position: fixed;
+#sci-info {
+    position: absolute;
     width: 150px;
     background: #fff;
     border: 1px solid #000;

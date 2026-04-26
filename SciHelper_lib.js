@@ -62,7 +62,7 @@ export function initSciHelper(initx = 100, inity = 100) {
             state.info = false;
         }
         else {
-            openInfo(outputLoc, panel);
+            openInfo(outputLoc);
             state.info = true;
         }
     });
@@ -232,16 +232,13 @@ export function createCopyBtn(target) {
     return copyBtn;
 }
 
-export function openInfo(outputLoc, parentpanel) {
-    if (document.getElementById('sci-info')) return;
+export function openInfo(outputLoc) {
+    while (document.getElementById('sci-info')) document.getElementById('sci-info').remove();
 
     var infoBtn = document.getElementById('sci-panel-info');
-    var rect = infoBtn.getBoundingClientRect();
 
     var menuWin = document.createElement('div');
-    menuWin.id = 'sci-info'; // Updated ID
-    menuWin.style.left = (rect.right + 2) + 'px';
-    menuWin.style.top = rect.top + 'px';
+    menuWin.id = 'sci-info';
 
     var header = document.createElement('div');
     header.className = 'sci-info-header';
@@ -257,10 +254,9 @@ export function openInfo(outputLoc, parentpanel) {
         btn.className = 'sci-info-menubtn';
         btn.textContent = label;
         
-        btn.onclick = () => {
-            var freshRect = infoBtn.getBoundingClientRect();
-            openInfoContent(label, data, freshRect.right + 2, freshRect.top, outputLoc, parentpanel); 
-            menuWin.remove();
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            openInfoContent(label, data, menuWin, outputLoc); 
         };
         return btn;
     }
@@ -268,21 +264,20 @@ export function openInfo(outputLoc, parentpanel) {
     btnList.appendChild(createMenuBtn('MATH', Object.entries(maths)));
     btnList.appendChild(createMenuBtn('GREEK', Object.entries(greeks)));
     btnList.appendChild(createMenuBtn('SUP/SUB', Object.entries(superscripts).concat(Object.entries(subscripts))));
-    btnList.appendChild(createMenuBtn('SPECIAL', [['Deg', degree], ['Eq', equilibium]]));
+    btnList.appendChild(createMenuBtn('SPECIAL', [
+                                                    ['Ctrl + Alt + D', degree], 
+                                                    ['Ctrl + Alt + E', equilibium]]));
 
     menuWin.append(header, btnList);
-    document.body.appendChild(menuWin);
+    infoBtn.appendChild(menuWin);
+
+    menuWin.style.left = (- menuWin.offsetWidth - 2) + 'px';
+    menuWin.style.top = '0px';
 }
 
-export function openInfoContent(title, mapping, x, y, outputLoc, parentpanel) {
-    var existingPage = document.getElementById('sci-info-content');
-    if (existingPage) existingPage.remove();
-
-    var contentWin = document.createElement('div');
-    contentWin.id = 'sci-info-content';
-    contentWin.style.left = x + 'px';
-    contentWin.style.top = y + 'px';
-
+export function openInfoContent(title, mapping, panel, outputLoc) {
+    panel.innerHTML = ''; 
+    
     var header = document.createElement('div');
     header.className = 'sci-info-content-header';
     header.style.cursor = 'move';
@@ -295,8 +290,7 @@ export function openInfoContent(title, mapping, x, y, outputLoc, parentpanel) {
     closeBtn.className = 'sci-info-content-header-closebtn';
     closeBtn.textContent = '×';
     closeBtn.onclick = () => {
-        contentWin.remove(); 
-        openInfo(outputLoc, parentpanel);
+        panel.remove();
     };
 
     header.append(titleSpan, closeBtn);
@@ -324,20 +318,20 @@ export function openInfoContent(title, mapping, x, y, outputLoc, parentpanel) {
         row.appendChild(arrowDiv);
         row.appendChild(mappedDiv);
 
-        row.onclick = () => {
-                insertIntoWindow(outputLoc, val);
+        row.onclick = (e) => {
+            e.stopPropagation();
+            insertIntoWindow(outputLoc, val);
         };
 
         displayArea.appendChild(row);
     });
 
-    contentWin.append(header, displayArea);
-    document.body.appendChild(contentWin);
+    panel.append(header, displayArea);
 
-    makeDraggable(header, contentWin);
+    panel.style.left = (- panel.offsetWidth - 2) + 'px';
+    panel.style.top = '0px';
 }
 
 export function closeInfo() {
-    document.getElementById('sci-info-content')?.remove();
     document.getElementById('sci-info')?.remove();
 }
