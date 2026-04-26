@@ -4,6 +4,13 @@
     user-select: none;         /* Standard syntax (Chrome, Firefox, Edge) */
 }
 
+:root {
+    --yellow-main: #cfe084;
+    --yellow-light: #f4f8e6;
+    --yellow-highlight: #ecf2d4;
+    --alert: #ff4d4d;
+}
+
 /*===========================================================================================================================*/
 /* --- The General Toolbox Styling --- */
 #sci-gen {
@@ -11,15 +18,15 @@
     right: 260px;
     top: 150px;
     width: 180px;
-    background: #fff;
-    border: 1px solid #cfe084;
+    background: white;
+    border: 1px solid var(--yellow-main);
     box-shadow: 0 2px 8px black;
     z-index: 2147483645;
     padding: 8px;
 }
 
 #sci-gen-header {
-    background: #cfe084;
+    background: var(--yellow-main);
     color: white;
     padding: 5px;
     font-size: 16px;
@@ -32,7 +39,7 @@
     width: 100%;
     margin-top: 8px;
     padding: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid #ccc;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
@@ -61,17 +68,17 @@
     padding: 10px;
     font-size: 14px;
     font-weight: bold;
-    background: #f4f8e6;
-    border-left: 4px solid #cfe084;
+    background: var(--yellow-light);
+    border-left: 4px solid var(--yellow-main);
     min-height: 20px;
-    color: #333;
+    color: #444;
     white-space: pre-wrap;
     display: flex;
     justify-content: space-between;
 }
 
 .sci-gen-tool-result:hover {
-    background: #ecf2d4;
+    background: var(--yellow-highlight);
 }
 
 /* --- Polynomial Solver --- */
@@ -142,7 +149,7 @@
 .sci-gen-poly-row-remove {
     background: none;
     border: none;
-    color: #ff4d4d;
+    color: var(--alert);
     font-size: 1.2em;
     cursor: pointer;
     flex: 0 0 24px;
@@ -174,7 +181,7 @@
 }
 
 #sci-gen-poly-confirm:hover {
-    background: #ecf2d4;
+    background: var(--yellow-highlight);
 }
 
 .sci-gen-poly-result-changeform {

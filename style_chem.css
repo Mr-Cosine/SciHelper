@@ -4,6 +4,13 @@
     user-select: none;         /* Standard syntax (Chrome, Firefox, Edge) */
 }
 
+:root {
+    --teal-main: #83c1bb;
+    --teal-light: #f0f8f7;
+    --teal-highlight: #f8fffe;
+    --alert: #ff4d4d;
+}
+
 /*===========================================================================================================================*/
 /* --- The Chemistry Toolbox Styling --- */
 #sci-chem {
@@ -11,15 +18,15 @@
     right: 260px;
     top: 150px;
     width: 180px;
-    background: #fff;
-    border: 1px solid #83c1bb;
+    background: white;
+    border: 1px solid var(--teal-main);
     box-shadow: 0 2px 8px black;
     z-index: 2147483645;
     padding: 8px;
 }
 
 #sci-chem-header {
-    background: #83c1bb;
+    background: var(--teal-main);
     color: white;
     padding: 5px;
     font-size: 16px;
@@ -32,7 +39,7 @@
     width: 100%;
     margin-top: 8px;
     padding: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid #ccc;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
@@ -61,15 +68,15 @@
     padding: 10px;
     font-size: 14px;
     font-weight: bold;
-    background: #f0f8f7;
-    border-left: 4px solid #83c1bb;
+    background: var(--teal-light);
+    border-left: 4px solid var(--teal-main);
     min-height: 20px;
-    color: #333;
+    color: #444;
     white-space: pre-wrap;
 }
 
 .sci-chem-tool-result:hover {
-    background: #f8fffe;
+    background: var(--teal-highlight);
 }
 
 /* --- Element Search Window --- */
@@ -90,7 +97,7 @@
 #sci-chem-elem input {
     margin: 8px;
     padding: 6px;
-    border: 1px solid #bbb;
+    border: 1px solid #ccc;
 }
 
 .sci-chem-elem-results {
@@ -103,20 +110,20 @@
     display: flex;
     align-items: center;
     padding: 8px 12px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #ccc;
     gap: 10px;
     text-align: left;
 }
 
 .sci-chem-elem-row:hover {
-    background: #f0f8f7;
+    background: var(--teal-light);
 }
 
 .sci-chem-elem-row-symbol {
     flex: 1;
     flex-shrink: 0;
     font-weight: bold;
-    color: #83c1bb;
+    color: var(--teal-main);
     text-align: center;
 }
 
@@ -141,8 +148,8 @@
 .sci-chem-elem-row.legend {
     background-color: #f8f9fa;
     font-size: 0.9em;
-    color: #666;
-    border-bottom: 2px solid #ddd;
+    color: #444;
+    border-bottom: 2px solid #ccc;
 }
 
 /* --- Molar Mass Calculator --- */
@@ -164,26 +171,26 @@
 #sci-chem-molm input {
     margin: 8px;
     padding: 6px;
-    border: 1px solid #bbb;
+    border: 1px solid #ccc;
 }
 
 .sci-chem-molm-row {
     display: flex;
     align-items: center;
     padding: 8px 12px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #ccc;
     text-align: left;
 }
 
 .sci-chem-molm-row:hover {
-    background: #f0f8f7;
+    background: var(--teal-light);
 }
 
 .sci-chem-molm-row-symbol {
     flex: 1;
     flex-shrink: 0;
     font-weight: bold;
-    color: #83c1bb;
+    color: var(--teal-main);
     text-align: center;
 }
 
@@ -208,8 +215,8 @@
 .sci-chem-molm-row.legend {
     background-color: #f8f9fa;
     font-size: 0.9em;
-    color: #666;
-    border-bottom: 2px solid #ddd;
+    color: #444;
+    border-bottom: 2px solid #ccc;
 }
 
 /* --- Limiting Reagent Calculator --- */
@@ -265,14 +272,14 @@
 
 input[readonly] {
     background-color: #f0f0f0;
-    color: #666;
+    color: #444;
     border: 1px dashed #ccc;
 }
 
 .sci-chem-lim-row-remove {
     background: none;
     border: none;
-    color: #ff4d4d;
+    color: var(--alert);
     font-size: 1.2em;
     cursor: pointer;
     padding: 0 5px;
@@ -323,6 +330,10 @@ input[readonly] {
     border: 1px solid #ccc;
     font-size: 16px;
     font-weight: bold;
+}
+
+#sci-chem-lim-confirm:hover {
+    background: var(--teal-highlight);
 }
 
 /* --- Electrochemistry Calculator --- */
@@ -393,13 +404,13 @@ input[readonly] {
     display: flex;
     justify-content: space-between;
     padding: 6px 8px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #ccc;
     cursor: pointer;
     font-size: 11px;
 }
 
 .sci-chem-elec-search-result-row:hover {
-    background-color: #f0f8f7;
+    background-color: var(--teal-light);
 }
 
 #sci-chem-elec-confirm {
@@ -417,6 +428,10 @@ input[readonly] {
     font-size: 16px;
     font-weight: bold;
     box-sizing: border-box;
+}
+
+#sci-elec-lim-confirm:hover {
+    background: var(--teal-highlight);
 }
 
 /* --- Formula Sheet --- */
@@ -442,20 +457,20 @@ input[readonly] {
     font-size: 14px;
     font-weight: bold;
     padding: 8px 12px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #ccc;
 }
 
 .sci-chem-frml-row {
     align-items: center;
     padding: 8px 12px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #ccc;
     gap: 10px;
     text-align: left;
     cursor: pointer;
 }
 
 .sci-chem-frml-row:hover {
-    background: #f0f8f7;
+    background: var(--teal-light);
 }
 
 #sci-chem-frml-calc{
@@ -474,14 +489,14 @@ input[readonly] {
 .sci-chem-frml-calc-input {
     display: flex;
     padding: 8px 12px;
-    border: 1px solid #eee;
+    border: 1px solid #ccc;
     text-align: left;
 }
 
 .sci-chem-frml-calc-solve {
     padding: 6px 10px;
     border: none;
-    background: #83c1bb;
+    background: var(--teal-main);
     color: white;
     font-weight: bold;
     cursor: pointer;
@@ -491,7 +506,7 @@ input[readonly] {
 .sci-chem-frml-calc-alert {
     padding: 6px 10px;
     border: none;
-    background: #ff4d4d;
+    background: var(--alert);
     color: white;
     font-weight: bold;
     cursor: pointer;

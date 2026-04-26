@@ -4,6 +4,13 @@
     user-select: none;         /* Standard syntax (Chrome, Firefox, Edge) */
 }
 
+:root {
+    --purple-main: #ba68c8;
+    --purple-light: #f3e8f7;
+    --purple-highlight: #fdf8ff;
+    --alert: #ff4d4d;
+}
+
 /*===========================================================================================================================*/
 /* --- The Physics Toolbox Styling --- */
 
@@ -12,15 +19,15 @@
     left: 260px;
     top: 150px;
     width: 180px;
-    background: #fff;
-    border: 1px solid #ba68c8;
+    background: white;
+    border: 1px solid var(--purple-main);
     box-shadow: 0 2px 8px black;
     z-index: 2147483645;
     padding: 8px;
 }
 
 #sci-phys-header {
-    background: #ba68c8;
+    background: var(--purple-main);
     color: white;
     padding: 5px;
     font-size: 16px;
@@ -33,7 +40,7 @@
     width: 100%;
     margin-top: 8px;
     padding: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid #ccc;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
@@ -62,13 +69,13 @@
     padding: 10px;
     font-size: 14px;
     font-weight: bold;
-    background: #f3e8f7;
-    border-left: 4px solid #ba68c8;
+    background: var(--purple-light);
+    border-left: 4px solid var(--purple-main);
     min-height: 20px;
-    color: #333;
+    color: #444;
     white-space: pre-wrap;
 }
 
 .sci-phys-tool-result:hover {
-    background: #fdf8ff;
+    background: var(--purple-highlight);
 }
