@@ -258,14 +258,14 @@ export function solveEq(variables, expressions) {
     if (!emptyVar || !expressions[emptyVar]) return "Error";
 
     let tokens = expressions[emptyVar].split(' ').map(token => {
-  
         if (variables.hasOwnProperty(token) && variables[token] !== null) {
             return variables[token];
         }
+        else if (token === 'PI') {
+            return 3.14159;
+        }
         return token;
     });
-
-    console.log(tokens);
 
     let postfix = infixToPostfix(tokens);
     let finalResult = evaluate(postfix);
@@ -1119,7 +1119,7 @@ function openCalculatorWindow (parentWindow, formula, outputLoc) {
         });
 
         if (Object.keys(emptyValues).length > 0 && Object.keys(emptyValues).length < 2) {
-            let result = solveEq(varValues, formula.solve);
+            let result = solveEq(varValues, formula.solve).toFixed(3);
             let targetVar = Array.from(inputs).find(input => input.symbol === Object.keys(emptyValues)[0]);
             targetVar.value = result;
             targetVar.style.backgroundColor = '#f0f8f7';

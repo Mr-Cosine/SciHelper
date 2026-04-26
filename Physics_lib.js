@@ -21,7 +21,7 @@ export function openPhysWindow(outputLoc, parentWin) {
     fnButtonContainer.setAttribute('class', 'sci-phys-btncontainer');
 
     var btncolor = '#ba68c8';
-    fnButtonContainer.appendChild(createFnBtn_phys('Formula Sheet', '🔎', btncolor, "formulas", state_phys, outputLoc));
+    fnButtonContainer.appendChild(createFnBtn_phys('Formula Sheet', '📝', btncolor, "formulas", state_phys, outputLoc));
 
     physWindow.appendChild(physHeader);
     physWindow.appendChild(fnButtonContainer);
@@ -155,10 +155,10 @@ function openCalculatorWindow (parentWindow, formula, outputLoc) {
         });
 
         if (Object.keys(emptyValues).length > 0 && Object.keys(emptyValues).length < 2) {
-            let result = solve(varValues, formula.solve);
+            let result = solveEq(varValues, formula.solve).toFixed(3);
             let targetVar = Array.from(inputs).find(input => input.symbol === Object.keys(emptyValues)[0]);
             targetVar.value = result;
-            targetVar.style.backgroundColor = '#f0f8f7';
+            targetVar.style.backgroundColor = '#f3e8f7';
         }
         else {
             var alert = document.createElement('div');
