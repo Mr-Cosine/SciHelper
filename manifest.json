@@ -10,12 +10,14 @@
     ],
     "host_permissions": [
         "https://docs.google.com/*",
-        "https://*.google.com/*"
+        "https://*.google.com/*",
+        "https://www.onlinenotepad.io/*"
     ],
     "content_scripts": [
         {
             "matches": [
-                "https://docs.google.com/document/*"
+                "https://docs.google.com/document/*",
+                "https://www.onlinenotepad.io/*"
             ],
             "css": [
                 "style.css",

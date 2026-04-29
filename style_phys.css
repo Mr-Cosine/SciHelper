@@ -236,3 +236,73 @@
     justify-content: center;
     font-size: 14px;
 }
+
+/* --- FBD Calculation --- */
+#sci-phys-fbd,
+#sci-phys-fbd * {
+    box-sizing: border-box;
+}
+
+#sci-phys-fbd {
+    position: fixed;
+    top: 150px;
+    right: 560px;
+    width: 400px;
+    max-height: 400px;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px black;
+    z-index: 2147483647;
+    display: flex;
+    flex-direction: column;
+}
+
+.sci-phys-fbd-row {
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+    padding: 5px;
+    padding-bottom: 0px;
+
+    box-sizing: border-box;
+}
+
+.sci-phys-fbd-row input,
+.sci-phys-fbd-row select {
+    padding: 3px;
+    border: 1px solid #ccc;
+    font-size: 10px;
+    flex-shrink: 1;
+    min-width: 0;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.sci-phys-fbd-row-name {flex: 1; font-weight: bold;}
+.sci-phys-fbd-row-magnitude {flex: 1;}
+.sci-phys-fbd-row-direction {flex: 1;}
+
+.sci-phys-fbd-row-remove {
+    background: none;
+    border: none;
+    color: var(--alert);
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 0 5px;
+    flex: 0;
+}
+
+#sci-phys-fbd-addrow {
+    width: 24px;
+    height: 24px;
+    padding-left: 5px;
+    font-size: 24px;
+    cursor: pointer;
+
+    background: none;
+    border: none;
+    color: black;
+}

@@ -1,6 +1,7 @@
 import { physFormulas } from './resources.js';
 import { insertIntoWindow, makeDraggable, refreshBtnDisp } from './SciHelper_lib.js';
 import { solveEq, infixToPostfix, evaluate } from './Chemistry_lib.js';
+import { Children } from 'react';
 
 // --- Helper Functions ---
 function vectorAdd(v1, v2, mode) {
@@ -80,7 +81,8 @@ export function openPhysWindow(outputLoc, parentWin) {
 
     let state_phys = {
         formula: false,
-        vectorCalc: false
+        vectorCalc: false,
+        FBDCalc: false
     }
     
     var physWindow = document.createElement('div');
@@ -97,6 +99,7 @@ export function openPhysWindow(outputLoc, parentWin) {
     var btncolor = '#ba68c8';
     fnButtonContainer.appendChild(createFnBtn_phys('Formula Sheet', '📝', btncolor, "formula", state_phys, outputLoc));
     fnButtonContainer.appendChild(createFnBtn_phys('Vector Calculations', '↗️', btncolor, "vectorCalc", state_phys, outputLoc));
+    fnButtonContainer.appendChild(createFnBtn_phys('FBD Visualization', '🧭', btncolor, "FBDCalc", state_phys, outputLoc));
 
     physWindow.appendChild(physHeader);
     physWindow.appendChild(fnButtonContainer);
@@ -136,10 +139,15 @@ function createFnBtn_phys(name, symbol, color, id, state_phys, outputLoc) {
             if (!existingWindow) {openFormulaWindow(outputLoc); state_phys.formulas = true;}
             else {existingWindow.remove(); state_phys.formulas = false;}
         }
-        if (id === 'vectorCalc') {
+        else if (id === 'vectorCalc') {
             var existingWindow = document.getElementById('sci-phys-vect');
             if (!existingWindow) {openVectorCalcWindow(outputLoc); state_phys.vectorCalc = true;}
             else {existingWindow.remove(); state_phys.vectorCalc = false;}
+        }
+        else if (id === 'FBDCalc') {
+            var existingWindow = document.getElementById('sci-phys-fbd');
+            if (!existingWindow) {openFBDCalcWindow(outputLoc); state_phys.FBDCalc = true;}
+            else {existingWindow.remove(); state_phys.FBDCalc = false;}
         }
         refreshBtnDisp(btn.className, state_phys);
     });
@@ -258,6 +266,7 @@ function openVectorCalcWindow(outputLoc) {
     if (document.getElementById('sci-phys-vect')) return;
     var vectorWindow = document.createElement('div');
     vectorWindow.setAttribute('id', 'sci-phys-vect');
+    vectorWindow.setAttribute('class', 'sci-phys-tool');
 
     var vectorHeader = document.createElement('div');
     vectorHeader.setAttribute('class', 'sci-phys-tool-header');
@@ -310,6 +319,13 @@ function openVectorCalcWindow(outputLoc) {
 
     var operationBox = document.createElement('div');
     operationBox.setAttribute('class', 'sci-phys-vect-opcontainer');
+    operationBox.addEventListener('click', ()=>{
+        let v1 = vector1.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
+        let v2 = vector2.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
+        operationBox.v1 = v1;
+        operationBox.v2 = v2;
+    })
+
     var add = document.createElement('div');
     add.setAttribute('class', 'sci-phys-vect-opcontainer-op');
     add.textContent = 'A + B';
@@ -319,9 +335,7 @@ function openVectorCalcWindow(outputLoc) {
             results.textContent = "Please enter both vectors.";
             return;
         }
-        let v1 = vector1.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
-        let v2 = vector2.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
-        let R = vectorAdd(v1, v2, mode.value);
+        let R = vectorAdd(operationBox.v1, operationBox.v2, mode.value);
         if (Array.isArray(R)) results.textContent = "R = (" + R.join(', ') + ")";
         else results.textContent = "Error";
     });
@@ -335,9 +349,7 @@ function openVectorCalcWindow(outputLoc) {
             results.textContent = "Please enter both vectors.";
             return;
         }
-        let v1 = vector1.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
-        let v2 = vector2.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
-        let R = vectorSubtract(v1, v2, mode.value);
+        let R = vectorSubtract(operationBox.v1, operationBox.v2, mode.value);
         if (Array.isArray(R)) results.textContent = "R = (" + R.join(', ') + ")";
         else results.textContent = "Error";
     });
@@ -351,9 +363,7 @@ function openVectorCalcWindow(outputLoc) {
             results.textContent = "Please enter both vectors.";
             return;
         }
-        let v1 = vector1.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
-        let v2 = vector2.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
-        let R = vectorDot(v1, v2, mode.value);
+        let R = vectorDot(operationBox.v1, operationBox.v2, mode.value);
         if (typeof(R) === 'number') results.textContent = "R = " + R;
         else results.textContent = "Error";
     });
@@ -367,9 +377,7 @@ function openVectorCalcWindow(outputLoc) {
             results.textContent = "Please enter both vectors.";
             return;
         }
-        let v1 = vector1.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
-        let v2 = vector2.value.replaceAll('(', '').replaceAll(')', '').split(',').map(Number);
-        let R = vectorCross(v1, v2, mode.value);
+        let R = vectorCross(operationBox.v1, operationBox.v2, mode.value);
         if (Array.isArray(R)) results.textContent = "R = (" + R.join(', ') + ")";
         else results.textContent = "Error";
     });
@@ -382,3 +390,162 @@ function openVectorCalcWindow(outputLoc) {
     makeDraggable(vectorHeader, vectorWindow);
 }
 
+// --- FBD Calculation --- 
+function openFBDCalcWindow(outputloc) {
+    if (document.getElementById('sci-phys-fbd')) return;
+    
+    var fbdCalcWindow = document.createElement('div');
+    fbdCalcWindow.setAttribute('id', 'sci-phys-fbd');
+    fbdCalcWindow.setAttribute('class', 'sci-phys-tool');
+    
+    var fbdCalcHeader = document.createElement('div');
+    fbdCalcHeader.setAttribute('class', 'sci-phys-tool-header');
+    fbdCalcHeader.textContent = 'Free Body Diagram';
+    fbdCalcHeader.classList.add('no-select');
+
+    var inputBox = document.createElement('div');
+    inputBox.setAttribute('id', 'sci-phys-fbd-input');
+
+    inputBox.append(createRow('F1'));
+    inputBox.append(createRow('F2'));
+
+    var addrowBtn = document.createElement('button');
+    addrowBtn.setAttribute('id', 'sci-phys-fbd-addrow')
+    addrowBtn.textContent = '+';
+
+    addrowBtn.addEventListener('click', () => {
+        let currentRows = document.querySelectorAll('.sci-phys-fbd-row')
+        let defaultName = 'F' + (currentRows.length + 1);
+        inputBox.append(createRow(defaultName));
+    });
+
+    const FBDvisualization = document.createElementNS(SVG_NS, 'svg');
+    FBDvisualization.setAttribute('id', 'sci-phys-disp')
+    FBDvisualization.setAttribute('viewBox', '0 0 400 400');
+
+    var result = document.createElement('div');
+    result.setAttribute('class', 'sci-phys-tool-result');
+    result.textContent = "Net Force: --";
+
+    fbdCalcWindow.append(fbdCalcHeader, inputBox, addrowBtn, confirmBtn, result);
+    document.body.appendChild(fbdCalcWindow);
+    makeDraggable(fbdCalcHeader, fbdCalcWindow);
+
+    return fbdCalcWindow;
+}
+
+function createRow(forceDefaultName) {
+    var row = document.createElement('div');
+    row.setAttribute('class', 'sci-phys-fbd-row');
+    row.rowID = forceDefaultName;
+
+    var name = document.createElement('input');
+    name.setAttribute('class','sci-phys-fbd-row-name');
+    name.placeholder = forceDefaultName;
+
+    var magnitude = document.createElement('input');
+    magnitude.setAttribute('class','sci-phys-fbd-row-magnitude');
+    magnitude.placeholder = "Magnitude";
+
+    var direction = document.createElement('input');
+    direction.setAttribute('class','sci-phys-fbd-row-direction');
+    direction.placeholder = "Direction (°)";
+
+    var removeBtn = document.createElement('button');
+    removeBtn.setAttribute('class', 'sci-phys-fbd-row-remove');
+    removeBtn.textContent = '⊝';
+    removeBtn.buttonID = forceDefaultName;
+
+    removeBtn.addEventListener('click', () => {
+        let rowLst = document.getElementsByClassName(row.className);
+        for (let existingRow of rowLst) {if (existingRow.rowID === removeBtn.buttonID) existingRow.remove();}
+    })
+    
+    if (parseInt(forceDefaultName.replace('F', '')) <= 1) {
+        removeBtn.disabled = true;
+        removeBtn.style.visibility = 'hidden';
+    }
+
+    row.addEventListener('input', () => {updateFBDvisualization();});
+    
+    row.append(name, magnitude, direction, removeBtn);
+    return row;
+}
+
+function updateFBDvisualization() {
+    let inputs = document.body.querySelectorAll('.sci-phys-fbd-row');
+    const canva = document.body.querySelector('#sci-phys-disp');
+    
+    let forces = [];
+    for (let input of inputs) {
+        let kids = row.children;
+        forces.push({
+            name:      kids[0].value || kids[0].placeholder,
+            magnitude: parseFloat(kids[1].value),
+            direction: parseFloat(kids[2].value),
+            color:     '#5a9e98'
+        });
+    }
+    
+    canva.innerHTML = '';
+
+    const arrowgroup = document.createElementNS(SVG_NS, 'g');
+    forces.forEach((force)=> {
+        arrowgroup.appendChild(renderArrow(force));
+    });
+    canva.append(arrowgroup);
+
+    const dotBase = document.createElementNS(SVG_NS, 'circle');
+    dotBase.setAttribute('cx', CENTER.x); dotBase.setAttribute('cy', CENTER.y);
+    dotBase.setAttribute('r', 8);
+    dotBase.setAttribute('fill', '#fff');
+    canva.appendChild(dotBase);
+
+    const dot = document.createElementNS(SVG_NS, 'circle');
+    dot.setAttribute('cx', CENTER.x); dot.setAttribute('cy', CENTER.y);
+    dot.setAttribute('r', 6);
+    dot.setAttribute('fill', '#444');
+    canva.appendChild(dot);
+}
+
+function renderArrow(force) {
+    let arrow = document.createElementNS(SVG_NS, 'g');
+
+    const SCALE = 2.5;
+    const leng = force.magnitude * SCALE;
+    const tipx = CENTER.x + Math.cos(-force.direction * 3.14159 / 180);
+    const tipy = CENTER.y + Math.sin(-force.direction * 3.14159 / 180);
+
+    const arrowbody = document.createElementNS(SVG_NS, 'line');
+    arrowbody.setAttribute('x1', CENTER.x); arrowbody.setAttribute('y1', CENTER.y); 
+    arrowbody.setAttribute('x2', tipx ); arrowbody.setAttribute('y2', tipy);
+    arrowbody.setAttribute('stroke', '#444'); arrowbody.setAttribute('stroke-width', 3);
+    arrow.appendChild(arrowbody);
+
+    const headLen = 10;
+    const headRad = rad;
+    const baseLeft  = { x: tipX - headLen * Math.cos(headRad - 0.4), y: tipY - headLen * Math.sin(headRad - 0.4) };
+    const baseRight = { x: tipX - headLen * Math.cos(headRad + 0.4), y: tipY - headLen * Math.sin(headRad + 0.4) };
+
+    const head = document.createElementNS(SVG_NS, 'polygon');
+    head.setAttribute('points', `${tipX},${tipY} ${baseLeft.x},${baseLeft.y} ${baseRight.x},${baseRight.y}`);
+    head.setAttribute('fill', f.color);
+    arrow.appendChild(head);
+
+    const perpRad = rad - Math.PI / 2;
+    const labelX = tipX + 16 * Math.cos(perpRad);
+    const labelY = tipY + 16 * Math.sin(perpRad);
+    const text = document.createElementNS(SVG_NS, 'text');
+    text.setAttribute('x', labelX);
+    text.setAttribute('y', labelY);
+    text.setAttribute('fill', f.color);
+    text.setAttribute('font-size', '12');
+    text.setAttribute('font-weight', '600');
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('dominant-baseline', 'middle');
+    text.setAttribute('opacity', opacity);
+    text.textContent = `${f.name} (${f.mag}N)`;
+    arrow.appendChild(text);
+
+    return arrow;
+}
