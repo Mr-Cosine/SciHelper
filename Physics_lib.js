@@ -492,18 +492,33 @@ function updateFBDvisualization() {
     }
     
     canva.innerHTML = '';
+    let netx = 0;
+    let nety = 0;
+    for (let force of forces){
+        netx += force.magnitude * Math.cos(force.direction * Math.PI/180);
+        nety += force.magnitude * Math.sin(force.direction * Math.PI/180);
+    }
+    let net = {'name': 'net', 'magnitude': Math.sqrt(netx ** 2 + nety ** 2), 'direction': Math.atan2(nety, netx) * 180/Math.PI};
+
+    if (maxMagnitude < net.magnitude) maxMagnitude = net.magnitude;
+
+    let result = document.querySelector('.sci-phys-tool-result')
+    result.textContent = `Net Force: ${net.magnitude.toFixed(3)}N @ ${net.direction.toFixed(3)}°`;
+
     const SCALE = 200/maxMagnitude/1.2;
 
     const arrowgroup = document.createElementNS(SVG_NS, 'g');
     forces.forEach((force)=> {
-        arrowgroup.appendChild(renderArrow(force, SCALE));
+        arrowgroup.appendChild(renderArrow(force, SCALE, '#444'));
     });
+    arrowgroup.appendChild(renderArrow(net, SCALE, '#ccc'));
+
     canva.append(arrowgroup);
 
     const dotBase = document.createElementNS(SVG_NS, 'circle');
     dotBase.setAttribute('cx', CENTER.x); dotBase.setAttribute('cy', CENTER.y);
     dotBase.setAttribute('r', 8);
-    dotBase.setAttribute('fill', '#fff');
+    dotBase.setAttribute('fill', 'white');
     canva.appendChild(dotBase);
 
     const dot = document.createElementNS(SVG_NS, 'circle');
@@ -511,11 +526,9 @@ function updateFBDvisualization() {
     dot.setAttribute('r', 6);
     dot.setAttribute('fill', '#444');
     canva.appendChild(dot);
-
-    return forces;
 }
 
-function renderArrow(force, SCALE) {
+function renderArrow(force, SCALE, color) {
     let arrow = document.createElementNS(SVG_NS, 'g');
 
     const leng = force.magnitude * SCALE;
@@ -527,7 +540,7 @@ function renderArrow(force, SCALE) {
     const arrowbody = document.createElementNS(SVG_NS, 'line');
     arrowbody.setAttribute('x1', CENTER.x); arrowbody.setAttribute('y1', CENTER.y); 
     arrowbody.setAttribute('x2', tipx ); arrowbody.setAttribute('y2', tipy);
-    arrowbody.setAttribute('stroke', '#444'); arrowbody.setAttribute('stroke-width', 3);
+    arrowbody.setAttribute('stroke', color); arrowbody.setAttribute('stroke-width', 3);
     arrow.appendChild(arrowbody);
 
     const headLen = 5;
@@ -537,7 +550,7 @@ function renderArrow(force, SCALE) {
 
     const head = document.createElementNS(SVG_NS, 'polygon');
     head.setAttribute('points', `${tip.x},${tip.y} ${baseLeft.x},${baseLeft.y} ${baseRight.x},${baseRight.y}`);
-    head.setAttribute('fill', f.color);
+    head.setAttribute('fill', color);
     arrow.appendChild(head);
 
     const labelX = tipx + 24 * Math.cos(perpRad);
@@ -559,13 +572,5 @@ function renderArrow(force, SCALE) {
 }
 
 function updateResult(forces){
-    let netx = 0;
-    let nety = 0;
-    for (let force of forces){
-        netx += force.magnitude * cos(force.direction * Math.PI/180);
-        nety += force.magnitude * sin(force.direction * Math.PI/180);
-    }
 
-    let result = fbdCalcWindow.querySelector('.sci-phys-tool-result')
-    result.textContent = `Net Force: ${Math.sqrt(netx ** 2 + nety ** 2)}N @ ${atan2(nety, netx)}°`;
 }
