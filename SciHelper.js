@@ -1,37 +1,3 @@
-import { superscripts, subscripts, greeks, maths, degree, equilibium } from './resources.js';
-import { state, outputLoc, initSciHelper, closeSciHelper, insertIntoWindow, makeDraggable, refreshBtnDisp, createToggle, createSubMenuToggle, createCopyBtn, openInfo, closeInfo } from './SciHelper_lib.js';
-
-// --- Keydown Logic ---
-document.addEventListener("keydown", function(e) {
-    // Detect focus conflict
-    if (document.activeElement.tagName === 'INPUT' && 
-        document.activeElement.id !== 'sci-panel-output') {
-        return;
-    }
-
-    if (e.ctrlKey && e.altKey) {
-        if (e.code === "KeyD") { insertIntoWindow(outputLoc, degree); e.preventDefault(); return; }
-        if (e.code === "KeyE") { insertIntoWindow(outputLoc, equilibium); e.preventDefault(); return; }
-    }
-
-    if ((e.ctrlKey || e.altKey) === false) {
-        var symbol = null;
-        var key = e.key;
-
-        if (state.superscript) {
-            symbol = superscripts[key] || (e.code.startsWith("Digit") ? superscripts[e.code.replace("Digit", "")] : null);
-        } else if (state.subscript) {
-            symbol = subscripts[key] || (e.code.startsWith("Digit") ? subscripts[e.code.replace("Digit", "")] : null);
-        } else if (state.greek) {
-            symbol = greeks[key.toLowerCase()];
-        } else if (state.math) {
-            symbol = maths[key];
-        }
-                
-        if (symbol) { e.preventDefault(); insertIntoWindow(outputLoc, symbol); }
-    }
-}, true);
-    
 if (document.getElementById('sci-restore')) {document.getElementById('sci-restore').remove();}
 var restoreBtn = document.createElement('div');
 restoreBtn.id = 'sci-restore';

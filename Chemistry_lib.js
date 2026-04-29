@@ -1,11 +1,8 @@
-import { elements, polyions, electroPotentials, chemFormulas } from './resources.js';
-import { insertIntoWindow, makeDraggable, refreshBtnDisp } from './SciHelper_lib.js';
-
 // --- Helper Functions ---
 function isLetter(token) {return /[a-zA-Z]/.test(token);}
 function isUpper(token) {return (isLetter(token) && token === token.toUpperCase());}
 function isLower(token) {return (isLetter(token) && token === token.toLowerCase());}
-export function isNum(token) {return (!isNaN(token));}
+function isNum(token) {return (!isNaN(token));}
 
 function sanitizeFormula(input) {
     if (!input) return "";
@@ -193,7 +190,7 @@ function calculate(elementList) {
     return [totalMass, elemNotFound.slice(0,-2)];
 }
 
- function calculateLimR(reagentList) {
+function calculateLimR(reagentList) {
     possibleProd = [];
     for (let r of reagentList) {
         const isVolumetricConc = (r.concUnit === 'molL' || r.concUnit === 'gL');
@@ -247,7 +244,7 @@ function calculate(elementList) {
     return returnList;
 }
 
-export function solveEq(variables, expressions) {
+function solveEq(variables, expressions) {
     let emptyVar = null;
     for (let key of Object.keys(variables)) {
         if (variables[key] === null) {
@@ -273,7 +270,7 @@ export function solveEq(variables, expressions) {
     return isNaN(finalResult) ? "Error" : finalResult;
 }
 
-export function infixToPostfix(tokens) {
+function infixToPostfix(tokens) {
     const precedence = 
     {   '(': 1, ')': 1, 
         '+': 2, '-': 2, 
@@ -327,7 +324,7 @@ export function infixToPostfix(tokens) {
     return outputQueue;
 }
 
-export function evaluate(postfix) {
+function evaluate(postfix) {
     let stack = [];
 
     for (let token of postfix) {
@@ -366,7 +363,7 @@ export function evaluate(postfix) {
 // --- UI builders ---
 
 // --- Main Chemistry submenu ---
-export function openChemWindow(outputLoc, parentWin) {
+function openChemWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-chem')) return;
 
     let state_chem = {
@@ -402,7 +399,7 @@ export function openChemWindow(outputLoc, parentWin) {
     return true;
 }
 
-export function closeChemWindow() {
+function closeChemWindow() {
     let toolWindow = document.getElementsByClassName('sci-chem-tool');
     while (toolWindow.length > 0) {toolWindow[0].remove();}
     document.getElementById('sci-chem')?.remove();

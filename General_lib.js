@@ -1,6 +1,3 @@
-import { insertIntoWindow, makeDraggable, refreshBtnDisp } from './SciHelper_lib.js';
-import { isNum } from './Chemistry_lib.js';
-
 // --- Helper Functions ---
 function f(x, polynomials) {let y = 0; for (let term of polynomials) { y += term.coeff * Math.pow(x, term.exp);} return y;};
 function getBound(polynomials) {
@@ -124,7 +121,7 @@ function getRoot(lo, hi, epsi, polynomials) {
 // --- UI builders ---
 
 // --- Main General submenu ---
-export function openGenWindow(outputLoc, parentWin) {
+function openGenWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-gen')) return;
 
     let state_gen = {
@@ -152,7 +149,7 @@ export function openGenWindow(outputLoc, parentWin) {
     return true;
 }
 
-export function closeGenWindow() {
+function closeGenWindow() {
     let toolWindow = document.getElementsByClassName('sci-gen-tool');
     while (toolWindow.length > 0) {toolWindow[0].remove();}
     document.getElementById('sci-gen')?.remove();

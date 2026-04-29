@@ -1,7 +1,5 @@
-import { physFormulas } from './resources.js';
-import { insertIntoWindow, makeDraggable, refreshBtnDisp } from './SciHelper_lib.js';
-import { solveEq, infixToPostfix, evaluate } from './Chemistry_lib.js';
-import { Children } from 'react';
+const SVG_NS = "http://www.w3.org/2000/svg";
+const CENTER = { x: 200, y: 200 };
 
 // --- Helper Functions ---
 function vectorAdd(v1, v2, mode) {
@@ -34,7 +32,7 @@ function vectorSubtract(v1, v2, mode) {
     else {
         let r = [];
         for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
-            r.push((v1[i] || 0) - (v2[i] || 0));
+            r.push((v1[i] || 0) - (v2[i] || 0))
         }
         return r;
     }
@@ -76,7 +74,7 @@ function vectorCross(v1, v2, mode) {
 // --- UI builders ---
 
 // --- Main Physics Window ---
-export function openPhysWindow(outputLoc, parentWin) {
+function openPhysWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-phys')) return;
 
     let state_phys = {
@@ -108,7 +106,7 @@ export function openPhysWindow(outputLoc, parentWin) {
     return true;
 }
 
-export function closePhysWindow() {
+function closePhysWindow() {
     let toolWindow = document.getElementsByClassName('sci-phys-tool');
     while (toolWindow.length > 0) {toolWindow[0].remove();}
     document.getElementById('sci-phys')?.remove();
@@ -427,7 +425,7 @@ function openFBDCalcWindow(outputloc) {
     result.setAttribute('class', 'sci-phys-tool-result');
     result.textContent = "Net Force: --";
 
-    fbdCalcWindow.append(fbdCalcHeader, inputBox, addrowBtn, confirmBtn, result);
+    fbdCalcWindow.append(fbdCalcHeader, inputBox, addrowBtn, FBDvisualization, result);
     document.body.appendChild(fbdCalcWindow);
     makeDraggable(fbdCalcHeader, fbdCalcWindow);
 
@@ -442,6 +440,7 @@ function createRow(forceDefaultName) {
     var name = document.createElement('input');
     name.setAttribute('class','sci-phys-fbd-row-name');
     name.placeholder = forceDefaultName;
+    name.defaultName = forceDefaultName;
 
     var magnitude = document.createElement('input');
     magnitude.setAttribute('class','sci-phys-fbd-row-magnitude');
@@ -466,7 +465,7 @@ function createRow(forceDefaultName) {
         removeBtn.style.visibility = 'hidden';
     }
 
-    row.addEventListener('input', () => {updateFBDvisualization();});
+    row.addEventListener('input', () => {let forces = updateFBDvisualization(); updateResult(forces)});
     
     row.append(name, magnitude, direction, removeBtn);
     return row;
@@ -477,21 +476,27 @@ function updateFBDvisualization() {
     const canva = document.body.querySelector('#sci-phys-disp');
     
     let forces = [];
+    let maxMagnitude = 0;
     for (let input of inputs) {
-        let kids = row.children;
-        forces.push({
-            name:      kids[0].value || kids[0].placeholder,
-            magnitude: parseFloat(kids[1].value),
-            direction: parseFloat(kids[2].value),
-            color:     '#5a9e98'
-        });
+        let fname = (input.querySelector('[class$="-name"]').value)? input.querySelector('[class$="-name"]').value : input.querySelector('[class$="-name"]').placeholder;
+        let fmagnitude = input.querySelector('[class$="-magnitude"]').value;
+        let fdirection = input.querySelector('[class$="-direction"]').value;
+        if (fmagnitude && fdirection){
+            forces.push({
+                name:      fname,
+                magnitude: parseFloat(fmagnitude),
+                direction: parseFloat(fdirection)
+            });
+            if (maxMagnitude < Math.abs(fmagnitude)) maxMagnitude = fmagnitude;
+        }
     }
     
     canva.innerHTML = '';
+    const SCALE = 200/maxMagnitude/1.2;
 
     const arrowgroup = document.createElementNS(SVG_NS, 'g');
     forces.forEach((force)=> {
-        arrowgroup.appendChild(renderArrow(force));
+        arrowgroup.appendChild(renderArrow(force, SCALE));
     });
     canva.append(arrowgroup);
 
@@ -506,15 +511,18 @@ function updateFBDvisualization() {
     dot.setAttribute('r', 6);
     dot.setAttribute('fill', '#444');
     canva.appendChild(dot);
+
+    return forces;
 }
 
-function renderArrow(force) {
+function renderArrow(force, SCALE) {
     let arrow = document.createElementNS(SVG_NS, 'g');
 
-    const SCALE = 2.5;
     const leng = force.magnitude * SCALE;
-    const tipx = CENTER.x + Math.cos(-force.direction * 3.14159 / 180);
-    const tipy = CENTER.y + Math.sin(-force.direction * 3.14159 / 180);
+    const rad = -force.direction * Math.PI / 180;
+    const perpRad = -force.direction * Math.PI/180 - Math.PI / 2;
+    const tipx = CENTER.x + leng*Math.cos(rad);
+    const tipy = CENTER.y + leng*Math.sin(rad);
 
     const arrowbody = document.createElementNS(SVG_NS, 'line');
     arrowbody.setAttribute('x1', CENTER.x); arrowbody.setAttribute('y1', CENTER.y); 
@@ -522,29 +530,29 @@ function renderArrow(force) {
     arrowbody.setAttribute('stroke', '#444'); arrowbody.setAttribute('stroke-width', 3);
     arrow.appendChild(arrowbody);
 
-    const headLen = 10;
-    const headRad = rad;
-    const baseLeft  = { x: tipX - headLen * Math.cos(headRad - 0.4), y: tipY - headLen * Math.sin(headRad - 0.4) };
-    const baseRight = { x: tipX - headLen * Math.cos(headRad + 0.4), y: tipY - headLen * Math.sin(headRad + 0.4) };
+    const headLen = 5;
+    const tip = { x: tipx + 2 * headLen * Math.cos(rad), y: tipy + 2 * headLen * Math.sin(rad) };
+    const baseLeft  = { x: tipx - headLen * Math.cos(perpRad), y: tipy - headLen * Math.sin(perpRad) };
+    const baseRight = { x: tipx + headLen * Math.cos(perpRad), y: tipy + headLen * Math.sin(perpRad) };
 
     const head = document.createElementNS(SVG_NS, 'polygon');
-    head.setAttribute('points', `${tipX},${tipY} ${baseLeft.x},${baseLeft.y} ${baseRight.x},${baseRight.y}`);
+    head.setAttribute('points', `${tip.x},${tip.y} ${baseLeft.x},${baseLeft.y} ${baseRight.x},${baseRight.y}`);
     head.setAttribute('fill', f.color);
     arrow.appendChild(head);
 
-    const perpRad = rad - Math.PI / 2;
-    const labelX = tipX + 16 * Math.cos(perpRad);
-    const labelY = tipY + 16 * Math.sin(perpRad);
+    const labelX = tipx + 24 * Math.cos(perpRad);
+    const labelY = tipy + 24 * Math.sin(perpRad);
     const text = document.createElementNS(SVG_NS, 'text');
     text.setAttribute('x', labelX);
     text.setAttribute('y', labelY);
-    text.setAttribute('fill', f.color);
     text.setAttribute('font-size', '12');
     text.setAttribute('font-weight', '600');
-    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('text-anchor', 'right');
     text.setAttribute('dominant-baseline', 'middle');
-    text.setAttribute('opacity', opacity);
-    text.textContent = `${f.name} (${f.mag}N)`;
+    text.innerHTML = `
+        <tspan x="${labelX}" dy="-0.6em">${force.name}</tspan>
+        <tspan x="${labelX}" dy="1.2em" font-size="10" fill="#666">${force.magnitude}N</tspan>`
+
     arrow.appendChild(text);
 
     return arrow;

@@ -28,7 +28,12 @@
             ],
             "js": [
                 "katex/katex.min.js",
-                "loader.js"
+                "SciHelper_lib.js",
+                "Chemistry_lib.js", 
+                "General_lib.js",
+                "Physics_lib.js",
+                "resources.js",
+                "SciHelper.js"
             ],
             "run_at": "document_end"
         }

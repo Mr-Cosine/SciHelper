@@ -1,7 +1,7 @@
 //============================================================================
 // Special characters mapping
 
-export const superscripts = Object.freeze({
+const superscripts = Object.freeze({
     "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴",
     "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹",
     "a": "ᵃ", "b": "ᵇ", "c": "ᶜ", "d": "ᵈ", "e": "ᵉ",
@@ -12,7 +12,7 @@ export const superscripts = Object.freeze({
     "-": "⁻"
 });
 
-export const subscripts = Object.freeze({
+const subscripts = Object.freeze({
     "0": "₀", "1": "₁", "2": "₂", "3": "₃", "4": "₄",
     "5": "₅", "6": "₆", "7": "₇", "8": "₈", "9": "₉",
     "a": "ₐ", "b": "₆", "c": "꜀", "e": "ₑ", "f": "ғ", "g": "₉",
@@ -22,7 +22,7 @@ export const subscripts = Object.freeze({
     "+": "₊", "-": "₋", "=": "₌", "(": "₍", ")": "₎",
 });
 
-export const greeks = Object.freeze({
+const greeks = Object.freeze({
     "a": "α", "b": "β", "g": "γ", "d": "δ", "e": "ε",
     "z": "ζ", "h": "η", "q": "θ", "i": "ι", "k": "κ",
     "l": "λ", "m": "μ", "n": "ν", "x": "ξ", "o": "ο",
@@ -30,15 +30,15 @@ export const greeks = Object.freeze({
     "f": "φ", "c": "χ", "y": "ψ", "w": "ω",
 });
 
-export const maths = Object.freeze({
+const maths = Object.freeze({
     "i": "∫", "p": "∂", "s": "∑", "r": "√", "l": "∞", "d": "∆",
     "g": "∇", "o": "ₒ", "e": "≈", "@": "∈", "*": "×", "f": "ƒ",
     "b": "≥", "s": "≤", "/": "÷", ".": "·", "n": "≠", "a": "∀",
     "E": "∃", "v": "⃗",
 });
 
-export const degree = "°";
-export const equilibium = "⇌";
+const degree = "°";
+const equilibium = "⇌";
 
 //============================================================================
 // Chemistry
@@ -185,7 +185,7 @@ const _elements = [];
     _elements[117] = new element("Tennessine",    "Ts",  117,  294.000);
     _elements[118] = new element("Oganesson",     "Og",  118,  294.000);
 
-export const elements = Object.freeze(_elements);
+const elements = Object.freeze(_elements);
 
 const _polyions = [];
     _polyions[0]  = new element("Ammonium",       "NH₄⁺",     -1,   18.044);
@@ -206,9 +206,9 @@ const _polyions = [];
     _polyions[15] = new element("Phosphate",      "PO₄³⁻",    -1,   94.971);
     _polyions[16] = new element("Phosphite",      "PO₃³⁻",    -1,   78.972);
 
-export const polyions = Object.freeze(_polyions);
+const polyions = Object.freeze(_polyions);
 
-export const electroPotentials = Object.freeze([
+const electroPotentials = Object.freeze([
     { name: "Fluorine",             symbol: "F₂",       rxn: "F₂(g) + 2e⁻ ⇌ 2F⁻(aq)",                                       e0: 2.87 },
     { name: "Hydrogen Peroxide",    symbol: "H₂O₂",     rxn: "H₂O₂ + 2H⁺ + 2e⁻ → 2H₂O",                                     e0:  1.78 }, 
     { name: "Permanganate",         symbol: "MnO₄⁻",    rxn: "MnO₄⁻(aq) + 8H⁺(aq) + 5e⁻ ⇌ Mn²⁺(aq) + 4H₂O(l)",              e0: 1.51 },
@@ -266,7 +266,7 @@ export const electroPotentials = Object.freeze([
     { name: "Lithium",              symbol: "Li⁺",      rxn: "Li⁺(aq) + e⁻ ⇌ Li(s)",                                        e0: -3.04 }
 ]);
 
-export const chemFormulas = [
+const chemFormulas = [
  
     // ── Stoichiometry & Moles ────────────────────────────────
  
@@ -808,7 +808,7 @@ export const chemFormulas = [
 //============================================================================
 // Physics
  
-export const physFormulas = [
+const physFormulas = [
 
     // ── Kinematics ──────────────────────────────────────────
  

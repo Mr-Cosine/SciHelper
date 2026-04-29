@@ -1,9 +1,4 @@
-import { maths, greeks, superscripts, subscripts, degree, equilibium } from './resources.js';
-import { openChemWindow, closeChemWindow } from './Chemistry_lib.js';
-import { openGenWindow, closeGenWindow } from './General_lib.js';
-import { openPhysWindow, closePhysWindow } from './Physics_lib.js';
-
-export var state = {
+var state = {
     greek: false,
     superscript: false,
     subscript: false,
@@ -12,15 +7,13 @@ export var state = {
     physics: false,
     general: false,
     info: false
-};
+    };
 
-export var outputLoc = null;
+var outputLoc = null;
 
 // --- Main SciHelper Window ---
-export function initSciHelper(initx = 100, inity = 100) {    
+function initSciHelper(initx = 100, inity = 100) {    
     if (!document.body || document.getElementById('sci-panel')) return;
-
-    for (let key in state) {state[key] = false;}
         
     // --- UI Construction ---
     var panel = document.createElement('div');
@@ -80,9 +73,39 @@ export function initSciHelper(initx = 100, inity = 100) {
     document.body.appendChild(panel);
 
     makeDraggable(header, panel);
+
+    document.addEventListener("keydown", function(e) {
+        // Detect focus conflict
+        if (document.activeElement.tagName === 'INPUT' && 
+            document.activeElement.id !== 'sci-panel-output') {
+            return;
+        }
+
+        if (e.ctrlKey && e.altKey) {
+            if (e.code === "KeyD") { insertIntoWindow(outputLoc, degree); e.preventDefault(); return; }
+            if (e.code === "KeyE") { insertIntoWindow(outputLoc, equilibium); e.preventDefault(); return; }
+        }
+
+        if ((e.ctrlKey || e.altKey) === false) {
+            var symbol = null;
+            var key = e.key;
+
+            if (state.superscript) {
+                symbol = superscripts[key] || (e.code.startsWith("Digit") ? superscripts[e.code.replace("Digit", "")] : null);
+            } else if (state.subscript) {
+                symbol = subscripts[key] || (e.code.startsWith("Digit") ? subscripts[e.code.replace("Digit", "")] : null);
+            } else if (state.greek) {
+                symbol = greeks[key.toLowerCase()];
+            } else if (state.math) {
+                symbol = maths[key];
+            }
+                    
+            if (symbol) { e.preventDefault(); insertIntoWindow(outputLoc, symbol); }
+        }
+    }, true);
 }
 
-export function closeSciHelper() {  
+function closeSciHelper() {  
     let panel = document.getElementById('sci-panel');          
     closeChemWindow();
     closeGenWindow();
@@ -100,7 +123,7 @@ export function closeSciHelper() {
 }
 
 // --- Put on textbox ---
-export function insertIntoWindow(target, text) {
+function insertIntoWindow(target, text) {
     if (!text || !target) return;
     var start = target.selectionStart || target.value.length;
     var end = target.selectionEnd || target.value.length;
@@ -110,7 +133,7 @@ export function insertIntoWindow(target, text) {
 }
 
 // --- Drag logic ---
-export function makeDraggable(handle, target) {
+function makeDraggable(handle, target) {
     handle.addEventListener('mousedown', function(e) {
         var rect = target.getBoundingClientRect();
         var shiftX = e.clientX - rect.left;
@@ -128,7 +151,7 @@ export function makeDraggable(handle, target) {
 }
 
 // --- Mode toggle buttons ---
-export function refreshBtnDisp(classname, state) {
+function refreshBtnDisp(classname, state) {
     var allBtns = document.getElementsByClassName(classname);
     for (let b of allBtns) {
         const active = state[b.id]; 
@@ -137,7 +160,7 @@ export function refreshBtnDisp(classname, state) {
     }
 }
 
-export function createToggle(label, symbol, id, color, state) {
+function createToggle(label, symbol, id, color, state) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'sci-panel-btn');
     btn.style.backgroundColor = 'white';
@@ -166,7 +189,7 @@ export function createToggle(label, symbol, id, color, state) {
     return btn;
 }
 
-export function createSubMenuToggle(label, symbol, id, color, state, outputLoc, parentPanel) {
+function createSubMenuToggle(label, symbol, id, color, state, outputLoc, parentPanel) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'sci-panel-btn');
     btn.style.backgroundColor = '#f9f9f9';
@@ -199,7 +222,7 @@ export function createSubMenuToggle(label, symbol, id, color, state, outputLoc, 
     return btn;
 }
 
-export function createCopyBtn(target) {
+function createCopyBtn(target) {
     var copyBtn = document.createElement('button');
     copyBtn.setAttribute('id', 'sci-panel-copybtn');
     copyBtn.textContent = 'COPY';
@@ -232,7 +255,7 @@ export function createCopyBtn(target) {
     return copyBtn;
 }
 
-export function openInfo(outputLoc) {
+function openInfo(outputLoc) {
     while (document.getElementById('sci-info')) document.getElementById('sci-info').remove();
 
     var infoBtn = document.getElementById('sci-panel-info');
@@ -275,7 +298,7 @@ export function openInfo(outputLoc) {
     menuWin.style.top = '0px';
 }
 
-export function openInfoContent(title, mapping, panel, outputLoc) {
+function openInfoContent(title, mapping, panel, outputLoc) {
     panel.innerHTML = ''; 
     
     var header = document.createElement('div');
@@ -332,6 +355,6 @@ export function openInfoContent(title, mapping, panel, outputLoc) {
     panel.style.top = '0px';
 }
 
-export function closeInfo() {
+function closeInfo() {
     document.getElementById('sci-info')?.remove();
 }
