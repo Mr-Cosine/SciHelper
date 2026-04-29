@@ -279,8 +279,8 @@ function openVectorCalcWindow(outputLoc) {
     modeContainer.appendChild(modeLabel);
 
     var mode = document.createElement('select');
-    mode.append(new Option('Cartesian', 'cartesian'));
-    mode.append(new Option('Polar(2D)', 'polar'));
+    mode.append(new Option('Cartesian: (x, y)', 'cartesian'));
+    mode.append(new Option('Polar(2D): (r, θ°)', 'polar'));
     mode.setAttribute('class', 'sci-phys-vect-modecontainer-mode');
     modeContainer.appendChild(mode);
 
@@ -423,7 +423,7 @@ function openFBDCalcWindow(outputloc) {
 
     var result = document.createElement('div');
     result.setAttribute('class', 'sci-phys-tool-result');
-    result.textContent = "Net Force: --";
+    result.textContent = "Net Force: --N @ --°";
 
     fbdCalcWindow.append(fbdCalcHeader, inputBox, addrowBtn, FBDvisualization, result);
     document.body.appendChild(fbdCalcWindow);
@@ -556,4 +556,16 @@ function renderArrow(force, SCALE) {
     arrow.appendChild(text);
 
     return arrow;
+}
+
+function updateResult(forces){
+    let netx = 0;
+    let nety = 0;
+    for (let force of forces){
+        netx += force.magnitude * cos(force.direction * Math.PI/180);
+        nety += force.magnitude * sin(force.direction * Math.PI/180);
+    }
+
+    let result = fbdCalcWindow.querySelector('.sci-phys-tool-result')
+    result.textContent = `Net Force: ${Math.sqrt(netx ** 2 + nety ** 2)}N @ ${atan2(nety, netx)}°`;
 }
