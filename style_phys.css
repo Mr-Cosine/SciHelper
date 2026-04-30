@@ -247,7 +247,7 @@
     position: fixed;
     top: 150px;
     right: 560px;
-    width: 320px;
+    width: 400px;
     height: auto;
     background: white;
     border: 1px solid #ccc;
@@ -279,7 +279,7 @@
     width: 100%;
 }
 
-.sci-phys-fbd-row-name {flex: 1; font-weight: bold;}
+.sci-phys-fbd-row-name {flex: 0.8; font-weight: bold;}
 .sci-phys-fbd-row-magnitude {flex: 1;}
 .sci-phys-fbd-row-direction {flex: 1;}
 
@@ -306,8 +306,10 @@
 }
 
 #sci-phys-disp {
-    height: 300px;
-    flex: 1;
+    flex: 1; 
+    height: 320px;
+    max-height: 320px;
+    display: block;
     border: 1px solid #ccc;
     margin: 8px 12px;
 }
