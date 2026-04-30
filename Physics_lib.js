@@ -465,7 +465,7 @@ function createRow(forceDefaultName) {
         removeBtn.style.visibility = 'hidden';
     }
 
-    row.addEventListener('input', () => {let forces = updateFBDvisualization(); updateResult(forces)});
+    row.addEventListener('input', () => {let forces = updateFBDvisualization();});
     
     row.append(name, magnitude, direction, removeBtn);
     return row;
@@ -479,71 +479,92 @@ function updateFBDvisualization() {
     let maxMagnitude = 0;
     for (let input of inputs) {
         let fname = (input.querySelector('[class$="-name"]').value)? input.querySelector('[class$="-name"]').value : input.querySelector('[class$="-name"]').placeholder;
-        let fmagnitude = input.querySelector('[class$="-magnitude"]').value;
-        let fdirection = input.querySelector('[class$="-direction"]').value;
-        if (fmagnitude && fdirection){
+        let fmagnitude = parseFloat(input.querySelector('[class$="-magnitude"]').value);
+        let fdirection = parseFloat(input.querySelector('[class$="-direction"]').value);
+        if (fmagnitude < 0) {fmagnitude = -1 * fmagnitude; fdirection = fdirection - 180;}
+        while (fdirection > 360) {fdirection -= 360;}
+        if (isNum(fmagnitude) && isNum(fdirection)){
             forces.push({
                 name:      fname,
-                magnitude: parseFloat(fmagnitude),
-                direction: parseFloat(fdirection)
+                magnitude: fmagnitude,
+                direction: fdirection,
+                startx: CENTER.x,
+                starty: CENTER.y
             });
-            if (maxMagnitude < Math.abs(fmagnitude)) maxMagnitude = fmagnitude;
+
+            if (maxMagnitude < Math.abs(fmagnitude)) maxMagnitude = Math.abs(fmagnitude);
         }
     }
     
-    canva.innerHTML = '';
-    let netx = 0;
-    let nety = 0;
-    for (let force of forces){
-        netx += force.magnitude * Math.cos(force.direction * Math.PI/180);
-        nety += force.magnitude * Math.sin(force.direction * Math.PI/180);
+    if (forces.length > 0){
+        canva.innerHTML = '';
+        let netx = 0;
+        let nety = 0;
+        for (let force of forces){
+            netx += force.magnitude * Math.cos(force.direction * Math.PI/180);
+            nety += force.magnitude * Math.sin(force.direction * Math.PI/180);
+        }
+
+        let net = {
+                'name': 'Fnet', 
+                'magnitude': parseFloat((Math.sqrt(netx ** 2 + nety ** 2)).toFixed(3)), 
+                'direction': parseFloat((Math.atan2(nety, netx) * 180/Math.PI).toFixed(3)),
+                startx: CENTER.x,
+                starty: CENTER.y
+            };
+        if (maxMagnitude < net.magnitude) maxMagnitude = net.magnitude;
+
+        let result = document.querySelector('.sci-phys-tool-result')
+        result.textContent = `Net Force: ${net.magnitude}N @ ${net.direction}°`;
+
+        const SCALE = 200/maxMagnitude/1.2;
+
+        const arrowgroup = document.createElementNS(SVG_NS, 'g');
+        forces.forEach((force)=> {
+            arrowgroup.appendChild(renderArrow(force, SCALE, '#444'));
+        });
+        if (forces.length > 1 && Math.abs(net.magnitude) > 0) {arrowgroup.appendChild(renderArrow(net, SCALE, '#ccc'));}
+
+        canva.append(arrowgroup);
+
+        const dot = document.createElementNS(SVG_NS, 'circle');
+        dot.setAttribute('cx', CENTER.x); dot.setAttribute('cy', CENTER.y);
+        dot.setAttribute('r', 6);
+        dot.setAttribute('fill', '#444');
+        canva.appendChild(dot);
+
+        const reference = document.createElementNS(SVG_NS, 'g');
+        reference.append(renderArrow({name: '', magnitude: 15/SCALE, direction: 0, startx: 350, starty: 50}, SCALE, '#444', false));
+        reference.append(renderArrow({name: '', magnitude: 15/SCALE, direction: 90, startx: 350, starty: 50}, SCALE, '#444', false));
+        /*
+        const referencedot = document.createElementNS(SVG_NS, 'circle');
+        referencedot.setAttribute('cx', 350); dot.setAttribute('cy', 50);
+        referencedot.setAttribute('r', 2);
+        referencedot.setAttribute('fill', '#444');
+        reference.append(referencedot);
+        */
+        canva.appendChild(reference);
     }
-    let net = {'name': 'net', 'magnitude': Math.sqrt(netx ** 2 + nety ** 2), 'direction': Math.atan2(nety, netx) * 180/Math.PI};
-
-    if (maxMagnitude < net.magnitude) maxMagnitude = net.magnitude;
-
-    let result = document.querySelector('.sci-phys-tool-result')
-    result.textContent = `Net Force: ${net.magnitude.toFixed(3)}N @ ${net.direction.toFixed(3)}°`;
-
-    const SCALE = 200/maxMagnitude/1.2;
-
-    const arrowgroup = document.createElementNS(SVG_NS, 'g');
-    forces.forEach((force)=> {
-        arrowgroup.appendChild(renderArrow(force, SCALE, '#444'));
-    });
-    arrowgroup.appendChild(renderArrow(net, SCALE, '#ccc'));
-
-    canva.append(arrowgroup);
-
-    const dotBase = document.createElementNS(SVG_NS, 'circle');
-    dotBase.setAttribute('cx', CENTER.x); dotBase.setAttribute('cy', CENTER.y);
-    dotBase.setAttribute('r', 8);
-    dotBase.setAttribute('fill', 'white');
-    canva.appendChild(dotBase);
-
-    const dot = document.createElementNS(SVG_NS, 'circle');
-    dot.setAttribute('cx', CENTER.x); dot.setAttribute('cy', CENTER.y);
-    dot.setAttribute('r', 6);
-    dot.setAttribute('fill', '#444');
-    canva.appendChild(dot);
 }
 
-function renderArrow(force, SCALE, color) {
+function renderArrow(force, SCALE, color, showMag = true) {
     let arrow = document.createElementNS(SVG_NS, 'g');
 
-    const leng = force.magnitude * SCALE;
+    const headLen = 5;
+    const bodyLen = force.magnitude * SCALE - headLen;
+
     const rad = -force.direction * Math.PI / 180;
     const perpRad = -force.direction * Math.PI/180 - Math.PI / 2;
-    const tipx = CENTER.x + leng*Math.cos(rad);
-    const tipy = CENTER.y + leng*Math.sin(rad);
+
+    const tipx = force.startx + bodyLen*Math.cos(rad);
+    const tipy = force.starty + bodyLen*Math.sin(rad);
 
     const arrowbody = document.createElementNS(SVG_NS, 'line');
-    arrowbody.setAttribute('x1', CENTER.x); arrowbody.setAttribute('y1', CENTER.y); 
+    arrowbody.setAttribute('x1', force.startx); arrowbody.setAttribute('y1', force.starty); 
     arrowbody.setAttribute('x2', tipx ); arrowbody.setAttribute('y2', tipy);
     arrowbody.setAttribute('stroke', color); arrowbody.setAttribute('stroke-width', 3);
     arrow.appendChild(arrowbody);
 
-    const headLen = 5;
     const tip = { x: tipx + 2 * headLen * Math.cos(rad), y: tipy + 2 * headLen * Math.sin(rad) };
     const baseLeft  = { x: tipx - headLen * Math.cos(perpRad), y: tipy - headLen * Math.sin(perpRad) };
     const baseRight = { x: tipx + headLen * Math.cos(perpRad), y: tipy + headLen * Math.sin(perpRad) };
@@ -553,24 +574,20 @@ function renderArrow(force, SCALE, color) {
     head.setAttribute('fill', color);
     arrow.appendChild(head);
 
-    const labelX = tipx + 24 * Math.cos(perpRad);
-    const labelY = tipy + 24 * Math.sin(perpRad);
     const text = document.createElementNS(SVG_NS, 'text');
-    text.setAttribute('x', labelX);
-    text.setAttribute('y', labelY);
+    text.setAttribute('x', tip.x);
+    text.setAttribute('y', tip.y);
     text.setAttribute('font-size', '12');
     text.setAttribute('font-weight', '600');
-    text.setAttribute('text-anchor', 'right');
+    if (Math.abs(force.direction) < 90 || Math.abs(force.direction) > 270) text.setAttribute('text-anchor', 'start');
+        else if (Math.abs(force.direction) > 90 && Math.abs(force.direction) < 270) text.setAttribute('text-anchor', 'end');
+        else text.setAttribute('text-anchor', 'middle');
     text.setAttribute('dominant-baseline', 'middle');
-    text.innerHTML = `
-        <tspan x="${labelX}" dy="-0.6em">${force.name}</tspan>
-        <tspan x="${labelX}" dy="1.2em" font-size="10" fill="#666">${force.magnitude}N</tspan>`
+
+    text.innerHTML = `<tspan x="${tip.x}" dy="-0.6em">${force.name}</tspan>`;
+    text.innerHTML += (showMag)? `<tspan x="${tip.x}" dy="1.2em" font-size="10" fill="#666">${force.magnitude}N</tspan>` : "";
 
     arrow.appendChild(text);
 
     return arrow;
-}
-
-function updateResult(forces){
-
 }
