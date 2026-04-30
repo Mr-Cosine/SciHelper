@@ -20,7 +20,7 @@
     width: 180px;
     background: white;
     border: 1px solid var(--teal-main);
-    box-shadow: 0 2px 8px black;
+    box-shadow: 0 2px 8px #444;
     z-index: 2147483645;
     padding: 8px;
 }
@@ -88,7 +88,7 @@
     max-height: 400px;
     background: white;
     border: 1px solid #ccc;
-    box-shadow: 0 4px 8px black;
+    box-shadow: 0 4px 8px #444;
     z-index: 2147483647;
     display: flex;
     flex-direction: column;
@@ -163,7 +163,7 @@
     max-height: 400px;
     background: white;
     border: 1px solid #ccc;
-    box-shadow: 0 4px 8px black;
+    box-shadow: 0 4px 8px #444;
     z-index: 2147483647;
     display: flex;
     flex-direction: column;
@@ -234,7 +234,7 @@
     width: 400px;
     background: white;
     border: 1px solid #ccc;
-    box-shadow: 0 4px 8px black;
+    box-shadow: 0 4px 8px #444;
     z-index: 2147483647;
     display: flex;
     flex-direction: column;
@@ -296,7 +296,7 @@ input[readonly] {
 
     background: none;
     border: none;
-    color: black;
+    color: #444;
 }
 
 #sci-chem-lim-ratiobox {
@@ -352,7 +352,7 @@ input[readonly] {
     width: 320px;
     background: white;
     border: 1px solid #ccc;
-    box-shadow: 0 4px 8px black;
+    box-shadow: 0 4px 8px #444;
     z-index: 2147483647;
     display: flex;
     flex-direction: column;
@@ -446,7 +446,7 @@ input[readonly] {
     max-height: 400px;
     background: white;
     border: 1px solid #ccc;
-    box-shadow: 0 4px 8px black;
+    box-shadow: 0 4px 8px #444;
     z-index: 2147483647;
     display: flex;
     flex-direction: column;
@@ -483,7 +483,7 @@ input[readonly] {
     width: 240px;
     background: white;
     border: 1px solid #ccc;
-    box-shadow: 0 4px 8px black;
+    box-shadow: 0 4px 8px #444;
     z-index: 2147483647;
     display: flex;
     flex-direction: column;
@@ -499,8 +499,8 @@ input[readonly] {
 .sci-chem-frml-calc-solve {
     padding: 6px 10px;
     border: none;
-    background: var(--teal-main);
-    color: white;
+    background: white;
+    color: #444;
     font-weight: bold;
     cursor: pointer;
     font-size: 14px;

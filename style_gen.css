@@ -20,7 +20,7 @@
     width: 180px;
     background: white;
     border: 1px solid var(--yellow-main);
-    box-shadow: 0 2px 8px black;
+    box-shadow: 0 2px 8px #444;
     z-index: 2147483645;
     padding: 8px;
 }
@@ -94,7 +94,7 @@
     width: 320px;
     background: white;
     border: 1px solid #ccc;
-    box-shadow: 0 4px 8px black;
+    box-shadow: 0 4px 8px #444;
     z-index: 2147483647;
     display: flex;
     flex-direction: column;
@@ -165,7 +165,7 @@
     cursor: pointer;
     background: none;
     border: none;
-    color: black;
+    color: #444;
 }
 
 #sci-gen-poly-confirm {

@@ -21,7 +21,7 @@
     width: 180px;
     background: white;
     border: 1px solid var(--purple-main);
-    box-shadow: 0 2px 8px black;
+    box-shadow: 0 2px 8px #444;
     z-index: 2147483645;
     padding: 8px;
 }
@@ -89,7 +89,7 @@
     max-height: 400px;
     background: white;
     border: 1px solid #ccc;
-    box-shadow: 0 4px 8px black;
+    box-shadow: 0 4px 8px #444;
     z-index: 2147483647;
     display: flex;
     flex-direction: column;
@@ -126,7 +126,7 @@
     width: 240px;
     background: white;
     border: 1px solid #ccc;
-    box-shadow: 0 4px 8px black;
+    box-shadow: 0 4px 8px #444;
     z-index: 2147483647;
     display: flex;
     flex-direction: column;
@@ -142,8 +142,8 @@
 .sci-phys-frml-calc-solve {
     padding: 6px 10px;
     border: none;
-    background: var(--purple-main);
-    color: white;
+    background: white;
+    color: #444;
     font-weight: bold;
     cursor: pointer;
     font-size: 14px;
@@ -168,7 +168,7 @@
     max-height: 400px;
     background: white;
     border: 1px solid #ccc;
-    box-shadow: 0 4px 8px black;
+    box-shadow: 0 4px 8px #444;
     z-index: 2147483647;
     display: flex;
     flex-direction: column;
@@ -230,7 +230,7 @@
     padding: 6px 10px;
     border: 1px solid #ccc;
     background: white;
-    color: black;
+    color: #444;
     cursor: pointer;
     align-items: center;
     justify-content: center;
@@ -251,7 +251,7 @@
     height: auto;
     background: white;
     border: 1px solid #ccc;
-    box-shadow: 0 4px 8px black;
+    box-shadow: 0 4px 8px #444;
     z-index: 2147483647;
     display: flex;
     flex-direction: column;
@@ -302,7 +302,7 @@
 
     background: none;
     border: none;
-    color: black;
+    color: #444;
 }
 
 #sci-phys-disp {
