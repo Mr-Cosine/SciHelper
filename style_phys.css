@@ -313,3 +313,17 @@
     border: 1px solid #ccc;
     margin: 8px 12px;
 }
+
+.sci-phys-fbd-disp-info {
+    position: fixed;
+    height: auto;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px #444;
+    padding: 8px;
+    font-size: 10px;
+    background: white;
+    z-index: 2147483648;
+    ul {
+        padding-left: 16px;
+    }
+}

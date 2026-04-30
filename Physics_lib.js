@@ -588,5 +588,55 @@ function renderArrow(force, SCALE, color, width, showMag = true) {
 
     arrow.appendChild(text);
 
+    let info = null;
+    let moveHandler = null;
+
+    const collisionBox = document.createElementNS(SVG_NS, 'line');
+    collisionBox.setAttribute('x1', force.startx); collisionBox.setAttribute('y1', force.starty); 
+    collisionBox.setAttribute('x2', tipx ); collisionBox.setAttribute('y2', tipy);
+    collisionBox.setAttribute('stroke', 'transparent'); collisionBox.setAttribute('stroke-width', 3*width);
+    arrow.appendChild(collisionBox);
+
+    collisionBox.addEventListener("mouseenter", (e) => {
+        info = document.createElement('div');
+        info.setAttribute("class", "sci-phys-fbd-disp-info")
+        info.innerHTML = `
+            <div > ${force.name} </div>
+            <ul>
+                <li> ${force.magnitude}N @ ${force.direction}° </li>
+                <li> Component-x: ${(force.magnitude * Math.cos(force.direction * Math.PI/180)).toFixed(3)}N </li> 
+                <li> Component-y: ${(force.magnitude * Math.sin(force.direction * Math.PI/180)).toFixed(3)}N </li> 
+            </ul>
+        `
+        document.body.appendChild(info);
+
+        const updatePosition = (event) => {
+            var rect = info.getBoundingClientRect();
+            var shiftX = event.clientX - rect.left;
+            var shiftY = event.clientY - rect.top;
+
+            if (info) {
+                info.style.left = (event.clientX + 15) + 'px';
+                info.style.top = (event.clientY + 15) + 'px';
+            }
+        };
+        
+        updatePosition(e);
+        
+        moveHandler = updatePosition;
+        document.addEventListener('mousemove', moveHandler);
+    });
+
+    collisionBox.addEventListener("mouseleave", () => {
+        if (info) {
+            info.remove();
+            info = null;
+        }
+        if (moveHandler) {
+            document.removeEventListener('mousemove', moveHandler);
+            moveHandler = null;
+        }
+    });
+
     return arrow;
 }
