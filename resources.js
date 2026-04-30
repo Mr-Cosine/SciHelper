@@ -9,7 +9,7 @@ const superscripts = Object.freeze({
     "k": "ᵏ", "l": "ˡ", "m": "ᵐ", "n": "ⁿ", "o": "ᵒ",
     "p": "ᵖ", "q": "ᑫ", "r": "ʳ", "s": "ˢ", "t": "ᵗ", "u": "ᵘ",
     "v": "ᵛ", "w": "ʷ", "x": "ˣ", "y": "ʸ", "z": "ᶻ",
-    "-": "⁻"
+    "-": "⁻", "+": "⁺"
 });
 
 const subscripts = Object.freeze({

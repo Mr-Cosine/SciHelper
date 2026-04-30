@@ -521,9 +521,9 @@ function updateFBDvisualization() {
 
         const arrowgroup = document.createElementNS(SVG_NS, 'g');
         forces.forEach((force)=> {
-            arrowgroup.appendChild(renderArrow(force, SCALE, '#444'));
+            arrowgroup.appendChild(renderArrow(force, SCALE, '#444', 3, true));
         });
-        if (forces.length > 1 && Math.abs(net.magnitude) > 0) {arrowgroup.appendChild(renderArrow(net, SCALE, '#ccc'));}
+        if (forces.length > 1 && Math.abs(net.magnitude) > 0) {arrowgroup.appendChild(renderArrow(net, SCALE, '#ccc', 3, true));}
 
         canva.append(arrowgroup);
 
@@ -534,24 +534,23 @@ function updateFBDvisualization() {
         canva.appendChild(dot);
 
         const reference = document.createElementNS(SVG_NS, 'g');
-        reference.append(renderArrow({name: '', magnitude: 15/SCALE, direction: 0, startx: 350, starty: 50}, SCALE, '#444', false));
-        reference.append(renderArrow({name: '', magnitude: 15/SCALE, direction: 90, startx: 350, starty: 50}, SCALE, '#444', false));
-        /*
+        reference.append(renderArrow({name: 'x⁺', magnitude: 20/SCALE, direction: 0, startx: 350, starty: 50}, SCALE, '#444', 2, false));
+        reference.append(renderArrow({name: 'y⁺', magnitude: 20/SCALE, direction: 90, startx: 350, starty: 50}, SCALE, '#444', 2, false));
         const referencedot = document.createElementNS(SVG_NS, 'circle');
-        referencedot.setAttribute('cx', 350); dot.setAttribute('cy', 50);
-        referencedot.setAttribute('r', 2);
+        referencedot.setAttribute('cx', 350); referencedot.setAttribute('cy', 50);
+        referencedot.setAttribute('r', 3);
         referencedot.setAttribute('fill', '#444');
         reference.append(referencedot);
-        */
         canva.appendChild(reference);
     }
 }
 
-function renderArrow(force, SCALE, color, showMag = true) {
+function renderArrow(force, SCALE, color, width, showMag = true) {
     let arrow = document.createElementNS(SVG_NS, 'g');
 
     const headLen = 5;
     const bodyLen = force.magnitude * SCALE - headLen;
+    const sizefactor = width/3;
 
     const rad = -force.direction * Math.PI / 180;
     const perpRad = -force.direction * Math.PI/180 - Math.PI / 2;
@@ -562,12 +561,12 @@ function renderArrow(force, SCALE, color, showMag = true) {
     const arrowbody = document.createElementNS(SVG_NS, 'line');
     arrowbody.setAttribute('x1', force.startx); arrowbody.setAttribute('y1', force.starty); 
     arrowbody.setAttribute('x2', tipx ); arrowbody.setAttribute('y2', tipy);
-    arrowbody.setAttribute('stroke', color); arrowbody.setAttribute('stroke-width', 3);
+    arrowbody.setAttribute('stroke', color); arrowbody.setAttribute('stroke-width', width);
     arrow.appendChild(arrowbody);
 
-    const tip = { x: tipx + 2 * headLen * Math.cos(rad), y: tipy + 2 * headLen * Math.sin(rad) };
-    const baseLeft  = { x: tipx - headLen * Math.cos(perpRad), y: tipy - headLen * Math.sin(perpRad) };
-    const baseRight = { x: tipx + headLen * Math.cos(perpRad), y: tipy + headLen * Math.sin(perpRad) };
+    const tip = { x: tipx + 2 * headLen * Math.cos(rad) * sizefactor, y: tipy + 2 * headLen * Math.sin(rad) * sizefactor };
+    const baseLeft  = { x: tipx - headLen * Math.cos(perpRad) * sizefactor, y: tipy - headLen * Math.sin(perpRad) * sizefactor };
+    const baseRight = { x: tipx + headLen * Math.cos(perpRad) * sizefactor, y: tipy + headLen * Math.sin(perpRad) * sizefactor };
 
     const head = document.createElementNS(SVG_NS, 'polygon');
     head.setAttribute('points', `${tip.x},${tip.y} ${baseLeft.x},${baseLeft.y} ${baseRight.x},${baseRight.y}`);
