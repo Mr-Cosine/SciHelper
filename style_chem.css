@@ -112,6 +112,7 @@
     padding: 8px 12px;
     border-bottom: 1px solid #ccc;
     gap: 10px;
+    font-size: 14px;
     text-align: left;
 }
 
@@ -179,6 +180,7 @@
     align-items: center;
     padding: 8px 12px;
     border-bottom: 1px solid #ccc;
+    font-size: 14px;
     text-align: left;
 }
 
@@ -230,7 +232,6 @@
     top: 150px;
     right: 560px;
     width: 400px;
-    max-height: 400px;
     background: white;
     border: 1px solid #ccc;
     box-shadow: 0 4px 8px black;
@@ -302,19 +303,20 @@ input[readonly] {
     display: flex;
     padding: 10px;
     gap: 10px;
+    font-size: 12px;
     align-items: center;
 }
 
 #sci-chem-lim-ratiobox-label {
-    font-size: 10px;
+    color: #444;
 }
 
 #sci-chem-lim-ratiobox-input {
     padding: 3px;
     border: 1px solid #ccc;
-    font-size: 10px;
+    font-size: 12px;
 
-    width: 40px;
+    width: 50px;
 }
 
 #sci-chem-lim-confirm {
@@ -330,6 +332,7 @@ input[readonly] {
     border: 1px solid #ccc;
     font-size: 16px;
     font-weight: bold;
+    color: #444;
 }
 
 #sci-chem-lim-confirm:hover {

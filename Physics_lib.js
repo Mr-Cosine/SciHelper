@@ -134,8 +134,8 @@ function createFnBtn_phys(name, symbol, color, id, state_phys, outputLoc) {
     btn.addEventListener('click', function() {
         if (id === 'formula') {
             var existingWindow = document.getElementById('sci-phys-frml');
-            if (!existingWindow) {openFormulaWindow(outputLoc); state_phys.formulas = true;}
-            else {existingWindow.remove(); state_phys.formulas = false;}
+            if (!existingWindow) {openPhysFormulaWindow(outputLoc); state_phys.formula = true;}
+            else {existingWindow.remove(); state_phys.formula = false;}
         }
         else if (id === 'vectorCalc') {
             var existingWindow = document.getElementById('sci-phys-vect');
@@ -155,7 +155,7 @@ function createFnBtn_phys(name, symbol, color, id, state_phys, outputLoc) {
 
 /* --- Formula Sheet --- */
 
-function openFormulaWindow(outputLoc) {
+function openPhysFormulaWindow(outputLoc) {
     if (document.getElementById('sci-phys-frml')) return;
 
     var formulaWindow = document.createElement('div');
@@ -404,8 +404,8 @@ function openFBDCalcWindow(outputloc) {
     var inputBox = document.createElement('div');
     inputBox.setAttribute('id', 'sci-phys-fbd-input');
 
-    inputBox.append(createRow('F1'));
-    inputBox.append(createRow('F2'));
+    inputBox.append(createFBDRow('F1'));
+    inputBox.append(createFBDRow('F2'));
 
     var addrowBtn = document.createElement('button');
     addrowBtn.setAttribute('id', 'sci-phys-fbd-addrow')
@@ -414,7 +414,7 @@ function openFBDCalcWindow(outputloc) {
     addrowBtn.addEventListener('click', () => {
         let currentRows = document.querySelectorAll('.sci-phys-fbd-row')
         let defaultName = 'F' + (currentRows.length + 1);
-        inputBox.append(createRow(defaultName));
+        inputBox.append(createFBDRow(defaultName));
     });
 
     const FBDvisualization = document.createElementNS(SVG_NS, 'svg');
@@ -432,7 +432,7 @@ function openFBDCalcWindow(outputloc) {
     return fbdCalcWindow;
 }
 
-function createRow(forceDefaultName) {
+function createFBDRow(forceDefaultName) {
     var row = document.createElement('div');
     row.setAttribute('class', 'sci-phys-fbd-row');
     row.rowID = forceDefaultName;

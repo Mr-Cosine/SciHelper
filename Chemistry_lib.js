@@ -367,11 +367,11 @@ function openChemWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-chem')) return;
 
     let state_chem = {
+        formula: false,
         elemSearch: false,
         molmCalc: false,
         limCalc: false,
-        electroChem: false,
-        formula: false
+        electroChem: false
     }
     
     var chemWindow = document.createElement('div');
@@ -448,8 +448,8 @@ function createFnBtn_chem(name, symbol, color, id, state_chem, outputLoc) {
         }
         else if (id === 'formula') {
             var existingWindow = document.getElementById('sci-chem-frml');
-            if (!existingWindow) {openFormulaWindow(outputLoc); state_chem.formulas = true;}
-            else {existingWindow.remove(); state_chem.formulas = false;}
+            if (!existingWindow) {openChemFormulaWindow(outputLoc); state_chem.formula = true;}
+            else {existingWindow.remove(); state_chem.formula = false;}
         }
         refreshBtnDisp(btn.className, state_chem);
     });
@@ -695,8 +695,8 @@ function openLimReagentWindow() {
     var inputBox = document.createElement('div');
     inputBox.setAttribute('id', 'sci-chem-lim-input');
 
-    inputBox.append(createRow('A'));
-    inputBox.append(createRow('B'));
+    inputBox.append(createLimRow('A'));
+    inputBox.append(createLimRow('B'));
 
     var addrowBtn = document.createElement('button');
     addrowBtn.setAttribute('id', 'sci-chem-lim-addrow')
@@ -707,7 +707,7 @@ function openLimReagentWindow() {
         let placeholder = String.fromCharCode(currentRows[currentRows.length - 1].rowID.charCodeAt(0) + 1);
 
         if (currentRows.length < 5 && placeholder <= 'Z') {
-            inputBox.appendChild(createRow(placeholder));
+            inputBox.appendChild(createLimRow(placeholder));
         }
         
         if(currentRows.length >= 4 || placeholder >= 'Z') {
@@ -789,7 +789,7 @@ function openLimReagentWindow() {
     return LimReagentWindow;
 }
 
-function createRow(reactantDefaultName) {
+function createLimRow(reactantDefaultName) {
     var row = document.createElement('div');
     row.setAttribute('class', 'sci-chem-lim-row');
     row.rowID = reactantDefaultName;
@@ -1029,7 +1029,7 @@ function createSearchInput(placeholderText) {
     return container;
 }
 
-function openFormulaWindow(outputLoc) {
+function openChemFormulaWindow(outputLoc) {
     if (document.getElementById('sci-chem-frml')) return;
 
     var formulaWindow = document.createElement('div');
