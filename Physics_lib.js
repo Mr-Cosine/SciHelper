@@ -601,9 +601,12 @@ function renderArrow(force, SCALE, color, width, showMag = true) {
         info = document.createElement('div');
         info.setAttribute("class", "sci-phys-fbd-disp-info")
         info.innerHTML = `
-            <div > ${force.name} </div>
+            <div style = "font-weight: bold; display: flex; flex-direction: row; gap: 5px;">${force.name}:
+            <div style = "font-weight: normal">${force.magnitude}N @ ${force.direction}°
+            </div></div>
+
             <ul>
-                <li> ${force.magnitude}N @ ${force.direction}° </li>
+            
                 <li> Component-x: ${(force.magnitude * Math.cos(force.direction * Math.PI/180)).toFixed(3)}N </li> 
                 <li> Component-y: ${(force.magnitude * Math.sin(force.direction * Math.PI/180)).toFixed(3)}N </li> 
             </ul>
