@@ -458,6 +458,7 @@ function createFBDRow(forceDefaultName) {
     removeBtn.addEventListener('click', () => {
         let rowLst = document.getElementsByClassName(row.className);
         for (let existingRow of rowLst) {if (existingRow.rowID === removeBtn.buttonID) existingRow.remove();}
+        updateFBDvisualization();
     })
     
     if (parseInt(forceDefaultName.replace('F', '')) <= 1) {
@@ -482,7 +483,8 @@ function updateFBDvisualization() {
         let fmagnitude = parseFloat(input.querySelector('[class$="-magnitude"]').value);
         let fdirection = parseFloat(input.querySelector('[class$="-direction"]').value);
         if (fmagnitude < 0) {fmagnitude = -1 * fmagnitude; fdirection = fdirection - 180;}
-        while (fdirection > 360) {fdirection -= 360;}
+        while (fdirection > 360 || fdirection < 0) {fdirection += (fdirection > 0)? -360: 360;}
+
         if (isNum(fmagnitude) && isNum(fdirection)){
             forces.push({
                 name:      fname,
@@ -583,8 +585,16 @@ function renderArrow(force, SCALE, color, width, showMag = true) {
         else text.setAttribute('text-anchor', 'middle');
     text.setAttribute('dominant-baseline', 'middle');
 
-    text.innerHTML = `<tspan x="${tip.x}" dy="-0.6em">${force.name}</tspan>`;
-    text.innerHTML += (showMag)? `<tspan x="${tip.x}" dy="1.2em" font-size="10" fill="#666">${force.magnitude}N</tspan>` : "";
+    const direction = Math.abs(force.direction) % 360;
+    let dy;
+
+    if (direction === 90) {dy = '-1.2em';} 
+    else if (direction === 270) {dy1 = '1.8em';} 
+    else { dy = '0em';}
+
+    text.innerHTML = `
+        <tspan x="${tip.x}" dy="${dy}" fill="#444" font-size="12">${force.name}: ${showMag ? `${force.magnitude}N` : ''}
+    `;
 
     arrow.appendChild(text);
 
