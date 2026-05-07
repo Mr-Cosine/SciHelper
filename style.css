@@ -10,7 +10,17 @@
 #sci-panel,
 #sci-panel *,
 #sci-info,
-#sci-info * {
+#sci-info *,
+#sci-restore,
+#sci-restore *,
+#sci-bubble,
+#sci-bubble *,
+#sci-chem,
+#sci-chem *,
+#sci-phys,
+#sci-phys *,
+#sci-gen,
+#sci-gen * {
     font-family: 'Noto Sans', 'Noto Sans Math', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -69,23 +79,22 @@
     position: fixed;
     bottom: 40px;
     right: 64px;
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     background-color: #4a90e2;
     color: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 36px;
-    font-weight: 500;
+    font-size: 40px;
     cursor: pointer;
     box-shadow: 0 4px 8px black;
     z-index: 2147483646;
     transition: transform 0.2s;
 }
 
-#sci-restore:hover {
+#sci-restore:not(:has(.sci-bubble:hover)):hover{
     transform: scale(1.1);
     background-color: #5d9ce3;
 }
@@ -245,4 +254,34 @@
 
 .sci-info-content-header-closebtn:hover {
     color: #ff4242;
+}
+
+/*===========================================================================================================================*/
+/*Bubbles*/
+.sci-bubble {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #4a90e2;
+    color: white;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    line-height: 1;
+    font-size: 12px;
+    cursor: pointer;
+    z-index: 2147483645;
+    opacity: 50%;
+}
+
+.sci-bubble:hover {
+    opacity: 80%;
+}
+
+#sci-bubble-close {
+    background-color: #888 !important;
+}
+
+#sci-bubble-close:hover {
+    background-color: #ff4242 !important;
 }

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sci‑Helper Settings</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        h1 { font-size: 1.5rem; }
+        .domain-input { display: flex; gap: 8px; margin: 20px 0; }
+        input { flex: 1; padding: 8px; }
+        button { padding: 8px 16px; cursor: pointer; }
+        ul { list-style: none; padding: 0; }
+        li { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #eee; }
+        .remove-btn { background: #e74c3c; color: white; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer; }
+        .status { margin-top: 20px; color: green; }
+    </style>
+</head>
+<body>
+    <h1>Sci‑Helper – Enabled Websites</h1>
+    <p>Your extension will run on the domains listed below:</p>
+    <ul id="domainList"></ul>
+    
+    <div class="domain-input">
+        <input type="text" id="domainInput" placeholder="https://www.example.com/*">
+        <button id="addBtn" onclick = "addDomain()">Add Domain</button>
+    </div>
+    <div>
+        <ul>Instruction:
+            <li>Paste your url of the website that you want to enable the extension in the box</li>
+            <li>URL must start by https:// or http://</li>
+            <li>It is not necessary to have www, as long as the real url does not</li>
+            <li>* is used to represent text that could be different, following are two examples.</li>
+            <li>If you want to apply to multiple urls that starts with same domain(E.g. both domain/abc and domain/123), use: https://domain/*</li>
+            <li>If you want to apply to multiple urls that shares part of the domain(E.g. abc.domain.com and 123.domain.com), use: https://*.domain.com</li>
+            <li>It is recommended to end the URL with /*</li>
+        </ul>
+    </div>
+
+    <script src="options.js"></script>
+</body>
+</html>

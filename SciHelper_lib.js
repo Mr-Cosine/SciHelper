@@ -1,4 +1,4 @@
-var state = {
+let state = {
     greek: false,
     superscript: false,
     subscript: false,
@@ -7,13 +7,50 @@ var state = {
     physics: false,
     general: false,
     info: false
-    };
+};
+    
+let outputLoc = null;
+let keyListener = null;
 
-var outputLoc = null;
+/* --- Booting --- */
+function boot() {
+    if (document.getElementById('sci-restore')) {document.getElementById('sci-restore').remove();}
+    var restoreBtn = document.createElement('div');
+    restoreBtn.id = 'sci-restore';
+    restoreBtn.textContent = '⌬';
+    restoreBtn.classList.add('no-select');
+    restoreBtn.rcdx = 100; restoreBtn.rcdy = 100;
 
-// --- Main SciHelper Window ---
+    let startTime;
+    restoreBtn.addEventListener('mousedown', function() { startTime = Date.now(); });
+
+    restoreBtn.addEventListener('mouseup', function() {
+        let duration = Date.now() - startTime;
+
+        if (duration < 150) { 
+            initSciHelper(this.rcdx, this.rcdy);
+            this.style.display = 'none';
+        } 
+    });
+
+    restoreBtn.addEventListener('mouseenter', function() {
+        openSettings(restoreBtn);
+    });
+
+    restoreBtn.addEventListener('mouseleave', function() {
+        closeSettings();
+    })
+
+    makeDraggable(restoreBtn, restoreBtn);
+
+    document.body.appendChild(restoreBtn);
+}
+
+/* --- Main SciHelper Window --- */
 function initSciHelper(initx = 100, inity = 100) {    
     if (!document.body || document.getElementById('sci-panel')) return;
+
+    Object.keys(state).forEach(key => { state[key] = false; });
         
     // --- UI Construction ---
     var panel = document.createElement('div');
@@ -74,8 +111,8 @@ function initSciHelper(initx = 100, inity = 100) {
 
     makeDraggable(header, panel);
 
-    document.addEventListener("keydown", function(e) {
-        // Detect focus conflict
+    if (keyListener) document.removeEventListener('keydown', keyListener);
+    keyListener = function(e) {
         if (document.activeElement.tagName === 'INPUT' && 
             document.activeElement.id !== 'sci-panel-output') {
             return;
@@ -102,7 +139,8 @@ function initSciHelper(initx = 100, inity = 100) {
                     
             if (symbol) { e.preventDefault(); insertIntoWindow(outputLoc, symbol); }
         }
-    }, true);
+    }
+    document.addEventListener("keydown", keyListener, true);
 }
 
 function closeSciHelper() {  
@@ -114,15 +152,15 @@ function closeSciHelper() {
     let restoreBtn = document.getElementById('sci-restore');
     restoreBtn.style.display = 'flex';
 
-    //Record current location for restoration
     var rect = document.getElementById('sci-panel').getBoundingClientRect();
     restoreBtn.rcdx = rect.right;
     restoreBtn.rcdy = rect.top;
 
     panel.remove();
+    outputLoc = null;
 }
 
-// --- Put on textbox ---
+/* --- Put on textbox --- */
 function insertIntoWindow(target, text) {
     if (!text || !target) return;
     var start = target.selectionStart || target.value.length;
@@ -132,7 +170,7 @@ function insertIntoWindow(target, text) {
     target.focus();
 }
 
-// --- Drag logic ---
+/* --- Drag logic --- */
 function makeDraggable(handle, target) {
     handle.addEventListener('mousedown', function(e) {
         var rect = target.getBoundingClientRect();
@@ -150,7 +188,7 @@ function makeDraggable(handle, target) {
     });
 }
 
-// --- Mode toggle buttons ---
+/* --- Mode toggle buttons --- */
 function refreshBtnDisp(classname, state) {
     var allBtns = document.getElementsByClassName(classname);
     for (let b of allBtns) {
@@ -358,3 +396,72 @@ function openInfoContent(title, mapping, panel, outputLoc) {
 function closeInfo() {
     document.getElementById('sci-info')?.remove();
 }
+
+/* --- Settings --- */
+function openSettings(parent) {
+    cancelClose();
+
+    if (document.querySelector('.sci-bubble')) return;
+
+    const initAngle = -90;
+    const deviate = 40;
+    const radius = 50;
+
+    const bubbles = [
+        createBubble('×', 'sci-bubble-close', () => turnoff()),
+        createBubble('⚙', 'sci-bubble-option', () => openOptions()),
+        createBubble('✉', 'sci-bubble-contact', () => openContact())
+    ];
+
+    bubbles.forEach((bubble, index) => {
+        parent.appendChild(bubble);
+
+        void bubble.offsetWidth;
+
+        const angleRad = (initAngle + deviate * index) * Math.PI / 180;
+        const dx = radius * Math.cos(angleRad);
+        const dy = radius * Math.sin(angleRad);
+
+        bubble.style.left = `calc(50% + ${dx}px)`;
+        bubble.style.top = `calc(50% + ${dy}px)`;
+        bubble.style.transform = 'translate(-50%, -50%)';
+    });
+}
+
+function createBubble(text, id, clickHandler) {
+    const bubble = document.createElement('div');
+    bubble.className = 'sci-bubble';
+    bubble.id = id;
+    bubble.textContent = text;
+    bubble.addEventListener('click', (e) => {
+        e.stopPropagation();
+        clickHandler();
+    });
+    bubble.addEventListener('mouseenter', () => cancelClose());
+    return bubble;
+}
+
+let closeTimeout = null;
+
+function closeSettings() {
+    if (closeTimeout) clearTimeout(closeTimeout);
+    closeTimeout = setTimeout(() => {
+        document.querySelectorAll('.sci-bubble').forEach(bubble => {
+            bubble.remove()
+        });
+        closeTimeout = null;
+    }, 200);
+}
+
+function cancelClose() {
+    if (closeTimeout) {
+        clearTimeout(closeTimeout);
+        closeTimeout = null;
+    }
+}
+
+function turnoff() { document.querySelectorAll('[id^="sci-"], [class^="sci-"]').forEach(element => element.remove()); }
+
+function openOptions() { browser.runtime.sendMessage({ action: 'openOptions' }); }
+
+function openContact() { browser.runtime.sendMessage({ action: 'openContact' }); }
