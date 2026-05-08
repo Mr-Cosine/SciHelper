@@ -74,8 +74,10 @@ function initSciHelper(initx = 100, inity = 100) {
 
     closeBtn.addEventListener('click', function() {closeSciHelper();});
 
-    var btnContainer = document.createElement('div');
-    btnContainer.setAttribute('id', 'sci-panel-btncontainer');
+    var characterBtnContainer = document.createElement('div');
+    characterBtnContainer.setAttribute('class', 'sci-panel-btncontainer');
+    var toolboxBtnContainer = document.createElement('div');
+    toolboxBtnContainer.setAttribute('class', 'sci-panel-btncontainer');
 
     var outputBox = document.createElement('textarea');
     outputBox.setAttribute('id', 'sci-panel-output');
@@ -98,19 +100,28 @@ function initSciHelper(initx = 100, inity = 100) {
         }
     });
 
-    btnContainer.appendChild(createToggle('Suprscript', 'Xⁿ', 'superscript', '#e57373', state));
-    btnContainer.appendChild(createToggle('Subscript', 'Xₙ', 'subscript', '#ffaf4d', state));
-    btnContainer.appendChild(createToggle('Greek', 'αbγ', 'greek', '#81c784', state)); 
-    btnContainer.appendChild(createToggle('Math', '+-×÷', 'math', '#64b5f6', state)); 
-    btnContainer.appendChild(createSubMenuToggle('Chemistry', 'H₂O', 'chemistry', '#83c1bb', state, outputLoc, panel)); 
-    btnContainer.appendChild(createSubMenuToggle('Physics', 'F=ma', 'physics', '#ba68c8', state, outputLoc, panel));
-    btnContainer.appendChild(createSubMenuToggle('General', '⌬', 'general', '#cfe084', state, outputLoc, panel));
+    var specialCharacterTitle = document.createElement('div');
+    specialCharacterTitle.setAttribute('class', 'sci-panel-sectiontitle');
+    specialCharacterTitle.textContent = '▸ Special characters insertion:';
+
+    characterBtnContainer.appendChild(createToggle('Suprscript', 'Xⁿ', 'superscript', '#e57373', state));
+    characterBtnContainer.appendChild(createToggle('Subscript', 'Xₙ', 'subscript', '#ffaf4d', state));
+    characterBtnContainer.appendChild(createToggle('Greek', 'αbγ', 'greek', '#81c784', state)); 
+    characterBtnContainer.appendChild(createToggle('Math', '+-×÷', 'math', '#64b5f6', state)); 
+
+    var toolboxTitle = document.createElement('div');
+    toolboxTitle.setAttribute('class', 'sci-panel-sectiontitle');
+    toolboxTitle.textContent = '▸ Toolboxes:';
+
+    toolboxBtnContainer.appendChild(createSubMenuToggle('Chemistry', 'H₂O', 'chemistry', '#83c1bb', state, outputLoc, panel)); 
+    toolboxBtnContainer.appendChild(createSubMenuToggle('Physics', 'F=ma', 'physics', '#ba68c8', state, outputLoc, panel));
+    toolboxBtnContainer.appendChild(createSubMenuToggle('General', '⌬', 'general', '#cfe084', state, outputLoc, panel));
 
     headerContainer.append(header, closeBtn);
-    panel.append(headerContainer, btnContainer, infoBtn, outputBox, createCopyBtn(outputBox));        
+    panel.append(headerContainer, specialCharacterTitle, characterBtnContainer, toolboxTitle, toolboxBtnContainer, infoBtn, outputBox, createCopyBtn(outputBox));        
     document.body.appendChild(panel);
 
-    makeDraggable(header, panel);
+    makeDraggable(headerContainer, panel);
 
     if (keyListener) document.removeEventListener('keydown', keyListener);
     keyListener = function(e) {
@@ -225,13 +236,15 @@ function createToggle(label, symbol, id, color, state) {
         refreshBtnDisp(btn.className, state);
     });
 
+    refreshBtnDisp(btn.className, state);
+
     return btn;
 }
 
 function createSubMenuToggle(label, symbol, id, color, state, outputLoc, parentPanel) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'sci-panel-btn');
-    btn.style.backgroundColor = '#f9f9f9';
+    btn.style.backgroundColor = 'white';
     btn.id = id;
     btn.color = color;
 
@@ -257,6 +270,8 @@ function createSubMenuToggle(label, symbol, id, color, state, outputLoc, parentP
         }
         refreshBtnDisp(btn.className, state);
     });
+
+    refreshBtnDisp(btn.className, state);
 
     return btn;
 }

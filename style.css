@@ -47,7 +47,7 @@
     background: none;
     padding: 5px 10px;
     cursor: move;
-    margin-bottom: 25px;
+    margin-bottom: 10px;
     border-bottom: 1px solid #bcbcbc;
 }
 
@@ -99,7 +99,7 @@
     background-color: #5d9ce3;
 }
 
-#sci-panel-btncontainer {
+.sci-panel-btncontainer {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4px;
@@ -120,6 +120,12 @@
     font-size: 16px;
     font-weight: bold;
     margin-left: 8px;
+}
+
+.sci-panel-sectiontitle {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 0px;
 }
 
 #sci-panel-info {
