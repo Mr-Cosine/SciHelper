@@ -12,7 +12,7 @@ browser.runtime.onMessage.addListener((msg) => {
 
 const DEFAULT_DOMAIN = [
     "https://docs.google.com/document/*",
-    "https://texteditor.cn/"
+    "https://texteditor.cn/*"
 ];
 
 async function initDefaultDomains() {
