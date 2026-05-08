@@ -34,6 +34,7 @@ function boot() {
     });
 
     restoreBtn.addEventListener('mouseenter', function() {
+        cancelClose();
         openSettings(restoreBtn);
     });
 
@@ -408,9 +409,9 @@ function openSettings(parent) {
     const radius = 50;
 
     const bubbles = [
-        createBubble('×', 'sci-bubble-close', () => turnoff()),
-        createBubble('⚙', 'sci-bubble-option', () => openOptions()),
-        createBubble('✉', 'sci-bubble-contact', () => openContact())
+        createBubble('×', 'sci-bubble-close', "Turn off SciHelper", () => turnoff()),
+        createBubble('⚙', 'sci-bubble-option', "Open options", () => openOptions()),
+        createBubble('✉', 'sci-bubble-contact', "Reach to dev", () => openContact())
     ];
 
     bubbles.forEach((bubble, index) => {
@@ -428,16 +429,20 @@ function openSettings(parent) {
     });
 }
 
-function createBubble(text, id, clickHandler) {
+function createBubble(text, id, description, clickHandler) {
     const bubble = document.createElement('div');
     bubble.className = 'sci-bubble';
     bubble.id = id;
     bubble.textContent = text;
+    bubble.setAttribute('title', description);
+
     bubble.addEventListener('click', (e) => {
         e.stopPropagation();
         clickHandler();
     });
+    
     bubble.addEventListener('mouseenter', () => cancelClose());
+    bubble.addEventListener ('mouseleave', () => closeSettings());
     return bubble;
 }
 
@@ -450,7 +455,7 @@ function closeSettings() {
             bubble.remove()
         });
         closeTimeout = null;
-    }, 200);
+    }, 300);
 }
 
 function cancelClose() {

@@ -58,3 +58,5 @@ function showStatus(msg, color = 'green') {
 }
 
 loadDomains();
+
+document.getElementById('addBtn').addEventListener('click', () => addDomain());
