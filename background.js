@@ -12,8 +12,6 @@ browser.runtime.onMessage.addListener((msg) => {
 
 const DEFAULT_DOMAIN = [
     "https://docs.google.com/document/*",
-    "https://www.onlinenotepad.io/*",
-    "https://example.com/*",
     "https://texteditor.cn/"
 ];
 
