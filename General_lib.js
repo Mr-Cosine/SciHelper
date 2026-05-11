@@ -279,10 +279,21 @@ function openPolyWindow(outputLoc) {
                 changeform.addEventListener('click', function() {
                     showingExact = !showingExact;
 
-                    let nextResponse = solve(polynomials, !showingExact);
-                    let nextRoots = nextResponse.roots.map(r => isNum(r) ? r.toFixed(3) : r);
+                    let {roots, exactRoot} = solve(polynomials, !showingExact);
+                        roots = roots.map(root => {
+                            if (isNum(root)) {
+                                let rounded = Math.round(root);
+                                if (Math.abs(rounded - root) < 1e-6) {
+                                    return rounded;
+                                }
+                                return root.toFixed(3);
+                            }
+                            else {
+                                return root;
+                            }
+                        });
 
-                    textSpan.textContent = '𝑥 = ' + nextRoots.join(', ');
+                    textSpan.textContent = '𝑥 = ' + roots.join(', ');
                     changeform.textContent = showingExact ? 'Num' : 'Exact';
                 });
 
