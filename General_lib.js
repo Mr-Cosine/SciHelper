@@ -97,12 +97,24 @@ function getExactRoot(polynomials) {
         else if (sqrtContent === 0) return [0];
 
         else {
-            let result = '√' + sqrtContent + ((b<0)? '-' + Math.abs(b): '+' + Math.abs(b)).toString() + ') / ' + Math.abs(2*a).toString();
+            let result = ' √ ' + sqrtContent + ((b<0)? ' - ' + Math.abs(b): ' + ' + Math.abs(b)).toString() + ' ) / ' + Math.abs(2*a).toString();
+
+            function trimZero (expr) {
+                return expr
+                    .replace(/\s*[+-]\s*0\s*/g, '')
+                    .replace(/^0\s*[+-]\s*/, '')
+                    .replace(/[+-]\s*$/, '')
+                    .replace(/\s*([+-])\s*/, '$1')
+                    .trim();
+            }
+
+            result = trimZero(result);
+
             let result1 = result;
             let result2 = result;
-            if (2*a < 0) {result1 = '(-' + result1; result2 = "(" + result2;}
-            else {result1 = '(' + result1; result2 = '(-' + result2;}
-            return [result1, result2];
+            if (2*a < 0) {result1 = ' ( - ' + result1; result2 = " ( " + result2;}
+            else {result1 = ' ( ' + result1; result2 = ' ( - ' + result2;}
+            return [result1.replace(/\s/g, ''), result2.replace(/\s/g, '')];
         }
     }
 }
