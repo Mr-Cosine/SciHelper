@@ -7,13 +7,17 @@
     <style>
         body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
         h1 { font-size: 1.5rem; }
+        #domainList ul { list-style: none; padding: 0; }
+        #domainList li { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #eee; }
         .domain-input { display: flex; gap: 8px; margin: 20px 0; }
         input { flex: 1; padding: 8px; }
         button { padding: 8px 16px; cursor: pointer; }
-        ul { list-style: none; padding: 0; }
-        li { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #eee; }
         .remove-btn { background: #e74c3c; color: white; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer; }
         .status { margin-top: 20px; color: green; }
+        #instruction { display: flex; flex-direction: column; overflow: hidden; margin-top: 10px; }
+        #instruction ul { padding: 0; margin: 0; }
+        #instruction li { margin-left: 30px; margin-bottom: 6px; }
+
     </style>
 </head>
 <body>
@@ -25,7 +29,7 @@
         <input type="text" id="domainInput" placeholder="https://www.example.com/*">
         <button id="addBtn">Add Domain</button>
     </div>
-    <div>
+    <div id = 'instruction'>
         <ul>Instruction:
             <li>Paste your url of the website that you want to enable the extension in the box</li>
             <li>URL must start by https:// or http://</li>
@@ -34,6 +38,7 @@
             <li>If you want to apply to multiple urls that starts with same domain(E.g. both domain/abc and domain/123), use: https://domain/*</li>
             <li>If you want to apply to multiple urls that shares part of the domain(E.g. abc.domain.com and 123.domain.com), use: https://*.domain.com</li>
             <li>It is recommended to end the URL with /*</li>
+            <li><b>If not following the url rule the plugin will not enable as expected</b></li>
         </ul>
     </div>
 
