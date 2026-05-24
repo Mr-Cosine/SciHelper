@@ -100,6 +100,7 @@
     height: auto;
     border-radius: 50%;
     object-fit: cover;
+    pointer-events: none;
 
     -webkit-user-select: none;
     -ms-user-select: none;
@@ -288,7 +289,7 @@
     line-height: 1;
     font-size: 12px;
     cursor: pointer;
-    z-index: 2147483645;
+    z-index: 2147483648;
     opacity: 50%;
 }
 
