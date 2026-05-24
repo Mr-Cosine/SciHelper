@@ -17,7 +17,7 @@ function boot() {
     if (document.getElementById('sci-restore')) {document.getElementById('sci-restore').remove();}
     var restoreBtn = document.createElement('div');
     restoreBtn.id = 'sci-restore';
-    restoreBtn.textContent = '⌬';
+    restoreBtn.innerHTML = `<img src="icon-restoreBtn.png" alt="⌬" draggable="false">`;
     restoreBtn.classList.add('no-select');
     restoreBtn.rcdx = 100; restoreBtn.rcdy = 100;
 

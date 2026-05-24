@@ -1,7 +1,7 @@
 .no-select {
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none;     /* IE 10 and 11 */
-    user-select: none;         /* Standard syntax (Chrome, Firefox, Edge) */
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 /* --- Font Import --- */
@@ -92,11 +92,21 @@
     box-shadow: 0 4px 8px #444;
     z-index: 2147483646;
     transition: transform 0.2s;
+    overflow: hidden;
+}
+
+#sci-restore img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 #sci-restore:not(:has(.sci-bubble:hover)):hover{
     transform: scale(1.1);
-    background-color: #5d9ce3;
 }
 
 .sci-panel-btncontainer {
