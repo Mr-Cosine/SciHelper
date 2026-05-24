@@ -92,12 +92,13 @@
     box-shadow: 0 4px 8px #444;
     z-index: 2147483646;
     transition: transform 0.2s;
-    overflow: hidden;
+    overflow: visible;
 }
 
 #sci-restore img {
     width: 100%;
     height: auto;
+    border-radius: 50%;
     object-fit: cover;
 
     -webkit-user-select: none;
@@ -287,7 +288,7 @@
     line-height: 1;
     font-size: 12px;
     cursor: pointer;
-    z-index: 2147483645;
+    z-index: 2147483647;
     opacity: 50%;
 }
 

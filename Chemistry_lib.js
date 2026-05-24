@@ -1060,7 +1060,7 @@ function openChemFormulaWindow(outputLoc) {
         katex.render(entry.latex, row, { throwOnError: false, displayMode: false });
         row.rowID = i;
         row.addEventListener('click', () => {
-            openCalculatorWindow(formulaWindow, entry, outputLoc);
+            openChemCalculatorWindow(formulaWindow, entry, outputLoc);
         });
         formulaContainer.appendChild(row);
     });
@@ -1072,7 +1072,7 @@ function openChemFormulaWindow(outputLoc) {
     return formulaWindow;
 }
 
-function openCalculatorWindow (parentWindow, formula, outputLoc) {
+function openChemCalculatorWindow (parentWindow, formula, outputLoc) {
     while(document.getElementById('sci-chem-frml-calc')) {document.getElementById('sci-chem-frml-calc').remove();}
     var calcWindow = document.createElement('div');
     calcWindow.setAttribute('id', 'sci-chem-frml-calc');

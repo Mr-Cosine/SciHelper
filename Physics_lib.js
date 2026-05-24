@@ -186,7 +186,7 @@ function openPhysFormulaWindow(outputLoc) {
         katex.render(entry.latex, row, { throwOnError: false, displayMode: false });
         row.rowID = i;
         row.addEventListener('click', () => {
-            openCalculatorWindow(formulaWindow, entry, outputLoc);
+            openPhysCalculatorWindow(formulaWindow, entry, outputLoc);
         });
         formulaContainer.appendChild(row);
     });
@@ -198,7 +198,7 @@ function openPhysFormulaWindow(outputLoc) {
     return formulaWindow;
 }
 
-function openCalculatorWindow (parentWindow, formula, outputLoc) {
+function openPhysCalculatorWindow (parentWindow, formula, outputLoc) {
     while(document.getElementById('sci-phys-frml-calc')) {document.getElementById('sci-phys-frml-calc').remove();}
     var calcWindow = document.createElement('div');
     calcWindow.setAttribute('id', 'sci-phys-frml-calc');
