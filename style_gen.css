@@ -194,3 +194,49 @@
 .sci-gen-poly-result-changeform:hover {
     color: #666;
 }
+
+/*--- Data Plotter ---*/
+#sci-gen-plot {
+    position: fixed;
+    top: 150px;
+    right: 560px;
+    width: 400px;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px #444;
+    z-index: 2147483647;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+#sci-gen-plot-input {
+    display: flex;
+    flex-direction: row;
+    margin: 10px;
+    width: auto;
+    gap: 10px;
+}
+
+#sci-gen-plot-input-input,
+#sci-gen-plot-input-dim,
+#sci-gen-plot-input-btn {
+    padding: 3px;
+    border: 1px solid #ccc;
+    border-radius: None;
+    font-size: 14px;
+    flex-shrink: 1;
+    min-width: 0;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+#sci-gen-plot-input-dim { flex: 0.3 }
+#sci-gen-plot-input-input { flex: 1; }
+#sci-gen-plot-input-btn { text-align:center; flex: 0.2; background-color: var(--yellow-light); font-weight: bold; cursor: pointer; }
+
+#sci-gen-plot-canvas {
+    margin: 10px;
+    aspect-ratio: 1/1;
+    width: auto;
+}

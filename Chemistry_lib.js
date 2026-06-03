@@ -2,7 +2,7 @@
 function isLetter(token) {return /[a-zA-Z]/.test(token);}
 function isUpper(token) {return (isLetter(token) && token === token.toUpperCase());}
 function isLower(token) {return (isLetter(token) && token === token.toLowerCase());}
-function isNum(token) {return (!isNaN(token));}
+function isNum(token) {return typeof token === 'number' && !isNaN(token);}
 
 function sanitizeFormula(input) {
     if (!input) return "";
@@ -24,7 +24,7 @@ function mergeElemLst(input1, input2) {
     input1.forEach(entry => {
         let exist = -1;
         result.forEach ((existedEntry, index) => {if(existedEntry.name === entry.name) exist = index;});
-        if (exist === -1){
+        if (exist === -1) {
             result.push(new elementinformula(entry.name, entry.count));
         }
         else {
@@ -35,7 +35,7 @@ function mergeElemLst(input1, input2) {
     input2.forEach(entry => {
         let exist = -1;
         result.forEach ((existedEntry, index) => {if(existedEntry.name === entry.name) exist = index;});
-        if (exist === -1){
+        if (exist === -1) {
             result.push(new elementinformula(entry.name, entry.count));
         }
         else {
@@ -63,7 +63,7 @@ class elementinformula {
     }
 }
 
-function parseInput(input){
+function parseInput(input) {
     let elemList = [];
     let i = 0;
     while (i < input.length) {
@@ -114,7 +114,7 @@ function parseInput(input){
             }
             let multiplier = multiplierStr === "" ? 1 : parseInt(multiplierStr);
 
-            for (let e of subList){
+            for (let e of subList) {
                 e.count *= Number(multiplier);
             }
             i = j;
@@ -141,7 +141,7 @@ function parseInput(input){
             else if (subList[0] === "ilgl") {
                 return ["ilgl"];
             }
-            for (let e of subList){
+            for (let e of subList) {
                 e.count *= Number(multiplier);
             }
             i = j;
@@ -267,7 +267,7 @@ function solveEq(variables, expressions) {
     let postfix = infixToPostfix(tokens);
     let finalResult = evaluate(postfix);
 
-    return isNaN(finalResult) ? "Error" : finalResult;
+    return isNum(finalResult) ? finalResult.toFixed(3) : "Error";
 }
 
 function infixToPostfix(tokens) {
@@ -315,7 +315,7 @@ function infixToPostfix(tokens) {
             operatorStack.push(token);
         }
         else {
-            return 'error';
+            outputQueue.push(token);
         }
     }
     while (operatorStack.length > 0) {
@@ -332,31 +332,46 @@ function evaluate(postfix) {
             stack.push(token);
         }
         else if (['+', '-', '*', '/', '^'].includes(token)) {
+            if (stack.length < 2) return "Error";
             let b = stack.pop();
             let a = stack.pop();
+
+            let result = null;
             switch (token) {
-                case '+': stack.push(a + b); break;
-                case '-': stack.push(a - b); break;
-                case '*': stack.push(a * b); break;
-                case '/': stack.push(a / b); break;
-                case '^': stack.push(Math.pow(a, b)); break;
+                case '+': result = a + b; break;
+                case '-': result = a - b; break;
+                case '*': result = a * b; break;
+                case '/': result = a / b; break;
+                case '^': result = Math.pow(a, b); break;
+                default: break;
             }
+            if (!isNum(result) || !isFinite(result) || result === null) { return "Error"; }
+            stack.push(result);
         }
         else {
+            if (stack.length < 1) return "Error";
             let a = stack.pop();
+
+            let result = null;
             switch (token) {
-                case 'log10': stack.push(Math.log10(a)); break;
-                case 'ln': stack.push(Math.log(a)); break;
-                case 'sin': stack.push(Math.sin(a)); break;
-                case 'cos': stack.push(Math.cos(a)); break;
-                case 'tan': stack.push(Math.tan(a)); break;
-                case 'asin': stack.push(Math.asin(a)); break;
-                case 'acos': stack.push(Math.acos(a)); break;
-                case 'atan': stack.push(Math.atan(a)); break;
+                case 'log10': result = Math.log10(a); break;
+                case 'ln': result = Math.log(a); break;
+                case 'sin': result = Math.sin(a); break;
+                case 'cos': result = Math.cos(a); break;
+                case 'tan': result = Math.tan(a); break;
+                case 'sec': result = 1/Math.cos(a); break;
+                case 'csc': result = 1/Math.sin(a); break;
+                case 'cot': result = 1/Math.tan(a); break;
+                case 'asin': result = Math.asin(a); break;
+                case 'acos': result = Math.acos(a); break;
+                case 'atan': result = Math.atan(a); break;
+                default: break;
             }
+            if (!isNum(result) || !isFinite(result) || result === null) { return "Error"; }
+            stack.push(result);
         }
     }
-    return stack[0];
+    return (stack.length === 1)? stack[0] : "Error";
 }
 
 //============================================================================
@@ -386,11 +401,11 @@ function openChemWindow(outputLoc, parentWin) {
     fnButtonContainer.setAttribute('class', 'sci-chem-btncontainer');
 
     var btncolor = '#83c1bb';
-    fnButtonContainer.appendChild(createFnBtn_chem('Formula Sheet', '📝', btncolor, 'formula', state_chem, outputLoc));
-    fnButtonContainer.appendChild(createFnBtn_chem('Element Look-Up', '🔎', btncolor, 'elemSearch', state_chem, outputLoc));
-    fnButtonContainer.appendChild(createFnBtn_chem('Molar Mass Calculator', '🧮', btncolor, 'molmCalc', state_chem, outputLoc));
-    fnButtonContainer.appendChild(createFnBtn_chem('Limiting Reagent Calculator', '🧪', btncolor, 'limCalc', state_chem, outputLoc));
-    fnButtonContainer.appendChild(createFnBtn_chem('Electrochemistry', '⚡', btncolor, 'electroChem', state_chem, outputLoc));
+    fnButtonContainer.appendChild(createFnBtn_chem('Formula Sheet', '📝', btncolor, 'formula', outputLoc, state_chem));
+    fnButtonContainer.appendChild(createFnBtn_chem('Element Look-Up', '🔎', btncolor, 'elemSearch', outputLoc, state_chem));
+    fnButtonContainer.appendChild(createFnBtn_chem('Molar Mass Calculator', '🧮', btncolor, 'molmCalc', outputLoc, state_chem));
+    fnButtonContainer.appendChild(createFnBtn_chem('Limiting Reagent Calculator', '🧪', btncolor, 'limCalc', outputLoc, state_chem));
+    fnButtonContainer.appendChild(createFnBtn_chem('Electrochemistry', '⚡', btncolor, 'electroChem', outputLoc, state_chem));
     
     chemWindow.appendChild(chemHeader);
     chemWindow.appendChild(fnButtonContainer);
@@ -407,7 +422,7 @@ function closeChemWindow() {
     return false;
 }
 
-function createFnBtn_chem(name, symbol, color, id, state_chem, outputLoc) {
+function createFnBtn_chem(name, symbol, color, id, outputLoc, state_chem) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'sci-chem-btn');
     btn.style.backgroundColor = '#f9f9f9'; // Default state
@@ -426,31 +441,40 @@ function createFnBtn_chem(name, symbol, color, id, state_chem, outputLoc) {
     btn.append(labelSpan, symbolSpan);
 
     btn.addEventListener('click', function() {
-        if (id === 'elemSearch') {
-            var existingWindow = document.getElementById('sci-chem-elem');
-            if (!existingWindow) {openElemSearchWindow(outputLoc); state_chem.elemSearch = true;}
-            else {existingWindow.remove(); state_chem.elemSearch = false;}
+        switch(id) {
+            case 'elemSearch':
+                var existingWindow = document.getElementById('sci-chem-elem');
+                if (!existingWindow) {openElemSearchWindow(outputLoc); state_chem.elemSearch = true;}
+                else {existingWindow.remove(); state_chem.elemSearch = false;}
+                break;
+                
+            case 'molmCalc': 
+                var existingWindow = document.getElementById('sci-chem-molm');
+                if (!existingWindow) {openMolarMassWindow(outputLoc); state_chem.molmCalc = true;} 
+                else {existingWindow.remove(); state_chem.molmCalc = false;}
+                break;
+
+            case 'limCalc':
+                var existingWindow = document.getElementById('sci-chem-lim');
+                if (!existingWindow) {openLimReagentWindow(); state_chem.limCalc = true;}
+                else {existingWindow.remove(); state_chem.limCalc = false;}
+                break;
+
+            case 'electroChem':
+                var existingWindow = document.getElementById('sci-chem-elec');
+                if (!existingWindow) {openElectroChemWindow(outputLoc); state_chem.electroChem = true;}
+                else {existingWindow.remove(); state_chem.electroChem = false;}
+                break;
+
+            case'formula':
+                var existingWindow = document.getElementById('sci-chem-frml');
+                if (!existingWindow) {openChemFormulaWindow(outputLoc); state_chem.formula = true;}
+                else {existingWindow.remove(); state_chem.formula = false;}
+                break;
+                
+            default: break;
         }
-        else if (id === 'molmCalc') {
-            var existingWindow = document.getElementById('sci-chem-molm');
-            if (!existingWindow) {openMolarMassWindow(outputLoc); state_chem.molmCalc = true;} 
-            else {existingWindow.remove(); state_chem.molmCalc = false;}
-        }
-        else if (id === 'limCalc') {
-            var existingWindow = document.getElementById('sci-chem-lim');
-            if (!existingWindow) {openLimReagentWindow(); state_chem.limCalc = true;}
-            else {existingWindow.remove(); state_chem.limCalc = false;}
-        }
-        else if (id === 'electroChem') {
-            var existingWindow = document.getElementById('sci-chem-elec');
-            if (!existingWindow) {openElectroChemWindow(outputLoc); state_chem.electroChem = true;}
-            else {existingWindow.remove(); state_chem.electroChem = false;}
-        }
-        else if (id === 'formula') {
-            var existingWindow = document.getElementById('sci-chem-frml');
-            if (!existingWindow) {openChemFormulaWindow(outputLoc); state_chem.formula = true;}
-            else {existingWindow.remove(); state_chem.formula = false;}
-        }
+
         refreshBtnDisp(btn.className, state_chem);
     });
 
@@ -710,8 +734,9 @@ function openLimReagentWindow() {
             inputBox.appendChild(createLimRow(placeholder));
         }
         
-        if(currentRows.length >= 4 || placeholder >= 'Z') {
-            addrowBtn.style.color = '#aaa';
+        if (!(currentRows.length < 4 && placeholder <= 'Z')) {
+            addrowBtn.style.color = '#ccc';
+            addrowBtn.style.cursor = "not-allowed";
         }
     });
 
@@ -881,12 +906,19 @@ function createLimRow(reactantDefaultName) {
     removeBtn.addEventListener('click', () => {
         let rowLst = document.getElementsByClassName(row.className);
         for (let existingRow of rowLst) {if (existingRow.rowID === removeBtn.buttonID) existingRow.remove();}
-        if (rowLst.length < 5) document.getElementById('sci-chem-lim-addrow').style.color = 'black';
+        if (rowLst.length < 5) {
+            let addrowBtn = document.getElementById('sci-chem-lim-addrow');
+            if (addrowBtn) {
+                addrowBtn.style.color = 'black';
+                addrowBtn.style.cursor = "pointer";
+            }
+        }
     })
     
     if (reactantDefaultName <= 'B') {
         removeBtn.disabled = true;
-        removeBtn.style.visibility = 'hidden';
+        removeBtn.style.color = "#ccc";
+        removeBtn.style.cursor = "not-allowed";
     }
     
     row.append(name, stoicoefficient, concentration, concUnit, amount, amountUnit, removeBtn);
@@ -1116,9 +1148,8 @@ function openChemCalculatorWindow (parentWindow, formula, outputLoc) {
         });
 
         if (Object.keys(emptyValues).length > 0 && Object.keys(emptyValues).length < 2) {
-            let result = solveEq(varValues, formula.solve).toFixed(3);
             let targetVar = Array.from(inputs).find(input => input.symbol === Object.keys(emptyValues)[0]);
-            targetVar.value = result;
+            targetVar.value = solveEq(varValues, formula.solve);
             targetVar.style.backgroundColor = '#f0f8f7';
         }
         else {

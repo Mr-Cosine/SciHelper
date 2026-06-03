@@ -14,36 +14,84 @@ let keyListener = null;
 
 /* --- Booting --- */
 function boot() {
-    if (document.getElementById('sci-restore')) {document.getElementById('sci-restore').remove();}
+    if (document.getElementById('sci-restore')) {
+        document.getElementById('sci-restore').remove();
+    }
     var restoreBtn = document.createElement('div');
     restoreBtn.id = 'sci-restore';
-    restoreBtn.innerHTML = `<img src="icon-restoreBtn.png" alt="⌬" draggable="false">`;
     restoreBtn.classList.add('no-select');
-    restoreBtn.rcdx = 100; restoreBtn.rcdy = 100;
+    restoreBtn.rcdx = 100;
+    restoreBtn.rcdy = 100;
+
+    // Create background wrapper (this will receive mouse events)
+    var bgWrapper = document.createElement('div');
+    bgWrapper.setAttribute('id', 'sci-restore-bg');
+    bgWrapper.innerHTML = `
+        <img id="top" src="img/SciHelper-iconcontent.png" draggable="false" style="width:100%; z-index:2;">
+        <img id="bottom" src="img/SciHelper-iconbg.png" draggable="false" style="width:140%; z-index:1;">
+    `;
+
+    let dynamicBG = null;
+
+    bgWrapper.addEventListener('mouseenter', () => {
+        cancelClose();
+
+        const bottomImg = bgWrapper.querySelector('#bottom');
+        const topImg = bgWrapper.querySelector('#top');
+        if (!bottomImg || !topImg) return;
+
+        // Define mousemove handler
+        dynamicBG = (e) => {
+            const rect = bgWrapper.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const offsetX = e.clientX - centerX;
+            const offsetY = e.clientY - centerY;
+
+            // Map offset to rotation angles (e.g., max ±15deg)
+            const MAX_ANGLE = 15;
+            const rotY = -(offsetX / (rect.width / 2)) * MAX_ANGLE;   // positive = right
+            const rotX = (offsetY / (rect.height / 2)) * MAX_ANGLE;  // positive = down
+
+            const TRANSLATE_SCALE = 0.4;
+            const dx = -offsetX * TRANSLATE_SCALE;
+            const dy = -offsetY * TRANSLATE_SCALE;
+
+            // Apply same rotation to both images (they move together)
+            const transformValue = `translate(-50%, -50%) translate(${dx}px, ${dy}px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            bottomImg.style.transform = transformValue;
+            topImg.style.transform = transformValue;
+        };
+
+        bgWrapper.addEventListener('mousemove', dynamicBG);
+    });
+
+    bgWrapper.addEventListener('mouseleave', () => {
+        if (dynamicBG) { bgWrapper.removeEventListener('mousemove', dynamicBG); dynamicBG = null; }
+
+        const bottomImg = bgWrapper.querySelector('#bottom');
+        const topImg = bgWrapper.querySelector('#top');
+        
+        if (bottomImg) bottomImg.style.transform = '';
+        if (topImg) topImg.style.transform = '';
+    });
+
+    restoreBtn.appendChild(bgWrapper);
 
     let startTime;
-    restoreBtn.addEventListener('mousedown', function() { startTime = Date.now(); });
-
-    restoreBtn.addEventListener('mouseup', function() {
+    restoreBtn.addEventListener('mousedown', () => { startTime = Date.now(); });
+    restoreBtn.addEventListener('mouseup', () => {
         let duration = Date.now() - startTime;
-
-        if (duration < 150) { 
-            initSciHelper(this.rcdx, this.rcdy);
-            this.style.display = 'none';
-        } 
+        if (duration < 150) {
+            initSciHelper(restoreBtn.rcdx, restoreBtn.rcdy);
+            restoreBtn.style.display = 'none';
+        }
     });
 
-    restoreBtn.addEventListener('mouseenter', function() {
-        cancelClose();
-        openSettings(restoreBtn);
-    });
-
-    restoreBtn.addEventListener('mouseleave', function() {
-        closeSettings();
-    })
+    restoreBtn.addEventListener('mouseenter', () => {openSettings(restoreBtn)});
+    restoreBtn.addEventListener('mouseleave', () => {closeSettings()});
 
     makeDraggable(restoreBtn, restoreBtn);
-
     document.body.appendChild(restoreBtn);
 }
 
@@ -64,7 +112,7 @@ function initSciHelper(initx = 100, inity = 100) {
         
     var header = document.createElement('div');
     header.setAttribute('id', 'sci-panel-header');
-    header.textContent = 'Sci-Helper';
+    header.innerHTML = `<img src=img/SciHelper-banner.svg alt="SciHelper" draggable="false">`;
     header.classList.add('no-select');
         
     var closeBtn = document.createElement('button')
@@ -424,9 +472,9 @@ function openSettings(parent) {
     const radius = 50;
 
     const bubbles = [
-        createBubble('×', 'sci-bubble-close', "Turn off SciHelper", () => turnoff()),
-        createBubble('⚙', 'sci-bubble-option', "Open options", () => openOptions()),
-        createBubble('✉', 'sci-bubble-contact', "Reach to dev", () => openContact())
+        createBubble("img/cross.svg", '×', false, 'sci-bubble-close', "Turn off SciHelper", () => turnoff()),
+        createBubble("img/gear.svg", '⚙', true, 'sci-bubble-option', "Open options", () => openOptions()),
+        createBubble("img/email.svg", '✉', true, 'sci-bubble-contact', "Reach to dev", () => openContact())
     ];
 
     bubbles.forEach((bubble, index) => {
@@ -444,17 +492,18 @@ function openSettings(parent) {
     });
 }
 
-function createBubble(text, id, description, clickHandler) {
+function createBubble(src, altText, colorfulBG, id, description, clickHandler) {
     const bubble = document.createElement('div');
     bubble.className = 'sci-bubble';
     bubble.id = id;
-    bubble.textContent = text;
+    bubble.innerHTML =  `
+        <img src="`+src+`" alt="`+altText+`" draggable = "false" style="z-index: 2">` 
+        + ((colorfulBG)? `<img id = 'bg' src="img/SciHelper-iconbg.png" draggable = "false" style="display: None; z-index: 1">`: ``);
     bubble.setAttribute('title', description);
 
-    bubble.addEventListener('click', (e) => {
-        e.stopPropagation();
-        clickHandler();
-    });
+    bubble.addEventListener('mouseenter', () => { if (bubble.querySelector("#bg")) bubble.querySelector("#bg").style.display= "block";});
+    bubble.addEventListener('mouseleave', () => { if (bubble.querySelector("#bg")) bubble.querySelector("#bg").style.display= "none";});
+    bubble.addEventListener('click', (e) => { e.stopPropagation(); clickHandler(); });
     
     bubble.addEventListener('mouseenter', () => cancelClose());
     bubble.addEventListener ('mouseleave', () => closeSettings());

@@ -137,7 +137,8 @@ function openGenWindow(outputLoc, parentWin) {
     if (document.getElementById('sci-gen')) return;
 
     let state_gen = {
-        polySolver: false
+        polySolver: false,
+        plotter: false
     }
     
     var genWindow = document.createElement('div');
@@ -152,7 +153,8 @@ function openGenWindow(outputLoc, parentWin) {
     fnButtonContainer.setAttribute('class', 'sci-gen-btncontainer');
 
     var btncolor = '#cfe084';
-    fnButtonContainer.appendChild(createFnBtn_gen('Polynomial solver', '🧮', btncolor, 'polySolver', state_gen, outputLoc));
+    fnButtonContainer.appendChild(createFnBtn_gen('Polynomial solver', '🧮', btncolor, 'polySolver', outputLoc, state_gen));
+    fnButtonContainer.appendChild(createFnBtn_gen('Function/data plotter', '📈', btncolor, 'plotter', outputLoc, state_gen))
 
     genWindow.appendChild(genHeader);
     genWindow.appendChild(fnButtonContainer);
@@ -169,7 +171,7 @@ function closeGenWindow() {
     return false;
 }
 
-function createFnBtn_gen(name, symbol, color, id, state_gen, outputLoc) {
+function createFnBtn_gen(name, symbol, color, id, outputLoc, state_gen) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'sci-gen-btn');
     btn.style.backgroundColor = '#f9f9f9';
@@ -187,11 +189,22 @@ function createFnBtn_gen(name, symbol, color, id, state_gen, outputLoc) {
     btn.append(labelSpan, symbolSpan);
 
     btn.addEventListener('click', function() {
-        if (id === 'polySolver') {
-            var existingWindow = document.getElementById('sci-gen-poly');
-            if (!existingWindow) {openPolyWindow(outputLoc); state_gen.polySolver = true;}
-            else {existingWindow.remove(); state_gen.polySolver = false;}
+        switch (id) {
+            case 'polySolver':
+                var existingWindow = document.getElementById('sci-gen-poly');
+                if (!existingWindow) {openPolyWindow(outputLoc); state_gen.polySolver = true;}
+                else {existingWindow.remove(); state_gen.polySolver = false;}
+                break;
+
+            case 'plotter':
+                var existingWindow = document.getElementById('sci-gen-plot');
+                if (!existingWindow) {openPlotterWindow(outputLoc); state_gen.plotter = true;}
+                else {existingWindow.remove(); state_gen.plotter = false;}
+                break;
+                
+            default: break;
         }
+
         refreshBtnDisp(btn.className, state_gen);
     });
 
@@ -371,3 +384,197 @@ function createPolyInput(rowID, defaultExponent = 'n') {
     return row;
 }
 
+function openPlotterWindow(outputLoc) {
+    if (document.getElementById('sci-gen-plot')) return;
+
+    var plotWindow = document.createElement('div');
+    plotWindow.setAttribute('id', 'sci-gen-plot');
+    plotWindow.setAttribute('class', 'sci-gen-tool');
+
+    var header = document.createElement('div');
+    header.setAttribute('class', 'sci-gen-tool-header');
+    header.textContent = 'Function/Data Plotter';
+    header.classList.add('no-select');
+
+    var inputSection = document.createElement('div');
+    inputSection.setAttribute('id', 'sci-gen-plot-input')
+    var dimension = document.createElement('select');
+    dimension.setAttribute('id', 'sci-gen-plot-input-dim');
+    let options = [
+        {text: 'f(x) =', value: '2D'},
+        {text: 'f(x,y) =', value: '3D'}
+    ];
+    options.forEach(opt => {
+        let el = document.createElement('option');
+        el.text = opt.text;
+        el.value = opt.value;
+        dimension.appendChild(el);
+    });
+    var functionInput = document.createElement('input');
+    functionInput.setAttribute('id', 'sci-gen-plot-input-input');
+    var inputConfirm = document.createElement('div');
+    inputConfirm.setAttribute('id', 'sci-gen-plot-input-btn')
+    inputConfirm.textContent = "Plot";
+    inputSection.append(dimension, functionInput, inputConfirm);
+
+    const canva = document.createElement('canvas');
+    canva.setAttribute('class', 'sci-gen-plot-canvas');
+    canva.setAttribute('width', '400');
+    canva.setAttribute('height', '400');
+    const gl = canva.getContext('webgl');
+
+    inputConfirm.addEventListener('click', function() {
+        if (functionInput.value) {
+            let points = calculatePoints(functionInput.value, dimension.value === '2D'? 2: 3);
+        
+            console.log(points);
+            if (dimension.value === '2D') {
+                plot2D(point, canva);
+            }
+            else if (dimension.value === '3D') {
+                plot3D(points, canva);
+            }
+        }
+        
+    });
+
+    plotWindow.append(header, inputSection, canva);
+    makeDraggable(header, plotWindow);
+    document.body.appendChild(plotWindow);
+}
+
+function calculatePoints(expression, dimension, lo = [-10, -10], hi = [10, 10], step = 0.001) {
+    const processedExpr = processExpr(expression, dimension);
+    if (processedExpr.varLst[0] === 'INVALID') return [];
+
+    let points = [];
+    const vars = processedExpr.varLst;      // e.g., [] or ['x'] or ['x','y']
+    const postfix = processedExpr.expression;
+
+    if (dimension === 2) {  // Expect 1 variable, but may have 0
+        const lowerX = lo[0], upperX = hi[0];
+        const xVar = vars[0];  // may be undefined if no variable
+        for (let xVal = lowerX; xVal <= upperX + step/2; xVal += step) {
+            const postfixWithValues = postfix.map(tok => {
+                if (xVar !== undefined && tok === xVar) return xVal;
+                return tok;
+            });
+            const y = evaluate(postfixWithValues);
+            points.push({ x: xVal, y: y });
+        }
+    } else {  // dimension === 3 (or higher later) – Expect 2 variables, but may have 0 or 1
+        const lowerX = lo[0], upperX = hi[0];
+        const lowerY = lo[1], upperY = hi[1];
+        const xVar = vars[0];  // may be undefined
+        const yVar = vars[1];  // may be undefined
+        for (let xVal = lowerX; xVal <= upperX + step/2; xVal += step) {
+            for (let yVal = lowerY; yVal <= upperY + step/2; yVal += step) {
+                const postfixWithValues = postfix.map(tok => {
+                    if (xVar !== undefined && tok === xVar) return xVal;
+                    if (yVar !== undefined && tok === yVar) return yVal;
+                    return tok;
+                });
+                const z = evaluate(postfixWithValues);
+                points.push({ x: xVal, y: yVal, z: z });
+            }
+        }
+    }
+    return points;
+}
+
+function processExpr(expression, dimension) {
+    // Tokenizer (unchanged)
+    const regex = /(\d+(?:\.\d+)?)|([a-zA-Z]+)|([+\-*/^()])|(\s+)/g;
+    const tokens = [];
+    let match;
+    while ((match = regex.exec(expression)) !== null) {
+        if (match[4]) continue;
+        if (match[1]) tokens.push(parseFloat(match[1]));
+        else if (match[2]) tokens.push(match[2]);
+        else if (match[3]) tokens.push(match[3]);
+    }
+
+    const rawTokens = tokens.filter(t => t !== " ");
+    const validExprKey = ['+', '-', '*', '/', '^', 'ln', 'e', 'sin', 'cos', 'tan', 'csc', 'sec', 'cot', 'asin', 'acos', 'atan'];
+
+    const unknownVar = new Set();
+    for (let token of rawTokens) {
+        let isKey = false;
+        for (let keywd of validExprKey) {
+            if (token === keywd) isKey = true;
+        }
+        if (!isKey && typeof token === 'string' && !/^\d+$/.test(token)) {
+            unknownVar.add(token);
+        }
+    }
+
+    const varList = [...unknownVar];
+
+    if (varList.length >= dimension) {
+        return { varLst: ['INVALID'], expression: [] };
+    }
+
+    const postfix = infixToPostfix(rawTokens);
+    return { varLst: varList, expression: postfix };
+}
+
+function plot2D(points, canva) {
+
+}
+
+function plot3D(points, canva) {
+    const vertexShader = createVShader();
+    const fragmentShader = createFShader();
+}
+function createVShader() {
+return `
+    #version 300 es
+    in vec3 aPosition;
+    in vec3 aColor
+    vec4 aWorldPos = vec4(aPosition, 1.0);
+    uniform mat4 uView;
+    uniform mat4 uProjection;
+    
+    void main() {
+        vWorldPos = aPosition;
+        vColor = aColor;
+        gl_Position = uProjection * uView * aWorldPos;
+    }
+`
+}
+
+function createFShader() {
+return `
+    #version 300 es
+    precision highp float;
+    in vec3 vColor;
+    in vec3 vWorldPos;
+    uniform vec3 uCamPosition;
+    out vec4 FragColor;
+
+    void main() {
+        float dist = length(vWorldPos - uCamPosition);
+        float alpha = 1.0 / (dist + 0.001);
+        FragColor = vec4(vColor, alpha);
+    }
+    `
+}
+
+function u_View(camPos, camTarget) {
+    const view = mat4.create();
+    const up = [0, 1, 0];
+    mat4.lookAt(view, camPos, camTarget, up);
+
+    return view
+}
+
+function u_Projection(FOV = 45, canvaWidth = 400, canvaHeight = 400) {
+    const proj = mat4.create();
+    const fov = FOV / 180 * Math.PI;
+    const aspect = canvaWidth / canvaHeight;
+    const near = 0.1;
+    const far = 100.0;
+    mat4.perspective(proj, fov, aspect, near, far);
+
+    return proj
+}
