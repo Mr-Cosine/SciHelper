@@ -251,6 +251,7 @@ function refreshBtnDisp(classname, state) {
         const active = state[b.id]; 
         b.style.backgroundColor = active ? b.color : 'white';
         b.style.color = active ? 'white' : 'black';
+        if (b.querySelector(".sci-panel-btn-symbol")) b.querySelector(".sci-panel-btn-symbol").style.color = active ? 'white' : b.color;
     }
 }
 
@@ -260,21 +261,23 @@ function createToggle(label, symbol, id, color, state) {
     btn.id = id;
     btn.color = color;
 
-    var labelSpan = document.createElement('span');
-    labelSpan.appendChild(document.createTextNode(label));
+    var labelSpan = document.createElement('div');
+    labelSpan.setAttribute('class', 'sci-panel-btn-label');
+    labelSpan.textContent = label;
         
-    var symbolSpan = document.createElement('span');
+    var symbolSpan = document.createElement('div');
     symbolSpan.setAttribute('class', 'sci-panel-btn-symbol');
     symbolSpan.style.color = color;
-    symbolSpan.appendChild(document.createTextNode(symbol));
+    symbolSpan.textContent = symbol;
 
     function rgba(hex, a) {
         const int = parseInt(hex.slice(1), 16);
         return `rgba(${int >> 16 & 255}, ${int >> 8 & 255}, ${int & 255}, ${a})`;
     };
 
-    btn.addEventListener('mouseenter', function() {btn.style.backgroundColor = rgba(color, 0.3)})
-    btn.addEventListener('mouseleave', function() {btn.style.backgroundColor = "white"})
+    let isActive = false;
+    btn.addEventListener('mouseenter', function() {if (!isActive) btn.style.backgroundColor = rgba(color, 0.3)})
+    btn.addEventListener('mouseleave', function() {if (!isActive) btn.style.backgroundColor = "white"})
 
     btn.append(labelSpan, symbolSpan);
 
@@ -283,6 +286,13 @@ function createToggle(label, symbol, id, color, state) {
         state.subscript = (id === 'subscript') ? !state.subscript : false;
         state.greek = (id === 'greek') ? !state.greek : false;
         state.math = (id === 'math')  ? !state.math  : false;
+
+        switch(id) {
+            case 'superscript': isActive = state.superscript; break;
+            case 'subscript': isActive = state.subscript; break;
+            case 'greek': isActive = state.greek; break;
+            case 'math': isActive = state.math; break;
+        }
 
         refreshBtnDisp(btn.className, state);
     });
@@ -299,39 +309,47 @@ function createSubMenuToggle(label, symbol, id, color, state, outputLoc, parentP
     btn.id = id;
     btn.color = color;
 
-    var labelSpan = document.createElement('span');
-    labelSpan.appendChild(document.createTextNode(label));
+    var labelSpan = document.createElement('div');
+    labelSpan.setAttribute('class', 'sci-panel-btn-label');
+    labelSpan.textContent = label;
         
-    var symbolSpan = document.createElement('span');
+    var symbolSpan = document.createElement('div');
     symbolSpan.setAttribute('class', 'sci-panel-btn-symbol');
     symbolSpan.style.color = color;
-    symbolSpan.appendChild(document.createTextNode(symbol));
+    symbolSpan.textContent = symbol;
     
     function rgba(hex, a) {
         const int = parseInt(hex.slice(1), 16);
         return `rgba(${int >> 16 & 255}, ${int >> 8 & 255}, ${int & 255}, ${a})`;
     };
 
-    btn.addEventListener('mouseenter', function() {btn.style.backgroundColor = rgba(color, 0.3)})
-    btn.addEventListener('mouseleave', function() {btn.style.backgroundColor = "white"})
+    let isActive = false;
+    btn.addEventListener('mouseenter', function() {if (!isActive) btn.style.backgroundColor = rgba(color, 0.3)});
+    btn.addEventListener('mouseleave', function() {if (!isActive) btn.style.backgroundColor = "white"});
 
     btn.append(labelSpan, symbolSpan);
     
     btn.addEventListener('click', function() {
-        if (id === 'chemistry') {
-            state.chemistry = (state.chemistry === false) ? openChemWindow(outputLoc, parentPanel) : closeChemWindow();
+        switch (id) { 
+            case 'chemistry':
+                state.chemistry = (state.chemistry === false)? openChemWindow(outputLoc, parentPanel): closeChemWindow();
+                isActive = state.chemistry;
+                break;
+            case 'physics':
+                state.physics = (state.physics === false)? openPhysWindow(outputLoc, parentPanel): closePhysWindow();
+                isActive = state.physics;
+                break;
+            case 'general':
+                state.general = (state.general === false)? openGenWindow(outputLoc, parentPanel): closeGenWindow();
+                isActive = state.general;
+                break;
+            default: break;
         }
-        else if (id === 'physics') {
-            state.physics = (state.physics === false) ? openPhysWindow(outputLoc, parentPanel) : closePhysWindow();
-        }
-        else if (id === 'general') {
-            state.general = (state.general === false) ? openGenWindow(outputLoc, parentPanel) : closeGenWindow();
-        }
+
         refreshBtnDisp(btn.className, state);
     });
 
     refreshBtnDisp(btn.className, state);
-
     return btn;
 }
 

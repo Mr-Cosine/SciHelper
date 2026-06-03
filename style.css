@@ -46,11 +46,9 @@
     align-items: center;
     justify-content: space-between;
     background: none;
-    padding: 5px 10px;
     cursor: move;
     margin-bottom: 10px;
-    padding: 10px;
-    margin-top: 10px;
+    padding: 10px 15px;
     border-bottom: 1px solid #bcbcbc;
 }
 
@@ -154,19 +152,34 @@
 .sci-panel-btn {
     width: 100%;
     padding: 6px 6px;
-    font-size: 14px;
     cursor: pointer;
     border: 1px solid #ccc;
     border-radius: 8px;
     background-color: white;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: row;
+    transition: all 0.2s;
+}
+
+.sci-panel-btn-label {
+    display: flex;
+    font-size: 14px;
+    align-items: center;
+    line-height: 1;
     transition: all 0.2s;
 }
 
 .sci-panel-btn-symbol {
+    display: flex;
     font-family: 'Times New Roman', 'Noto Sans Math', serif !important;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: bold;
     margin-left: 8px;
+    align-items: center;
+    line-height: 1;
+    transition: all 0.2s;
 }
 
 .sci-panel-sectiontitle {
