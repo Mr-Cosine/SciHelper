@@ -27,8 +27,8 @@ function boot() {
     var bgWrapper = document.createElement('div');
     bgWrapper.setAttribute('id', 'sci-restore-bg');
     bgWrapper.innerHTML = `
-        <img id="top" src="img/SciHelper-iconcontent.png" draggable="false" style="width:100%; z-index:2;">
-        <img id="bottom" src="img/SciHelper-iconbg.png" draggable="false" style="width:140%; z-index:1;">
+        <img id="top" src="img/SciHelper-iconContent.png" draggable="false" style="width:100%; z-index:3;">
+        <img id="bottom" src="img/SciHelper-iconBg.png" draggable="false" style="width:140%; z-index:1;">
     `;
 
     let dynamicBG = null;
@@ -53,14 +53,9 @@ function boot() {
             const rotY = -(offsetX / (rect.width / 2)) * MAX_ANGLE;   // positive = right
             const rotX = (offsetY / (rect.height / 2)) * MAX_ANGLE;  // positive = down
 
-            const TRANSLATE_SCALE = 0.4;
-            const dx = -offsetX * TRANSLATE_SCALE;
-            const dy = -offsetY * TRANSLATE_SCALE;
-
             // Apply same rotation to both images (they move together)
-            const transformValue = `translate(-50%, -50%) translate(${dx}px, ${dy}px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-            bottomImg.style.transform = transformValue;
-            topImg.style.transform = transformValue;
+            bottomImg.style.transform = `translate(-50%, -50%) translate(${offsetX * -0.4}px, ${offsetY * -0.4}px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            topImg.style.transform = `translate(-50%, -50%) translate(${offsetX * -0.4}px, ${offsetY * -0.4}px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
         };
 
         bgWrapper.addEventListener('mousemove', dynamicBG);
@@ -108,16 +103,17 @@ function initSciHelper(initx = 100, inity = 100) {
     panel.style.top = inity + 'px';
 
     var headerContainer = document.createElement('div');
-    headerContainer.setAttribute('id', 'sci-panel-headercontainer');
+    headerContainer.setAttribute('id', 'sci-panel-header');
         
     var header = document.createElement('div');
-    header.setAttribute('id', 'sci-panel-header');
+    header.setAttribute('id', 'sci-panel-header-header');
     header.innerHTML = `<img src=img/SciHelper-banner.svg alt="SciHelper" draggable="false">`;
     header.classList.add('no-select');
         
     var closeBtn = document.createElement('button')
-    closeBtn.setAttribute('id', 'sci-panel-closebtn');
-    closeBtn.textContent = "×";
+    closeBtn.setAttribute('id', 'sci-panel-header-closebtn');
+    let color = "#444";
+    closeBtn.textContent = "✖";
     closeBtn.classList.add('no-select');
 
     closeBtn.addEventListener('click', function() {closeSciHelper();});
@@ -261,7 +257,6 @@ function refreshBtnDisp(classname, state) {
 function createToggle(label, symbol, id, color, state) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'sci-panel-btn');
-    btn.style.backgroundColor = 'white';
     btn.id = id;
     btn.color = color;
 
@@ -272,6 +267,14 @@ function createToggle(label, symbol, id, color, state) {
     symbolSpan.setAttribute('class', 'sci-panel-btn-symbol');
     symbolSpan.style.color = color;
     symbolSpan.appendChild(document.createTextNode(symbol));
+
+    function rgba(hex, a) {
+        const int = parseInt(hex.slice(1), 16);
+        return `rgba(${int >> 16 & 255}, ${int >> 8 & 255}, ${int & 255}, ${a})`;
+    };
+
+    btn.addEventListener('mouseenter', function() {btn.style.backgroundColor = rgba(color, 0.3)})
+    btn.addEventListener('mouseleave', function() {btn.style.backgroundColor = "white"})
 
     btn.append(labelSpan, symbolSpan);
 
@@ -303,6 +306,14 @@ function createSubMenuToggle(label, symbol, id, color, state, outputLoc, parentP
     symbolSpan.setAttribute('class', 'sci-panel-btn-symbol');
     symbolSpan.style.color = color;
     symbolSpan.appendChild(document.createTextNode(symbol));
+    
+    function rgba(hex, a) {
+        const int = parseInt(hex.slice(1), 16);
+        return `rgba(${int >> 16 & 255}, ${int >> 8 & 255}, ${int & 255}, ${a})`;
+    };
+
+    btn.addEventListener('mouseenter', function() {btn.style.backgroundColor = rgba(color, 0.3)})
+    btn.addEventListener('mouseleave', function() {btn.style.backgroundColor = "white"})
 
     btn.append(labelSpan, symbolSpan);
     
@@ -498,7 +509,7 @@ function createBubble(src, altText, colorfulBG, id, description, clickHandler) {
     bubble.id = id;
     bubble.innerHTML =  `
         <img src="`+src+`" alt="`+altText+`" draggable = "false" style="z-index: 2">` 
-        + ((colorfulBG)? `<img id = 'bg' src="img/SciHelper-iconbg.png" draggable = "false" style="display: None; z-index: 1">`: ``);
+        + ((colorfulBG)? `<img id = 'bg' src="img/SciHelper-iconBg.png" draggable = "false" style="display: None; z-index: 1">`: ``);
     bubble.setAttribute('title', description);
 
     bubble.addEventListener('mouseenter', () => { if (bubble.querySelector("#bg")) bubble.querySelector("#bg").style.display= "block";});
@@ -507,6 +518,51 @@ function createBubble(src, altText, colorfulBG, id, description, clickHandler) {
     
     bubble.addEventListener('mouseenter', () => cancelClose());
     bubble.addEventListener ('mouseleave', () => closeSettings());
+
+    let dynamicBG = null;
+    bubble.addEventListener('mouseenter', () => {
+        cancelClose();
+
+        const bgWrapper = document.querySelector('#sci-restore-bg');
+        if (!bgWrapper) return;
+
+        const bottomImg = bgWrapper.querySelector('#bottom');
+        const topImg = bgWrapper.querySelector('#top');
+        if (!bottomImg || !topImg) return;
+
+        // Define mousemove handler
+        dynamicBG = (e) => {
+            const rect = bgWrapper.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const offsetX = e.clientX - centerX;
+            const offsetY = e.clientY - centerY;
+
+            // Map offset to rotation angles (e.g., max ±15deg)
+            const MAX_ANGLE = 15;
+            const rotY = -(offsetX / (rect.width / 2)) * MAX_ANGLE;
+            const rotX = (offsetY / (rect.height / 2)) * MAX_ANGLE;
+
+            // Apply same rotation to both images (they move together)
+            bottomImg.style.transform = `translate(-50%, -50%) translate(${offsetX * 0.4}px, ${offsetY * 0.4}px) rotateX(${-rotX}deg) rotateY(${-rotY}deg)`;
+            topImg.style.transform = `translate(-50%, -50%) translate(${offsetX * 0.4}px, ${offsetY * 0.4}px) rotateX(${-rotX}deg) rotateY(${-rotY}deg)`;
+        };
+
+        bubble.addEventListener('mousemove', dynamicBG);
+    });
+
+    bubble.addEventListener('mouseleave', () => {
+        const bgWrapper = document.querySelector('#sci-restore-bg');
+        if (!bgWrapper) return;
+
+        if (dynamicBG) { bgWrapper.removeEventListener('mousemove', dynamicBG); dynamicBG = null; }
+
+        const bottomImg = bgWrapper.querySelector('#bottom');
+        const topImg = bgWrapper.querySelector('#top');
+        
+        if (bottomImg) bottomImg.style.transform = '';
+        if (topImg) topImg.style.transform = '';
+    });
     return bubble;
 }
 

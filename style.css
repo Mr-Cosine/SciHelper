@@ -27,18 +27,21 @@
 #sci-panel {
     position: fixed;
     width: 320px;
-    background: white;
-    border: 2px solid;
-    border-image: linear-gradient(135deg, #4a90e2, #ba68c8) 1;
     z-index: 2147483646;
     padding: 10px;
     box-shadow: 0 4px 8px #444;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+
+    border: 2px solid transparent;
+    border-radius: 16px;
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+    background-image: linear-gradient(to right, white, white), linear-gradient(135deg, #4a90e2, #ba68c8);
 }
 
-#sci-panel-headercontainer {
+#sci-panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -46,20 +49,19 @@
     padding: 5px 10px;
     cursor: move;
     margin-bottom: 10px;
+    padding: 10px;
+    margin-top: 10px;
     border-bottom: 1px solid #bcbcbc;
 }
 
-#sci-panel-header {
+#sci-panel-header-header {
     display: flex;
     cursor: move;
-    height: 75px;
-    font-size: 24px;
-    font-weight: bold;
-    color: #4a90e2;
-    text-align: left;
+    height: 40px;
+    align-items: center;
 }
 
-#sci-panel-header img {
+#sci-panel-header-header img {
     height: 100%;
     width: auto;
     object-fit: cover;
@@ -70,19 +72,17 @@
     user-select: none;
 }
 
-#sci-panel-closebtn {
+#sci-panel-header-closebtn {
     background: none;
     border: none;
-    color: #888;
     cursor: pointer;
-    font-size: 36px;
-    font-weight: bold;
+    font-size: 24px;
     line-height: 1;
-    padding: 10px;
-    margin-left: 10px;
+    font-weight: bold;
+    color: #444;
 }
 
-#sci-panel-closebtn:hover {
+#sci-panel-header-closebtn:hover {
     color: #ff4242;
 }
 
@@ -116,7 +116,9 @@
     overflow: hidden;
     z-index: 2;
     perspective: 30px;
-    transition: transform 0.3s;
+
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 #sci-restore img#top,
@@ -130,11 +132,15 @@
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    transition: transform 0.2s ease-out;
+    transition: transform 0.3s ease-out;
+
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    -webkit-font-smoothing: antialiased;
 }
 
-#sci-restore:not(:has(.sci-bubble:hover)):hover{
-    transform: scale(1.075);
+#sci-restore:hover{
+    transform: scale(1.1);
 }
 
 .sci-panel-btncontainer {
@@ -151,6 +157,9 @@
     font-size: 14px;
     cursor: pointer;
     border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: white;
+    transition: all 0.2s;
 }
 
 .sci-panel-btn-symbol {
@@ -208,7 +217,8 @@
     padding: 8px;
     cursor: pointer;
     border: 1px solid #4a90e2;
-    background: #f9f9f9;
+    border-radius: 8px;
+    background: white;
     font-weight: bold;
 }
 
@@ -217,7 +227,7 @@
 #sci-info {
     position: absolute;
     width: 150px;
-    background: #fff;
+    background: white;
     border: 1px solid #ccc;
     z-index: 2147483647;
     display: flex;
@@ -229,7 +239,7 @@
 .sci-info-header,
 .sci-info-content-header {
     background: #444;
-    color: #fff;
+    color: white;
     padding: 6px 8px;
     display: flex;
     flex-direction: row;
@@ -246,7 +256,7 @@
     padding: 10px 8px;
     border: none;
     border-bottom: 1px solid #f0f0f0;
-    background: #fff;
+    background: white;
     cursor: pointer;
     font-size: 12px;
     transition: background 0.2s;
@@ -294,7 +304,7 @@
 
 .sci-info-content-header-closebtn {
     background: none;
-    color: #fff;
+    color: white;
     border: none;
     cursor: pointer;
     font-size: 16px;
@@ -320,7 +330,7 @@
     font-size: 12px;
     cursor: pointer;
     z-index: 1;
-    opacity: 50%;
+    opacity: 65%;
     overflow: hidden;
     transition: all 0.2s ease-in-out;
 }
@@ -343,7 +353,7 @@
 .sci-bubble img#bg { width: 100%; }
 
 .sci-bubble:hover {
-    opacity: 80%;
+    opacity: 90%;
 }
 
 #sci-bubble-close {
