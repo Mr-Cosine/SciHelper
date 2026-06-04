@@ -215,15 +215,22 @@
 
 #sci-gen-plot-input {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    flex: 1;
     margin: 10px;
-    width: auto;
+    gap: 5px;
+}
+
+#sci-gen-plot-input-function {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
     gap: 10px;
 }
 
-#sci-gen-plot-input-input,
-#sci-gen-plot-input-dim,
-#sci-gen-plot-input-btn {
+#sci-gen-plot-input-function-expr,
+#sci-gen-plot-input-function-dim,
+#sci-gen-plot-input-function-confirm {
     padding: 3px;
     border: 1px solid #ccc;
     border-radius: None;
@@ -231,15 +238,63 @@
     flex-shrink: 1;
     min-width: 0;
     box-sizing: border-box;
-    width: 100%;
 }
 
-#sci-gen-plot-input-dim { flex: 0.3 }
-#sci-gen-plot-input-input { flex: 1; }
-#sci-gen-plot-input-btn { text-align:center; flex: 0.2; background-color: var(--yellow-light); font-weight: bold; cursor: pointer; }
+#sci-gen-plot-input-function-dim { flex: 0.3 }
+#sci-gen-plot-input-function-expr { flex: 1; }
+#sci-gen-plot-input-function-confirm { text-align:center; flex: 0.2; background-color: white; font-weight: bold; cursor: pointer; }
+#sci-gen-plot-input-function-confirm:hover { background-color: var(--yellow-light); }
+
+#sci-gen-plot-input-range {
+    display: flex;
+    flex-direction: column;
+    width:100%;
+    gap: 10px;
+    box-sizing: border-box;
+}
+
+.sci-gen-plot-input-range-var {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 5px;
+    box-sizing: border-box;
+}
+
+.sci-gen-plot-input-range-label {
+    padding: 3px;
+    border: None;
+    font-size: 14px;
+    flex-shrink: 1;
+    min-width: 0;
+    box-sizing: border-box;
+}
+.sci-gen-plot-input-range-min,
+.sci-gen-plot-input-range-max {
+    padding: 3px;
+    border: 1px solid #ccc;
+    border-radius: None;
+    font-size: 14px;
+    flex-shrink: 1;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.sci-gen-plot-input-range-label { width: auto; }
+.sci-gen-plot-input-range-min { flex: 0.5; }
+.sci-gen-plot-input-range-max { flex: 0.5; }
 
 #sci-gen-plot-canvas {
+    display: flex;
     margin: 10px;
-    aspect-ratio: 1/1;
-    width: auto;
+    border: 1px solid #ccc;
+    flex: 1;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+#sci-gen-plot-canvas-canvas {
+    width: 100%;
+    height: auto;
+    display: block;
 }

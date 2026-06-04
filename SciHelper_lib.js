@@ -497,8 +497,8 @@ function openSettings(parent) {
     if (document.querySelector('.sci-bubble')) return;
 
     const initAngle = -90;
-    const deviate = 40;
-    const radius = 50;
+    const deviate = 42;
+    const radius = 54;
 
     const bubbles = [
         createBubble("img/cross.svg", '×', false, 'sci-bubble-close', "Turn off SciHelper", () => turnoff()),
@@ -593,7 +593,7 @@ function closeSettings() {
             bubble.remove()
         });
         closeTimeout = null;
-    }, 300);
+    }, 500);
 }
 
 function cancelClose() {

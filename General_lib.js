@@ -129,6 +129,100 @@ function getRoot(lo, hi, epsi, polynomials) {
     else {return getRoot(lo, mid, epsi, polynomials);}
 }
 
+function calculatePoints(expression, dimension, x, y) {
+    const processedExpr = processExpr(expression, dimension);
+    if (processedExpr.varLst[0] === 'INVALID') return [];
+
+    let points = [];
+    const vars = processedExpr.varLst;      // e.g., [] or ['x'] or ['x','y']
+    const postfix = processedExpr.expression;
+
+    if (dimension == 2) {
+        const lowerX = x[0], upperX = x[1]; 
+        if (lowerX >= upperX) return [];
+        const xVar = vars[0];
+
+        let step = 0.001;
+        const maxStep = 0.001;
+        const minStep = 0.001;
+
+        let prevPoint = { x: lowerX-0.001, y: evaluate(postfix.map(tok => {if (xVar !== undefined && tok === xVar) return lowerX-0.001; return tok;})) };
+        
+        for (let xVal = lowerX; xVal <= upperX + step/2;) {
+            const postfixWithValues = postfix.map(tok => {
+                if (xVar !== undefined && tok === xVar) return xVal;
+                return tok;
+            });
+            let yVal = evaluate(postfixWithValues);
+
+            if (isNum(yVal)) {
+                step = Math.min(maxStep, Math.max(1/Math.abs((yVal - prevPoint.y)/(xVal - prevPoint.x)), minStep));
+                points.push({ x: xVal, y: yVal });
+                prevPoint = { x: xVal, y: yVal };
+            }
+            xVal += step;
+        }
+    } 
+    /*else {  // dimension === 3 (or higher later) – Expect 2 variables, but may have 0 or 1
+        const step = 0.005;
+        const lowerX = x[0], upperX = x[1];
+        const lowerY = y[0], upperY = y[1];
+        if (lowerX >= upperX) return [];
+        if (lowerY >= upperY) return [];
+        const xVar = vars[0];  // may be undefined
+        const yVar = vars[1];  // may be undefined
+        for (let xVal = lowerX; xVal <= upperX + step/2; xVal += step) {
+            for (let yVal = lowerY; yVal <= upperY + step/2;) {
+                const postfixWithValues = postfix.map(tok => {
+                    if (xVar !== undefined && tok === xVar) return xVal;
+                    if (yVar !== undefined && tok === yVar) return yVal;
+                    return tok;
+                });
+                const z = evaluate(postfixWithValues);
+                points.push({ x: xVal, y: yVal, z: z });
+                yVal += step
+            }
+        }
+    }*/
+    return points;
+}
+
+function processExpr(expression, dimension) {
+    // Tokenizer (unchanged)
+    const regex = /(\d+(?:\.\d+)?)|([a-zA-Z]+)|([+\-*/^()])|(\s+)/g;
+    const tokens = [];
+    let match;
+    while ((match = regex.exec(expression)) !== null) {
+        if (match[4]) continue;
+        if (match[1]) tokens.push(parseFloat(match[1]));
+        else if (match[2]) tokens.push(match[2]);
+        else if (match[3]) tokens.push(match[3]);
+    }
+
+    const rawTokens = tokens.filter(t => t !== " ");
+    const validExprKey = ['+', '-', '*', '/', '^', 'ln', 'e', 'sin', 'cos', 'tan', 'csc', 'sec', 'cot', 'asin', 'acos', 'atan', "(", ")"];
+
+    const unknownVar = new Set();
+    for (let token of rawTokens) {
+        let isKey = false;
+        for (let keywd of validExprKey) {
+            if (token === keywd) isKey = true;
+        }
+        if (!isKey && typeof token === 'string' && !/^\d+$/.test(token)) {
+            unknownVar.add(token);
+        }
+    }
+
+    const varList = [...unknownVar];
+
+    if (varList.length >= dimension) {
+        return { varLst: ['INVALID'], expression: [] };
+    }
+
+    const postfix = infixToPostfix(rawTokens);
+    return { varLst: varList, expression: postfix };
+}
+
 //============================================================================
 // --- UI builders ---
 
@@ -398,11 +492,14 @@ function openPlotterWindow(outputLoc) {
 
     var inputSection = document.createElement('div');
     inputSection.setAttribute('id', 'sci-gen-plot-input')
+
+    var functionInput = document.createElement('div');
+    functionInput.setAttribute('id', 'sci-gen-plot-input-function')
     var dimension = document.createElement('select');
-    dimension.setAttribute('id', 'sci-gen-plot-input-dim');
+    dimension.setAttribute('id', 'sci-gen-plot-input-function-dim');
     let options = [
-        {text: 'f(x) =', value: '2D'},
-        {text: 'f(x,y) =', value: '3D'}
+        {text: 'f(x) =', value: 2},
+        {text: 'f(x,y) =', value: 3}
     ];
     options.forEach(opt => {
         let el = document.createElement('option');
@@ -410,122 +507,257 @@ function openPlotterWindow(outputLoc) {
         el.value = opt.value;
         dimension.appendChild(el);
     });
-    var functionInput = document.createElement('input');
-    functionInput.setAttribute('id', 'sci-gen-plot-input-input');
+    var expression = document.createElement('input');
+    expression.setAttribute('id', 'sci-gen-plot-input-function-expr');
     var inputConfirm = document.createElement('div');
-    inputConfirm.setAttribute('id', 'sci-gen-plot-input-btn')
+    inputConfirm.setAttribute('id', 'sci-gen-plot-input-function-confirm')
     inputConfirm.textContent = "Plot";
-    inputSection.append(dimension, functionInput, inputConfirm);
+    functionInput.append(dimension, expression, inputConfirm);
 
-    const canva = document.createElement('canvas');
-    canva.setAttribute('class', 'sci-gen-plot-canvas');
-    canva.setAttribute('width', '400');
-    canva.setAttribute('height', '400');
-    const gl = canva.getContext('webgl');
+    var rangeInput = document.createElement('div');
+    rangeInput.setAttribute('id', 'sci-gen-plot-input-range');
+    var xrange = document.createElement('div');
+    xrange.setAttribute('class', 'sci-gen-plot-input-range-var');
+    xrange.setAttribute("id", "x");
+    var xlabel = document.createElement('div');
+    xlabel.setAttribute('class',  'sci-gen-plot-input-range-label');
+    xlabel.textContent = 'x range:';
+    var xmin = document.createElement('input');
+    xmin.setAttribute('class',  'sci-gen-plot-input-range-min');
+    xmin.value = "-10";
+    xmin.type = "number";
+    var xmax = document.createElement('input');
+    xmax.setAttribute('class',  'sci-gen-plot-input-range-max');
+    xmax.value = "10";
+    xmax.type = "number";
+    var connlabel = document.createElement('div');
+    connlabel.setAttribute('class', 'sci-gen-plot-input-range-label');
+    connlabel.textContent = '~';
+
+    var yrange = document.createElement('div');
+    yrange.setAttribute('class', 'sci-gen-plot-input-range-var');
+    yrange.setAttribute('id', 'y');
+    var ylabel = document.createElement('div');
+    ylabel.setAttribute('class',  'sci-gen-plot-input-range-label');
+    ylabel.textContent = 'y range:';
+    var ymin = document.createElement('input')
+    ymin.setAttribute('class',  'sci-gen-plot-input-range-min');
+    ymin.value = "-10";
+    ymin.type = "number";
+    var ymax = document.createElement('input');
+    ymax.setAttribute('class',  'sci-gen-plot-input-range-max');
+    ymax.value = "10";
+    ymax.type = "number";
+
+    xrange.append(xlabel, xmin, connlabel.cloneNode(true), xmax);
+    yrange.append(ylabel, ymin, connlabel.cloneNode(true), ymax);
+
+    rangeInput.append(xrange, yrange);
+    
+    inputSection.append(functionInput, rangeInput);
+    
+
+    var graphSection = document.createElement('div');
+    graphSection.setAttribute('id', 'sci-gen-plot-canvas');
+    const graph = document.createElement('canvas');
+    graph.setAttribute('id', 'sci-gen-plot-canvas-canvas');
+    graph.setAttribute('width', '840');
+    graph.setAttribute('height', '840');
+    graphSection.append(graph);
 
     inputConfirm.addEventListener('click', function() {
-        if (functionInput.value) {
-            let points = calculatePoints(functionInput.value, dimension.value === '2D'? 2: 3);
-        
-            console.log(points);
-            if (dimension.value === '2D') {
-                plot2D(point, canva);
+        if (expression.value && dimension.value && 
+            (parseFloat(xmin.value) || parseFloat(xmin.value == 0)) && 
+            (parseFloat(xmax.value) || parseFloat(xmax.value == 0))) {
+
+            let xspan = [parseFloat(xmin.value), parseFloat(xmax.value)];
+            let yspan = null;
+
+            if (dimension.value == 2) {
+                if (yrange[0] === null && yrange[1] === null) {
+                    yspan = [null, null];
+                }
+                else if ((parseFloat(ymin.value) || parseFloat(ymin.value == 0)) && (parseFloat(ymax.value) || parseFloat(ymax.value == 0))) {
+                    yspan = [parseFloat(ymin.value), parseFloat(ymax.value)];
+                }
+                else return;
+
+                let points = calculatePoints(expression.value, dimension.value, xspan, yspan);
+                plot2D(points, graph, xspan, yspan);
             }
-            else if (dimension.value === '3D') {
-                plot3D(points, canva);
+            else {
+                if ((parseFloat(ymin.value) || parseFloat(ymin.value == 0)) && (parseFloat(ymax.value) || parseFloat(ymax.value == 0))) {
+                    yspan = [parseFloat(ymin.value), parseFloat(ymax.value)];
+                    plot3D(points, graph, xspan, yspan);
+                }
+                else return;
+
+                let points = calculatePoints(expression.value, dimension.value, xspan, yspan);
+                plot3D(points, graph, xspan, yspan);
             }
         }
-        
     });
 
-    plotWindow.append(header, inputSection, canva);
+    plotWindow.append(header, inputSection, graphSection);
     makeDraggable(header, plotWindow);
     document.body.appendChild(plotWindow);
 }
 
-function calculatePoints(expression, dimension, lo = [-10, -10], hi = [10, 10], step = 0.001) {
-    const processedExpr = processExpr(expression, dimension);
-    if (processedExpr.varLst[0] === 'INVALID') return [];
+function plot2D(points, canvas, xrange, yrange) {
+   const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.globalCompositeOperation = 'source-over';
 
-    let points = [];
-    const vars = processedExpr.varLst;      // e.g., [] or ['x'] or ['x','y']
-    const postfix = processedExpr.expression;
+    const CANVAS_YSTART = 0;
+    const CANVAS_YEND = canvas.height;
+    const CANVAS_XSTART = 0;
+    const CANVAS_XEND = canvas.width;
+    const CANVAS_XCENTER = canvas.width/2;
+    const CANVAS_YCENTER = canvas.height/2;
 
-    if (dimension === 2) {  // Expect 1 variable, but may have 0
-        const lowerX = lo[0], upperX = hi[0];
-        const xVar = vars[0];  // may be undefined if no variable
-        for (let xVal = lowerX; xVal <= upperX + step/2; xVal += step) {
-            const postfixWithValues = postfix.map(tok => {
-                if (xVar !== undefined && tok === xVar) return xVal;
-                return tok;
-            });
-            const y = evaluate(postfixWithValues);
-            points.push({ x: xVal, y: y });
+    const validPoints = points.filter(p => isFinite(p.x) && isFinite(p.y));
+    if (validPoints.length === 0) {
+        ctx.fillStyle = 'red';
+        ctx.fillText('No valid points', CANVAS_XCENTER, CANVAS_YCENTER);
+        return;
+    }
+
+    let MIN_X = xrange[0];
+    let MAX_X = xrange[1];
+
+    let MIN_Y = yrange[0];
+    let MAX_Y = yrange[1];
+
+    if ( MIN_Y === null || MAX_Y === null) {
+        MIN_Y = Math.min(...validPoints.map(p => p.y));
+        MAX_Y = Math.max(...validPoints.map(p => p.y));
+        const MIN_PADDING = 2;
+        MAX_Y += (Math.abs(MAX_Y * 0.1) > MIN_PADDING)? (MAX_Y * 0.1) : MIN_PADDING;
+        MIN_Y -= (Math.abs(MIN_Y * 0.1) > MIN_PADDING)? (MIN_Y * 0.1) : MIN_PADDING;
+    }
+
+    let scaleX = canvas.width / (MAX_X - MIN_X);
+    let scaleY = canvas.height / (MAX_Y - MIN_Y);
+
+    function canvasX(x) {return (x - MIN_X) * scaleX; }
+    function canvasY(y) { return CANVAS_YEND - (y - MIN_Y) * scaleY; }
+    function realX(canvasX) { return canvasX / scaleX + MIN_X; }
+    function realY(canvasY) { return (CANVAS_YEND - canvasY) / scaleY + MIN_Y; }
+
+    function line(x1, y1, x2, y2, lineWidth = 1, color) {
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+    }
+    function circle(x, y, r, color) {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+
+    function XYaxis(color = "#ccc", lineWidth = 1) {
+        const tickStepX = tickStep(MAX_X - MIN_X, 10);
+        const tickStepY = tickStep(MAX_Y - MIN_Y, 10);
+        const tickLen = canvas.width * 0.02;   
+        ctx.fillStyle = "#333";
+        ctx.font = `${canvas.width * 0.03}px sans-serif`;
+        const tickFontDeviate = canvas.width * 0.02;
+
+        let existedZero = false;
+        // Y axis
+        if (MIN_X * MAX_X < 0) {
+            line(canvasX(0), CANVAS_YSTART, canvasX(0), CANVAS_YEND, lineWidth, color);
+
+            ctx.textAlign = "right";
+            ctx.textBaseline = 'middle';
+            if (canvasY(0) < CANVAS_YEND) {
+                for (let y = canvasY(0); y <= CANVAS_YEND + tickStepY * scaleY / 2; y += tickStepY * scaleY) {
+                    line(canvasX(0)- tickLen/2, y, canvasX(0)+ tickLen/2, y, lineWidth, color);
+                    let val = realY(y);
+                    if (Math.abs(Math.round(val) - val) < 1e-3) val = Math.round(val).toString();
+                    else val = val.toFixed(2);
+                    if (Math.abs(val) > 1e-6) ctx.fillText(val, canvasX(0) - tickFontDeviate, y)
+                    else if (!existedZero) { ctx.fillText(val, canvasX(0) - tickFontDeviate, y + tickFontDeviate); existedZero = true; }
+                    else continue;
+                }
+            }
+            
+            if (canvasY(0) > CANVAS_YSTART) {
+                for (let y = canvasY(0); y >= CANVAS_YSTART - tickStepY * scaleY / 2; y -= tickStepY * scaleY) {
+                    line(canvasX(0)- tickLen/2, y, canvasX(0)+ tickLen/2, y, lineWidth, color);
+                    let val = realY(y);
+                    if (Math.abs(Math.round(val) - val) < 1e-3) val = Math.round(val).toString();
+                    else val = val.toFixed(2);
+                    if (Math.abs(val) > 1e-6) ctx.fillText(val, canvasX(0) - tickFontDeviate, y)
+                    else if (!existedZero) { ctx.fillText(val, canvasX(0) - tickFontDeviate, y + tickFontDeviate); existedZero = true; }
+                    else continue;
+                }
+            }
         }
-    } else {  // dimension === 3 (or higher later) – Expect 2 variables, but may have 0 or 1
-        const lowerX = lo[0], upperX = hi[0];
-        const lowerY = lo[1], upperY = hi[1];
-        const xVar = vars[0];  // may be undefined
-        const yVar = vars[1];  // may be undefined
-        for (let xVal = lowerX; xVal <= upperX + step/2; xVal += step) {
-            for (let yVal = lowerY; yVal <= upperY + step/2; yVal += step) {
-                const postfixWithValues = postfix.map(tok => {
-                    if (xVar !== undefined && tok === xVar) return xVal;
-                    if (yVar !== undefined && tok === yVar) return yVal;
-                    return tok;
-                });
-                const z = evaluate(postfixWithValues);
-                points.push({ x: xVal, y: yVal, z: z });
+
+        // X axis
+        if (MIN_Y * MAX_Y < 0) {
+            line(CANVAS_XSTART, canvasY(0), CANVAS_XEND, canvasY(0), lineWidth, color);
+
+            ctx.textAlign = "middle";
+            ctx.textBaseline = 'top';
+            if (canvasX(0) < CANVAS_XEND) {
+                for (let x = canvasX(0); x <= CANVAS_XEND + tickStepX * scaleX / 2; x += tickStepX * scaleX) {
+                    line(x, canvasY(0)- tickLen/2, x, canvasY(0)+ tickLen/2, lineWidth, color);
+                    let val = realX(x);
+                    if (Math.abs(Math.round(val) - val) < 1e-3) val = Math.round(val).toString();
+                    else val = val.toFixed(2);
+                    if (Math.abs(val) > 1e-6) ctx.fillText(val, x, canvasY(0) + tickFontDeviate);
+                    else if (!existedZero) ctx.fillText(val, x - tickFontDeviate, canvasY(0) + tickFontDeviate);
+                    else continue;
+                }
+            }
+
+            if (canvasX(0) > CANVAS_XSTART) {
+                for (let x = canvasX(0); x >= CANVAS_XSTART - tickStepX * scaleX / 2; x -= tickStepX * scaleX) {
+                    line(x, canvasY(0)- tickLen/2, x, canvasY(0)+ tickLen/2, lineWidth, color);
+                    let val = realX(x);
+                    if (Math.abs(Math.round(val) - val) < 1e-3) val = Math.round(val).toString();
+                    else val = val.toFixed(2);
+                    if (Math.abs(val) > 1e-6) ctx.fillText(val, x, canvasY(0) + tickFontDeviate);
+                    else if (!existedZero) ctx.fillText(val, x - tickFontDeviate, canvasY(0) + tickFontDeviate);
+                    else continue;
+                }
             }
         }
     }
-    return points;
-}
 
-function processExpr(expression, dimension) {
-    // Tokenizer (unchanged)
-    const regex = /(\d+(?:\.\d+)?)|([a-zA-Z]+)|([+\-*/^()])|(\s+)/g;
-    const tokens = [];
-    let match;
-    while ((match = regex.exec(expression)) !== null) {
-        if (match[4]) continue;
-        if (match[1]) tokens.push(parseFloat(match[1]));
-        else if (match[2]) tokens.push(match[2]);
-        else if (match[3]) tokens.push(match[3]);
-    }
+    XYaxis();
+    
+    const MAX_SLOPE = 999;  // tune this based on your data's typical max finite slope
+    let prev = points[0];
+    points.pop(0);
+    for (let curr of points) {
+        let dx = curr.x - prev.x;
+        if (dx === 0) continue;  // skip vertical line case (or handle separately)
 
-    const rawTokens = tokens.filter(t => t !== " ");
-    const validExprKey = ['+', '-', '*', '/', '^', 'ln', 'e', 'sin', 'cos', 'tan', 'csc', 'sec', 'cot', 'asin', 'acos', 'atan'];
-
-    const unknownVar = new Set();
-    for (let token of rawTokens) {
-        let isKey = false;
-        for (let keywd of validExprKey) {
-            if (token === keywd) isKey = true;
+        let slope = Math.abs((curr.y - prev.y) / dx);
+        if (slope < MAX_SLOPE) {
+            // draw line between prev and curr
+            line(canvasX(prev.x), canvasY(prev.y), canvasX(curr.x), canvasY(curr.y), 1, "#444");
         }
-        if (!isKey && typeof token === 'string' && !/^\d+$/.test(token)) {
-            unknownVar.add(token);
-        }
+        // else: slope too large → discontinuity, skip drawing
+        prev = curr;
     }
-
-    const varList = [...unknownVar];
-
-    if (varList.length >= dimension) {
-        return { varLst: ['INVALID'], expression: [] };
-    }
-
-    const postfix = infixToPostfix(rawTokens);
-    return { varLst: varList, expression: postfix };
 }
 
-function plot2D(points, canva) {
+function tickStep(range, desiredTickCount) { return range / desiredTickCount; }
 
-}
-
-function plot3D(points, canva) {
+function plot3D(points, canvas) {
     const vertexShader = createVShader();
     const fragmentShader = createFShader();
 }
+
 function createVShader() {
 return `
     #version 300 es
