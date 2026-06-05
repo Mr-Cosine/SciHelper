@@ -129,66 +129,65 @@ function getRoot(lo, hi, epsi, polynomials) {
     else {return getRoot(lo, mid, epsi, polynomials);}
 }
 
-function calculatePoints(expression, dimension, x, y) {
+function calculatePoints(expression, dimension, x, y, defaultStep = 0.001) {
     const processedExpr = processExpr(expression, dimension);
-    if (processedExpr.varLst[0] === 'INVALID') return [];
+    if (processedExpr[0] === 'INVALID') return [];
 
     let points = [];
-    const vars = processedExpr.varLst;      // e.g., [] or ['x'] or ['x','y']
-    const postfix = processedExpr.expression;
 
     if (dimension == 2) {
         const lowerX = x[0], upperX = x[1]; 
         if (lowerX >= upperX) return [];
-        const xVar = vars[0];
 
-        let step = 0.001;
+        let step = defaultStep;
         const maxStep = 0.001;
-        const minStep = 0.001;
+        const minStep = 1e-6;
 
-        let prevPoint = { x: lowerX-0.001, y: evaluate(postfix.map(tok => {if (xVar !== undefined && tok === xVar) return lowerX-0.001; return tok;})) };
+        let prevPoint = { x: lowerX-0.001, y: evaluate(processedExpr.map(tok => {if (tok === 'x' || tok === 'X') return lowerX-0.001; else return tok;})) };
         
         for (let xVal = lowerX; xVal <= upperX + step/2;) {
-            const postfixWithValues = postfix.map(tok => {
-                if (xVar !== undefined && tok === xVar) return xVal;
-                return tok;
+            const postfixWithValues = processedExpr.map(tok => {
+                if (tok === 'x' || tok === 'X') return xVal;
+                else return tok;
             });
             let yVal = evaluate(postfixWithValues);
 
             if (isNum(yVal)) {
-                step = Math.min(maxStep, Math.max(1/Math.abs((yVal - prevPoint.y)/(xVal - prevPoint.x)), minStep));
+                step = Math.min(maxStep, Math.max(1/Math.abs((yVal - prevPoint.y)/(xVal - prevPoint.x)) * 0.05, minStep));
                 points.push({ x: xVal, y: yVal });
                 prevPoint = { x: xVal, y: yVal };
             }
+
             xVal += step;
         }
+        return points;
     } 
-    /*else {  // dimension === 3 (or higher later) – Expect 2 variables, but may have 0 or 1
-        const step = 0.005;
+    else {
         const lowerX = x[0], upperX = x[1];
         const lowerY = y[0], upperY = y[1];
         if (lowerX >= upperX) return [];
         if (lowerY >= upperY) return [];
-        const xVar = vars[0];  // may be undefined
-        const yVar = vars[1];  // may be undefined
+
+        const step = defaultStep;
+
         for (let xVal = lowerX; xVal <= upperX + step/2; xVal += step) {
             for (let yVal = lowerY; yVal <= upperY + step/2;) {
-                const postfixWithValues = postfix.map(tok => {
-                    if (xVar !== undefined && tok === xVar) return xVal;
-                    if (yVar !== undefined && tok === yVar) return yVal;
-                    return tok;
+                const postfixWithValues = processedExpr.map(tok => {
+                    if (tok === 'x' || tok === 'X') return xVal;
+                    else if (tok === 'y' || tok === 'Y') return yVal;
+                    else return tok;
                 });
-                const z = evaluate(postfixWithValues);
-                points.push({ x: xVal, y: yVal, z: z });
+
+                let zVal = evaluate(postfixWithValues);
+                if (isNum(zVal)) points.push({ x: xVal, y: yVal, z: zVal, step: step });
                 yVal += step
             }
         }
-    }*/
-    return points;
+        return points;
+    }
 }
 
 function processExpr(expression, dimension) {
-    // Tokenizer (unchanged)
     const regex = /(\d+(?:\.\d+)?)|([a-zA-Z]+)|([+\-*/^()])|(\s+)/g;
     const tokens = [];
     let match;
@@ -199,28 +198,21 @@ function processExpr(expression, dimension) {
         else if (match[3]) tokens.push(match[3]);
     }
 
-    const rawTokens = tokens.filter(t => t !== " ");
-    const validExprKey = ['+', '-', '*', '/', '^', 'ln', 'e', 'sin', 'cos', 'tan', 'csc', 'sec', 'cot', 'asin', 'acos', 'atan', "(", ")"];
+    const rawTokens = tokens.filter(t => t !== " ").map(t => (typeof t === 'string' && t === 'X') ? 'x' : t);
+    const ops = new operators();
 
     const unknownVar = new Set();
     for (let token of rawTokens) {
-        let isKey = false;
-        for (let keywd of validExprKey) {
-            if (token === keywd) isKey = true;
-        }
-        if (!isKey && typeof token === 'string' && !/^\d+$/.test(token)) {
+        if (!ops.isOperator(token) && typeof token === 'string' && !/^\d+$/.test(token)) {
             unknownVar.add(token);
         }
     }
+    const varList = [...unknownVar]
+    if (varList.length >= dimension) return { varLst: ['INVALID'], expression: [] };
+    if (dimension == 2 && varList.filter(v => (v.length > 1 || !v.includes("x"))).length > 0) return ['INVALID'];
+    if (dimension == 3 && varList.filter(v => (v.length > 1 || (!v.includes("x") && !v.includes("y")))).length > 0) return ['INVALID'];
 
-    const varList = [...unknownVar];
-
-    if (varList.length >= dimension) {
-        return { varLst: ['INVALID'], expression: [] };
-    }
-
-    const postfix = infixToPostfix(rawTokens);
-    return { varLst: varList, expression: postfix };
+    return infixToPostfix(rawTokens);
 }
 
 //============================================================================
@@ -582,17 +574,17 @@ function openPlotterWindow(outputLoc) {
                 }
                 else return;
 
+                
                 let points = calculatePoints(expression.value, dimension.value, xspan, yspan);
                 plot2D(points, graph, xspan, yspan);
             }
             else {
                 if ((parseFloat(ymin.value) || parseFloat(ymin.value == 0)) && (parseFloat(ymax.value) || parseFloat(ymax.value == 0))) {
                     yspan = [parseFloat(ymin.value), parseFloat(ymax.value)];
-                    plot3D(points, graph, xspan, yspan);
                 }
                 else return;
 
-                let points = calculatePoints(expression.value, dimension.value, xspan, yspan);
+                let points = calculatePoints(expression.value, dimension.value, xspan, yspan, Math.abs(yspan[1] - yspan[0])/2000);
                 plot3D(points, graph, xspan, yspan);
             }
         }
@@ -604,7 +596,7 @@ function openPlotterWindow(outputLoc) {
 }
 
 function plot2D(points, canvas, xrange, yrange) {
-   const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.globalCompositeOperation = 'source-over';
@@ -619,8 +611,103 @@ function plot2D(points, canvas, xrange, yrange) {
     const validPoints = points.filter(p => isFinite(p.x) && isFinite(p.y));
     if (validPoints.length === 0) {
         ctx.fillStyle = 'red';
+        ctx.font = "20px sans-serif";
+        ctx.textAlign = "middle";
         ctx.fillText('No valid points', CANVAS_XCENTER, CANVAS_YCENTER);
         return;
+    }
+
+    function line(x1, y1, x2, y2, lineWidth = 1, color) {
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+    }
+
+    function XYaxis(lineWidth = 1, color = "#ccc") {
+        function tickStep(range, desiredTickCount) { return range / desiredTickCount; }
+
+        let MIN_X = xrange[0];
+        let MAX_X = xrange[1];
+
+        let MIN_Y = yrange[0];
+        let MAX_Y = yrange[1];
+
+        const tickStepX = tickStep(MAX_X - MIN_X, 10);
+        const tickStepY = tickStep(MAX_Y - MIN_Y, 10);
+        const tickLen = canvas.width * 0.02;   
+        ctx.fillStyle = "#ccc";
+        ctx.font = `${canvas.width * 0.03}px sans-serif`;
+        const tickFontDeviate = canvas.width * 0.02;
+
+        let existedZero = false;
+        // Y axis
+        if (MIN_X * MAX_X < 0) {
+            line(canvasX(0), CANVAS_YSTART, canvasX(0), CANVAS_YEND, lineWidth, color);
+
+            ctx.textAlign = "right";
+            ctx.textBaseline = 'middle';
+            if (canvasY(0) < CANVAS_YEND) {
+                for (let y = canvasY(0); y <= CANVAS_YEND + tickStepY * scaleY / 2; y += tickStepY * scaleY) {
+                    line(canvasX(0)- tickLen/2, y, canvasX(0)+ tickLen/2, y, lineWidth, color);
+                    let val = realY(y);
+                    if (Math.abs(Math.round(val) - val) < 1e-3) val = Math.round(val).toString();
+                    else val = val.toFixed(2);``
+                    if (Math.abs(val) > 1e-6) ctx.fillText(val, canvasX(0) - tickFontDeviate, y)
+                    else if (!existedZero) { ctx.fillText(val, canvasX(0) - tickFontDeviate, y + tickFontDeviate); existedZero = true; }
+                    else continue;
+                }
+            }
+            if (canvasY(0) > CANVAS_YSTART) {
+                for (let y = canvasY(0); y >= CANVAS_YSTART - tickStepY * scaleY / 2; y -= tickStepY * scaleY) {
+                    line(canvasX(0)- tickLen/2, y, canvasX(0)+ tickLen/2, y, lineWidth, color);
+                    let val = realY(y);
+                    if (Math.abs(Math.round(val) - val) < 1e-3) val = Math.round(val).toString();
+                    else val = val.toFixed(2);
+                    if (Math.abs(val) > 1e-6) ctx.fillText(val, canvasX(0) - tickFontDeviate, y)
+                    else if (!existedZero) { ctx.fillText(val, canvasX(0) - tickFontDeviate, y + tickFontDeviate); existedZero = true; }
+                    else continue;
+                }
+            }
+        }
+        ctx.textAlign = "left";
+        ctx.textBaseline = 'top';
+        ctx.fillText("y", CANVAS_XSTART + 10, CANVAS_YSTART + 10);
+
+        // X axis
+        if (MIN_Y * MAX_Y < 0) {
+            line(CANVAS_XSTART, canvasY(0), CANVAS_XEND, canvasY(0), lineWidth, color);
+
+            ctx.textAlign = "middle";
+            ctx.textBaseline = 'top';
+            if (canvasX(0) < CANVAS_XEND) {
+                for (let x = canvasX(0); x <= CANVAS_XEND + tickStepX * scaleX / 2; x += tickStepX * scaleX) {
+                    line(x, canvasY(0)- tickLen/2, x, canvasY(0)+ tickLen/2, lineWidth, color);
+                    let val = realX(x);
+                    if (Math.abs(Math.round(val) - val) < 1e-3) val = Math.round(val).toString();
+                    else val = val.toFixed(2);
+                    if (Math.abs(val) > 1e-6) ctx.fillText(val, x, canvasY(0) + tickFontDeviate);
+                    else if (!existedZero) ctx.fillText(val, x - tickFontDeviate, canvasY(0) + tickFontDeviate);
+                    else continue;
+                }
+            }
+            if (canvasX(0) > CANVAS_XSTART) {
+                for (let x = canvasX(0); x >= CANVAS_XSTART - tickStepX * scaleX / 2; x -= tickStepX * scaleX) {
+                    line(x, canvasY(0)- tickLen/2, x, canvasY(0)+ tickLen/2, lineWidth, color);
+                    let val = realX(x);
+                    if (Math.abs(Math.round(val) - val) < 1e-3) val = Math.round(val).toString();
+                    else val = val.toFixed(2);
+                    if (Math.abs(val) > 1e-6) ctx.fillText(val, x, canvasY(0) + tickFontDeviate);
+                    else if (!existedZero) ctx.fillText(val, x - tickFontDeviate, canvasY(0) + tickFontDeviate);
+                    else continue;
+                }
+            }
+        }
+        ctx.textAlign = "right";
+        ctx.textBaseline = 'bottom';
+        ctx.fillText("x", CANVAS_XEND - 10, CANVAS_YEND - 10);
     }
 
     let MIN_X = xrange[0];
@@ -645,6 +732,43 @@ function plot2D(points, canvas, xrange, yrange) {
     function realX(canvasX) { return canvasX / scaleX + MIN_X; }
     function realY(canvasY) { return (CANVAS_YEND - canvasY) / scaleY + MIN_Y; }
 
+    XYaxis(1, "#ccc");
+    
+    const MAX_SLOPE = 1e6;  // tune this based on your data's typical max finite slope
+    let prev = validPoints[0];
+    validPoints.pop(0);
+    for (let curr of validPoints) {
+        let dx = curr.x - prev.x;
+        if (dx === 0) { line(canvasX(curr.X), CANVAS_YSTART, canvasX(curr.X), CANVAS_YEND, 1, "#444"); continue; }
+ 
+        let slope = Math.abs((curr.y - prev.y) / dx);
+        if (slope < MAX_SLOPE) line(canvasX(prev.x), canvasY(prev.y), canvasX(curr.x), canvasY(curr.y), 1, "#444");
+        prev = curr;
+    }
+}
+
+function plot3D(points, canvas, xrange, yrange) {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.globalCompositeOperation = 'source-over';
+
+    const CANVAS_YSTART = 0;
+    const CANVAS_YEND = canvas.height;
+    const CANVAS_XSTART = 0;
+    const CANVAS_XEND = canvas.width;
+    const CANVAS_XCENTER = canvas.width/2;
+    const CANVAS_YCENTER = canvas.height/2;
+
+    const validPoints = points.filter(p => isFinite(p.x) && isFinite(p.y) && isFinite(p.z));
+    if (validPoints.length === 0) {
+        ctx.fillStyle = 'red';
+        ctx.font = "20px sans-serif";
+        ctx.textAlign = "middle";
+        ctx.fillText('No valid points', CANVAS_XCENTER, CANVAS_YCENTER);
+        return;
+    }
+
     function line(x1, y1, x2, y2, lineWidth = 1, color) {
         ctx.beginPath();
         ctx.strokeStyle = color;
@@ -653,18 +777,20 @@ function plot2D(points, canvas, xrange, yrange) {
         ctx.lineTo(x2, y2);
         ctx.stroke();
     }
-    function circle(x, y, r, color) {
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, 2 * Math.PI);
-        ctx.fill();
-    }
 
-    function XYaxis(color = "#ccc", lineWidth = 1) {
+    function XYaxis(lineWidth = 1, color = "#ccc") {
+        function tickStep(range, desiredTickCount) { return range / desiredTickCount; }
+
+        let MIN_X = xrange[0];
+        let MAX_X = xrange[1];
+
+        let MIN_Y = yrange[0];
+        let MAX_Y = yrange[1];
+
         const tickStepX = tickStep(MAX_X - MIN_X, 10);
         const tickStepY = tickStep(MAX_Y - MIN_Y, 10);
         const tickLen = canvas.width * 0.02;   
-        ctx.fillStyle = "#333";
+        ctx.fillStyle = "#ccc";
         ctx.font = `${canvas.width * 0.03}px sans-serif`;
         const tickFontDeviate = canvas.width * 0.02;
 
@@ -680,13 +806,12 @@ function plot2D(points, canvas, xrange, yrange) {
                     line(canvasX(0)- tickLen/2, y, canvasX(0)+ tickLen/2, y, lineWidth, color);
                     let val = realY(y);
                     if (Math.abs(Math.round(val) - val) < 1e-3) val = Math.round(val).toString();
-                    else val = val.toFixed(2);
+                    else val = val.toFixed(2);``
                     if (Math.abs(val) > 1e-6) ctx.fillText(val, canvasX(0) - tickFontDeviate, y)
                     else if (!existedZero) { ctx.fillText(val, canvasX(0) - tickFontDeviate, y + tickFontDeviate); existedZero = true; }
                     else continue;
                 }
             }
-            
             if (canvasY(0) > CANVAS_YSTART) {
                 for (let y = canvasY(0); y >= CANVAS_YSTART - tickStepY * scaleY / 2; y -= tickStepY * scaleY) {
                     line(canvasX(0)- tickLen/2, y, canvasX(0)+ tickLen/2, y, lineWidth, color);
@@ -699,6 +824,9 @@ function plot2D(points, canvas, xrange, yrange) {
                 }
             }
         }
+        ctx.textAlign = "left";
+        ctx.textBaseline = 'top';
+        ctx.fillText("y", CANVAS_XSTART + 10, CANVAS_YSTART + 10);
 
         // X axis
         if (MIN_Y * MAX_Y < 0) {
@@ -717,7 +845,6 @@ function plot2D(points, canvas, xrange, yrange) {
                     else continue;
                 }
             }
-
             if (canvasX(0) > CANVAS_XSTART) {
                 for (let x = canvasX(0); x >= CANVAS_XSTART - tickStepX * scaleX / 2; x -= tickStepX * scaleX) {
                     line(x, canvasY(0)- tickLen/2, x, canvasY(0)+ tickLen/2, lineWidth, color);
@@ -730,33 +857,48 @@ function plot2D(points, canvas, xrange, yrange) {
                 }
             }
         }
+        ctx.textAlign = "right";
+        ctx.textBaseline = 'bottom';
+        ctx.fillText("x", CANVAS_XEND - 10, CANVAS_YEND - 10);
     }
 
-    XYaxis();
-    
-    const MAX_SLOPE = 999;  // tune this based on your data's typical max finite slope
-    let prev = points[0];
-    points.pop(0);
-    for (let curr of points) {
-        let dx = curr.x - prev.x;
-        if (dx === 0) continue;  // skip vertical line case (or handle separately)
+    let MIN_X = xrange[0];
+    let MAX_X = xrange[1];
 
-        let slope = Math.abs((curr.y - prev.y) / dx);
-        if (slope < MAX_SLOPE) {
-            // draw line between prev and curr
-            line(canvasX(prev.x), canvasY(prev.y), canvasX(curr.x), canvasY(curr.y), 1, "#444");
-        }
-        // else: slope too large → discontinuity, skip drawing
-        prev = curr;
+    let MIN_Y = yrange[0];
+    let MAX_Y = yrange[1];
+
+    let MIN_Z = validPoints[0].z;
+    let MAX_Z = validPoints[0].z;
+    for (let point of validPoints) {
+        if (point.z < MIN_Z) MIN_Z = point.z;
+        if (point.z > MAX_Z) MAX_Z = point.z;
     }
+
+    let scaleX = canvas.width / (MAX_X - MIN_X);
+    let scaleY = canvas.height / (MAX_Y - MIN_Y);
+
+    function canvasX(x) {return (x - MIN_X) * scaleX; }
+    function canvasY(y) { return CANVAS_YEND - (y - MIN_Y) * scaleY; }
+    function realX(canvasX) { return canvasX / scaleX + MIN_X; }
+    function realY(canvasY) { return (CANVAS_YEND - canvasY) / scaleY + MIN_Y; }
+
+    const viridisMapping = new viridis();
+
+    for (let point of validPoints) {
+        const color = viridisMapping.mapColor(MIN_Z, MAX_Z, point.z);
+        ctx.fillStyle = `rgb(${color.r}, ${color.g}, ${color.b})`;
+        ctx.fillRect(canvasX(point.x - point.step / 2), canvasY(point.y - point.step / 2), point.step * scaleX, point.step * scaleY);
+    }
+
+    XYaxis(1, "#ccc");
 }
 
-function tickStep(range, desiredTickCount) { return range / desiredTickCount; }
-
+/*
 function plot3D(points, canvas) {
     const vertexShader = createVShader();
     const fragmentShader = createFShader();
-}
+}s
 
 function createVShader() {
 return `
@@ -810,3 +952,4 @@ function u_Projection(FOV = 45, canvaWidth = 400, canvaHeight = 400) {
 
     return proj
 }
+    */

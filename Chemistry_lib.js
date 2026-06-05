@@ -271,105 +271,62 @@ function solveEq(variables, expressions) {
 }
 
 function infixToPostfix(tokens) {
-    const precedence = 
-    {   '(': 1, ')': 1, 
-        '+': 2, '-': 2, 
-        '*': 3, '/': 3, 
-        '^': 4, 
-        'log10': 5, 'ln': 5, 'sin': 5, 'cos': 5, 'tan': 5, 'asin': 5, 'acos': 5, 'atan': 5 
-    };
-
+    const ops = new operators();
     let outputQueue = [];
     let operatorStack = [];
-    
+
     for (let token of tokens) {
-        if (isNum(token)) {
-            outputQueue.push(parseFloat(token));
-        }
-        else if (token === '(') {
-            operatorStack.push(token);
-        }
+        if (isNum(token)) outputQueue.push(parseFloat(token));
+        else if (token === '(') operatorStack.push(token);
         else if (token === ')') {
-            while (operatorStack.length > 0 && operatorStack[operatorStack.length - 1] !== '(') {
-                outputQueue.push(operatorStack.pop());
-            }
-            operatorStack.pop();
-        
+            while (operatorStack.length > 0 && operatorStack[operatorStack.length - 1] !== '(') { outputQueue.push(operatorStack.pop()); }
+            operatorStack.pop(); 
             let top = operatorStack[operatorStack.length - 1];
-            if (top && precedence[top] === 5) {
-                outputQueue.push(operatorStack.pop());
-            }
-        }
-        else if (precedence[token]) {
+            if (top && ops.isUnary(top)) outputQueue.push(operatorStack.pop());
+        } 
+        else if (ops.isOperator(token)) {
+            const precToken = ops.precedence(token);
             while (operatorStack.length > 0) {
                 let operator = operatorStack[operatorStack.length - 1];
                 if (operator === '(') break;
-                if ((precedence[operator] > precedence[token]) ||
-                    (precedence[operator] === precedence[token] && token !== '^')) {
-                    outputQueue.push(operatorStack.pop());
-                }
-                else {
-                    break;
-                }
+                const precOp = ops.precedence(operator);
+                if (precOp > precToken || (precOp === precToken && token !== '^')) outputQueue.push(operatorStack.pop());
+                else break;
             }
             operatorStack.push(token);
-        }
-        else {
-            outputQueue.push(token);
-        }
+        } 
+        else outputQueue.push(token);
     }
-    while (operatorStack.length > 0) {
-        outputQueue.push(operatorStack.pop());
-    }
+    while (operatorStack.length > 0) { outputQueue.push(operatorStack.pop()); }
     return outputQueue;
 }
 
 function evaluate(postfix) {
+    const ops = new operators();
     let stack = [];
-
+    
     for (let token of postfix) {
         if (isNum(token)) {
             stack.push(token);
         }
-        else if (['+', '-', '*', '/', '^'].includes(token)) {
+        else if (ops.isBinary(token)) {
             if (stack.length < 2) return "Error";
             let b = stack.pop();
             let a = stack.pop();
 
-            let result = null;
-            switch (token) {
-                case '+': result = a + b; break;
-                case '-': result = a - b; break;
-                case '*': result = a * b; break;
-                case '/': result = a / b; break;
-                case '^': result = Math.pow(a, b); break;
-                default: break;
-            }
+            let result = ops.eval(a, token, b);
             if (!isNum(result) || !isFinite(result) || result === null) { return "Error"; }
             stack.push(result);
         }
-        else {
+        else if (ops.isUnary(token)) {
             if (stack.length < 1) return "Error";
             let a = stack.pop();
 
-            let result = null;
-            switch (token) {
-                case 'log10': result = Math.log10(a); break;
-                case 'ln': result = Math.log(a); break;
-                case 'sin': result = Math.sin(a); break;
-                case 'cos': result = Math.cos(a); break;
-                case 'tan': result = Math.tan(a); break;
-                case 'sec': result = 1/Math.cos(a); break;
-                case 'csc': result = 1/Math.sin(a); break;
-                case 'cot': result = 1/Math.tan(a); break;
-                case 'asin': result = Math.asin(a); break;
-                case 'acos': result = Math.acos(a); break;
-                case 'atan': result = Math.atan(a); break;
-                default: break;
-            }
+            let result = ops.eval(a, token);
             if (!isNum(result) || !isFinite(result) || result === null) { return "Error"; }
             stack.push(result);
         }
+        else return "Error";
     }
     return (stack.length === 1)? stack[0] : "Error";
 }
@@ -592,7 +549,6 @@ function openElemSearchWindow(outputLoc) {
 }
 
 // --- Molar Mass Calculation ---
-
 function openMolarMassWindow(outputLoc) {
     if (document.getElementById('sci-chem-molm')) return;
     
