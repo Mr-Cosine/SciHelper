@@ -146,7 +146,7 @@ function initSciHelper(initx = 100, inity = 100) {
 
     var specialCharacterTitle = document.createElement('div');
     specialCharacterTitle.setAttribute('class', 'sci-panel-sectiontitle');
-    specialCharacterTitle.textContent = '▸ Special characters insertion:';
+    specialCharacterTitle.textContent = '▸Special characters:';
 
     characterBtnContainer.appendChild(createToggle('Suprscript', 'Xⁿ', 'superscript', '#e57373', state));
     characterBtnContainer.appendChild(createToggle('Subscript', 'Xₙ', 'subscript', '#ffaf4d', state));
@@ -155,7 +155,7 @@ function initSciHelper(initx = 100, inity = 100) {
 
     var toolboxTitle = document.createElement('div');
     toolboxTitle.setAttribute('class', 'sci-panel-sectiontitle');
-    toolboxTitle.textContent = '▸ Toolboxes:';
+    toolboxTitle.textContent = '▸Toolboxes:';
 
     toolboxBtnContainer.appendChild(createSubMenuToggle('Chemistry', 'H₂O', 'chemistry', '#83c1bb', state, outputLoc, panel)); 
     toolboxBtnContainer.appendChild(createSubMenuToggle('Physics', 'F=ma', 'physics', '#ba68c8', state, outputLoc, panel));
