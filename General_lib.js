@@ -137,13 +137,19 @@ function calculatePoints(expression, dimension, x, y, defaultStep = 0.001) {
 
     if (dimension == 2) {
         const lowerX = x[0], upperX = x[1]; 
+        const lowerY = y[0], upperY = y[1];
         if (!isNum(lowerX) || !isNum(upperX) || lowerX >= upperX) return [];
+        if (!isNum(lowerY) || !isNum(upperY) || lowerY >= upperY) return [];
 
         let step = defaultStep;
-        const maxStep = Math.abs(y[1] - y[0])/2000;
+        const maxStep = defaultStep;
         const minStep = 1e-6;
 
         let prevPoint = { x: lowerX-0.001, y: evaluate(processedExpr.map(tok => {if (tok === 'x' || tok === 'X') return lowerX-0.001; else return tok;})) };
+
+        console.log(lowerX)
+        console.log(upperX)
+        console.log(defaultStep)
         
         for (let xVal = lowerX; xVal <= upperX + step/2;) {
             const postfixWithValues = processedExpr.map(tok => {
@@ -153,13 +159,17 @@ function calculatePoints(expression, dimension, x, y, defaultStep = 0.001) {
             let yVal = evaluate(postfixWithValues);
 
             if (isNum(yVal)) {
-                step = Math.min(maxStep, Math.max(1/Math.abs((yVal - prevPoint.y)/(xVal - prevPoint.x)) * 0.05, minStep));
+                if (isNum(prevPoint.x) && isNum(prevPoint.y)) step = Math.min(maxStep, Math.max(1/Math.abs((yVal - prevPoint.y)/(xVal - prevPoint.x)) * 0.05, minStep));
                 points.push({ x: xVal, y: yVal });
                 prevPoint = { x: xVal, y: yVal };
             }
-
+            else {
+                prevPoint = { x: xVal, y: yVal };
+                step = defaultStep;
+            }
             xVal += step;
         }
+        console.log(points)
         return points;
     } 
     else {
@@ -168,7 +178,7 @@ function calculatePoints(expression, dimension, x, y, defaultStep = 0.001) {
         if (!isNum(lowerX) || !isNum(upperX) || lowerX >= upperX) return [];
         if (!isNum(lowerY) || !isNum(upperY) || lowerY >= upperY) return [];
 
-        let step = min(Math.abs(y[1] - y[0]), Math.abs(x[1] - x[0]))/2000;
+        let step = defaultStep;
 
         for (let xVal = lowerX; xVal <= upperX + step/2; xVal += step) {
             for (let yVal = lowerY; yVal <= upperY + step/2;) {
@@ -558,25 +568,19 @@ function openPlotterWindow(outputLoc) {
     graphSection.append(graph);
 
     let plot = () => {
-        console.log(isNum(xmin.value))
-        console.log(xmin.value)
-        if (expression.value && dimension.value && isNum(xmin.value) && isNum(xmax.value)) {
-            let xspan = [parseFloat(xmin.value), parseFloat(xmax.value)];
-            let yspan = [null, null];
+        let DESIRED_SAMPLE = 2000;
+        let xspan = [null, null]; let yspan = [null, null];
+        let points = null;
 
-            if (dimension.value == 2) {
-                if (isNum(ymin.value) && isNum(ymax.value)) yspan = [parseFloat(ymin.value), parseFloat(ymax.value)];
-                console.log('y')
-                let points = calculatePoints(expression.value, dimension.value, xspan, yspan);
-                plot2D(points, graph, xspan, yspan);
-            }
-            else {
-                if (isNum(ymin.value) && isNum(ymax.value)) yspan = [parseFloat(ymin.value), parseFloat(ymax.value)];
-                console.log('y')
-                let points = calculatePoints(expression.value, dimension.value, xspan, yspan);
-                plot3D(points, graph, xspan, yspan);
-            }
+        if (expression.value && dimension.value && isNum(xmin.value) && isNum(xmax.value) && isNum(ymin.value) && isNum(ymax.value)) {
+            xspan = [parseFloat(xmin.value), parseFloat(xmax.value)];
+            yspan = [parseFloat(ymin.value), parseFloat(ymax.value)];
+            step = Math.min(Math.abs(yspan[1] - yspan[0]), Math.abs(xspan[1] - xspan[0]))/DESIRED_SAMPLE;
+            points = calculatePoints(expression.value, dimension.value, xspan, yspan, step);
         }
+        
+        if (dimension.value == 2) plot2D(points, graph, xspan, yspan);
+        else plot3D(points, graph, xspan, yspan);
     }
     inputConfirm.addEventListener('click', plot);
 
@@ -674,7 +678,6 @@ function plot2D(points, canvas, xrange, yrange) {
         ctx.font = "20px sans-serif";
         ctx.textAlign = "middle";
         ctx.fillText('No valid points', CANVAS_XCENTER, CANVAS_YCENTER);
-        return;
     }
 
     function line(x1, y1, x2, y2, lineWidth = 1, color) {
@@ -707,7 +710,7 @@ function plot2D(points, canvas, xrange, yrange) {
         if (MIN_X * MAX_X < 0) {
             line(canvasX(0), CANVAS_YSTART, canvasX(0), CANVAS_YEND, lineWidth, color);
 
-            ctx.textAlign = "right";
+            ctx.textAlign = "middle";
             ctx.textBaseline = 'middle';
             if (canvasY(0) < CANVAS_YEND) {
                 for (let y = canvasY(0); y <= CANVAS_YEND + tickStepY * scaleY / 2; y += tickStepY * scaleY) {
@@ -826,7 +829,6 @@ function plot3D(points, canvas, xrange, yrange) {
         ctx.font = "20px sans-serif";
         ctx.textAlign = "middle";
         ctx.fillText('No valid points', CANVAS_XCENTER, CANVAS_YCENTER);
-        return;
     }
 
     function line(x1, y1, x2, y2, lineWidth = 1, color) {
@@ -859,7 +861,7 @@ function plot3D(points, canvas, xrange, yrange) {
         if (MIN_X * MAX_X < 0) {
             line(canvasX(0), CANVAS_YSTART, canvasX(0), CANVAS_YEND, lineWidth, color);
 
-            ctx.textAlign = "right";
+            ctx.textAlign = "middle";
             ctx.textBaseline = 'middle';
             if (canvasY(0) < CANVAS_YEND) {
                 for (let y = canvasY(0); y <= CANVAS_YEND + tickStepY * scaleY / 2; y += tickStepY * scaleY) {
