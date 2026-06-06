@@ -137,10 +137,10 @@ function calculatePoints(expression, dimension, x, y, defaultStep = 0.001) {
 
     if (dimension == 2) {
         const lowerX = x[0], upperX = x[1]; 
-        if (lowerX >= upperX) return [];
+        if (!isNum(lowerX) || !isNum(upperX) || lowerX >= upperX) return [];
 
         let step = defaultStep;
-        const maxStep = 0.001;
+        const maxStep = Math.abs(y[1] - y[0])/2000;
         const minStep = 1e-6;
 
         let prevPoint = { x: lowerX-0.001, y: evaluate(processedExpr.map(tok => {if (tok === 'x' || tok === 'X') return lowerX-0.001; else return tok;})) };
@@ -165,10 +165,10 @@ function calculatePoints(expression, dimension, x, y, defaultStep = 0.001) {
     else {
         const lowerX = x[0], upperX = x[1];
         const lowerY = y[0], upperY = y[1];
-        if (lowerX >= upperX) return [];
-        if (lowerY >= upperY) return [];
+        if (!isNum(lowerX) || !isNum(upperX) || lowerX >= upperX) return [];
+        if (!isNum(lowerY) || !isNum(upperY) || lowerY >= upperY) return [];
 
-        const step = defaultStep;
+        let step = min(Math.abs(y[1] - y[0]), Math.abs(x[1] - x[0]))/2000;
 
         for (let xVal = lowerX; xVal <= upperX + step/2; xVal += step) {
             for (let yVal = lowerY; yVal <= upperY + step/2;) {
@@ -557,38 +557,98 @@ function openPlotterWindow(outputLoc) {
     graph.setAttribute('height', '840');
     graphSection.append(graph);
 
-    inputConfirm.addEventListener('click', function() {
-        if (expression.value && dimension.value && 
-            (parseFloat(xmin.value) || parseFloat(xmin.value == 0)) && 
-            (parseFloat(xmax.value) || parseFloat(xmax.value == 0))) {
-
+    let plot = () => {
+        console.log(isNum(xmin.value))
+        console.log(xmin.value)
+        if (expression.value && dimension.value && isNum(xmin.value) && isNum(xmax.value)) {
             let xspan = [parseFloat(xmin.value), parseFloat(xmax.value)];
-            let yspan = null;
+            let yspan = [null, null];
 
             if (dimension.value == 2) {
-                if (yrange[0] === null && yrange[1] === null) {
-                    yspan = [null, null];
-                }
-                else if ((parseFloat(ymin.value) || parseFloat(ymin.value == 0)) && (parseFloat(ymax.value) || parseFloat(ymax.value == 0))) {
-                    yspan = [parseFloat(ymin.value), parseFloat(ymax.value)];
-                }
-                else return;
-
-                
+                if (isNum(ymin.value) && isNum(ymax.value)) yspan = [parseFloat(ymin.value), parseFloat(ymax.value)];
+                console.log('y')
                 let points = calculatePoints(expression.value, dimension.value, xspan, yspan);
                 plot2D(points, graph, xspan, yspan);
             }
             else {
-                if ((parseFloat(ymin.value) || parseFloat(ymin.value == 0)) && (parseFloat(ymax.value) || parseFloat(ymax.value == 0))) {
-                    yspan = [parseFloat(ymin.value), parseFloat(ymax.value)];
-                }
-                else return;
-
-                let points = calculatePoints(expression.value, dimension.value, xspan, yspan, Math.abs(yspan[1] - yspan[0])/2000);
+                if (isNum(ymin.value) && isNum(ymax.value)) yspan = [parseFloat(ymin.value), parseFloat(ymax.value)];
+                console.log('y')
+                let points = calculatePoints(expression.value, dimension.value, xspan, yspan);
                 plot3D(points, graph, xspan, yspan);
             }
         }
+    }
+    inputConfirm.addEventListener('click', plot);
+
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+    let startRanges = { xmin: 0, xmax: 0, ymin: 0, ymax: 0 };
+
+    // Panning: start drag on mousedown
+    graphSection.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        dragStart.x = e.clientX;
+        dragStart.y = e.clientY;
+        // Store current ranges at drag start
+        startRanges.xmin = parseFloat(xmin.value);
+        startRanges.xmax = parseFloat(xmax.value);
+        startRanges.ymin = parseFloat(ymin.value);
+        startRanges.ymax = parseFloat(ymax.value);
+        e.preventDefault(); // prevent text selection
     });
+
+    // Panning: update ranges while dragging
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        
+        const dx = e.clientX - dragStart.x;
+        const dy = e.clientY - dragStart.y;
+        
+        // Convert pixel movement to data units
+        const canvasRect = graphSection.getBoundingClientRect();
+        const width = canvasRect.width;
+        const height = canvasRect.height;
+        
+        const xRange = startRanges.xmax - startRanges.xmin;
+        const yRange = startRanges.ymax - startRanges.ymin;
+        
+        const xDelta = (dx / width) * xRange;
+        const yDelta = (dy / height) * yRange;
+        
+        // Update input fields (note: y axis is inverted because canvas Y goes down)
+        xmin.value = startRanges.xmin - xDelta;
+        xmax.value = startRanges.xmax - xDelta;
+        ymin.value = startRanges.ymin + yDelta;
+        ymax.value = startRanges.ymax + yDelta;
+        
+        plot();
+    });
+
+    // End dragging on mouseup
+    document.addEventListener('mouseup', () => { isDragging = false; });
+
+    // Zoom with wheel (centered)
+    graphSection.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const factor = e.deltaY > 0 ? 1.1 : 0.9; // scroll down = zoom out, up = zoom in
+        
+        const xminVal = parseFloat(xmin.value);
+        const xmaxVal = parseFloat(xmax.value);
+        const yminVal = parseFloat(ymin.value);
+        const ymaxVal = parseFloat(ymax.value);
+        
+        const xCenter = (xminVal + xmaxVal) / 2;
+        const yCenter = (yminVal + ymaxVal) / 2;
+        const xRange = (xmaxVal - xminVal) * factor;
+        const yRange = (ymaxVal - yminVal) * factor;
+        
+        xmin.value = xCenter - xRange / 2;
+        xmax.value = xCenter + xRange / 2;
+        ymin.value = yCenter - yRange / 2;
+        ymax.value = yCenter + yRange / 2;
+        
+        plot();
+    }, { passive: false });
 
     plotWindow.append(header, inputSection, graphSection);
     makeDraggable(header, plotWindow);
@@ -884,11 +944,14 @@ function plot3D(points, canvas, xrange, yrange) {
     function realY(canvasY) { return (CANVAS_YEND - canvasY) / scaleY + MIN_Y; }
 
     const viridisMapping = new viridis();
+    const maxZMag = Math.max( Math.abs(MIN_X), Math.abs(MAX_X), Math.abs(MIN_Y), Math.abs(MAX_Y) );
+    const minColor = (MIN_Z < 0)? -Math.min(maxZMag, Math.abs(MIN_Z)): Math.min(maxZMag, Math.abs(MIN_Z));
+    const maxColor = (MAX_Z < 0)? -Math.min(maxZMag, Math.abs(MAX_Z)): Math.min(maxZMag, Math.abs(MAX_Z));
 
     for (let point of validPoints) {
-        const color = viridisMapping.mapColor(MIN_Z, MAX_Z, point.z);
+        const color = viridisMapping.mapColor(minColor, maxColor, point.z);
         ctx.fillStyle = `rgb(${color.r}, ${color.g}, ${color.b})`;
-        ctx.fillRect(canvasX(point.x - point.step / 2), canvasY(point.y - point.step / 2), point.step * scaleX, point.step * scaleY);
+        ctx.fillRect(canvasX(point.x - point.step/2), canvasY(point.y + point.step/2), point.step*scaleX, point.step*scaleY);
     }
 
     XYaxis(1, "#ccc");

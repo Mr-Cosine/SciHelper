@@ -2,7 +2,7 @@
 function isLetter(token) {return /[a-zA-Z]/.test(token);}
 function isUpper(token) {return (isLetter(token) && token === token.toUpperCase());}
 function isLower(token) {return (isLetter(token) && token === token.toLowerCase());}
-function isNum(token) {return typeof token === 'number' && !isNaN(token);}
+function isNum(token) {return !isNaN(parseFloat(token));}
 
 function sanitizeFormula(input) {
     if (!input) return "";

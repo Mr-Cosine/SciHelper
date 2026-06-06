@@ -1769,7 +1769,12 @@ class viridis {
     }
 
     mapColor(lo, hi, val) {
-        if (Math.abs(hi - lo) <= 1e-6) { return {r: this.getRGB(0).r, g: this.getRGB(0).g, b: this.getRGB(0).b}; }
+        if (Math.abs(hi - lo) <= 1e-6) { 
+            return {
+                r: this.getRGB(Math.round(this.#samplesNumber/2)).r, 
+                g: this.getRGB(Math.round(this.#samplesNumber/2)).g, 
+                b: this.getRGB(Math.round(this.#samplesNumber/2)).b}; 
+        }
 
         let t = (val - lo) / (hi - lo);
         t = Math.min(1, Math.max(0, t));
