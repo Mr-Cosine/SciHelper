@@ -1493,7 +1493,7 @@ class operators {
     }
 }
 
-class viridis {
+class viridisPlot {
     #colors;
     #samplesNumber;
 
@@ -1757,14 +1757,14 @@ class viridis {
             [68, 1, 84],
         ];
         
-        this.#samplesNumber = this.#colors.length - 1;
+        this.#samplesNumber = this.#colors.length;
     } 
     
     getRGB(index) {
         return {
-            r: parseInt(this.#colors[index][0], 10),
-            g: parseInt(this.#colors[index][1], 10),
-            b: parseInt(this.#colors[index][2], 10)
+            r: this.#colors[index][0],
+            g: this.#colors[index][1],
+            b: this.#colors[index][2]
         };
     }
 
@@ -1779,11 +1779,11 @@ class viridis {
         let t = (val - lo) / (hi - lo);
         t = Math.min(1, Math.max(0, t));
 
-        const pos = (1 - t) * this.#samplesNumber;   // position in [0, n]
+        const pos = (1 - t) * (this.#samplesNumber - 1);
 
         const idx1 = Math.floor(pos);
-        const idx2 = Math.min(idx1 + 1, this.#samplesNumber);
-        const frac = pos - idx1;    // interpolation factor between idx1 and idx2
+        const idx2 = Math.min(idx1 + 1, this.#samplesNumber - 1);
+        const frac = pos - idx1;
 
         const c1 = this.getRGB(idx1);
         const c2 = this.getRGB(idx2);
@@ -1793,5 +1793,25 @@ class viridis {
         const b = Math.round(c1.b * (1 - frac) + c2.b * frac);
 
         return { r, g, b };
+    }
+
+    createGLTexture(gl, alpha = 255) {
+        const data = new Uint8Array(this.#samplesNumber * 4);
+        for (let i = 0; i < this.#samplesNumber; i++) {
+            let coloridx = this.#samplesNumber - 1 - i;
+            data[i*4]   = this.#colors[coloridx][0];
+            data[i*4+1] = this.#colors[coloridx][1];
+            data[i*4+2] = this.#colors[coloridx][2];
+            data[i*4+3] = alpha;
+        }
+
+        const texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.#samplesNumber, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        return texture;
     }
 }

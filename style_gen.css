@@ -285,10 +285,11 @@
 .sci-gen-plot-input-range-max { flex: 0.5; }
 
 #sci-gen-plot-canvas {
-    display: flex;
+    position: relative;
     margin: 10px;
     border: 1px solid #ccc;
     flex: 1;
+    aspect-ratio: 1/1;
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -296,5 +297,18 @@
 #sci-gen-plot-canvas-canvas {
     width: 100%;
     height: auto;
-    display: block;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    cursor: pointer;
+}
+
+#sci-gen-plot-canvas-overlay {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    pointer-events: none;
 }

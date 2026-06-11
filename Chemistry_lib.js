@@ -25,7 +25,7 @@ function mergeElemLst(input1, input2) {
         let exist = -1;
         result.forEach ((existedEntry, index) => {if(existedEntry.name === entry.name) exist = index;});
         if (exist === -1) {
-            result.push(new elementinformula(entry.name, entry.count));
+            result.push({name: entry.name, count: entry.count});
         }
         else {
             result[exist].count += entry.count;
@@ -36,7 +36,7 @@ function mergeElemLst(input1, input2) {
         let exist = -1;
         result.forEach ((existedEntry, index) => {if(existedEntry.name === entry.name) exist = index;});
         if (exist === -1) {
-            result.push(new elementinformula(entry.name, entry.count));
+            result.push({name: entry.name, count: entry.count});
         }
         else {
             result[exist].count += entry.count;
@@ -54,13 +54,6 @@ function hasMultipleCapitals(query) {
         if (count > 1) return true; // Exit early once we hit 2
     }
     return false;
-}
-
-class elementinformula {
-    constructor(name = "", count = 0) {
-        this.name = name;
-        this.count = count;
-    }
 }
 
 function parseInput(input) {
@@ -81,7 +74,7 @@ function parseInput(input) {
                 i++;
             }
             let count = countStr === "" ? 1 : parseInt(countStr);
-            elemList = mergeElemLst(elemList, [new elementinformula(name, count)]);
+            elemList = mergeElemLst(elemList, [{name: name, count: count}]);
         } 
 
         else if (token === " ") {
@@ -122,7 +115,7 @@ function parseInput(input) {
             elemList = mergeElemLst(elemList, subList);
         }
 
-        else if (token === ".") {
+        else if (token === "." || token === "·") {
             let j = i + 1;
             let multiplierStr = "";
             while (j < input.length && isNum(input[j])) {
