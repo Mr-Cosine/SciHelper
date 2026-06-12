@@ -129,7 +129,7 @@ function getRoot(lo, hi, epsi, polynomials) {
     else {return getRoot(lo, mid, epsi, polynomials);}
 }
 
-function calculatePoints(expression, dimension, x, y, defaultStep) {
+function calculatePoints(expression, dimension, xrange, yrange, defaultStep) {
     function processExpr() {
         const regex = /(\d+(?:\.\d+)?)|([a-zA-Z]+)|([+\-*/^()])|(\s+)/g;
         const tokens = [];
@@ -163,13 +163,13 @@ function calculatePoints(expression, dimension, x, y, defaultStep) {
 
     let points = [];
 
+    const MIN_X = xrange[0], MAX_X = xrange[1];
+    const MIN_Y = yrange[0], MAX_Y = yrange[1];
+    if (!isNum(MIN_X) || !isNum(MAX_X) || MIN_X >= MAX_X) return null;
+    if (!isNum(MIN_Y) || !isNum(MAX_Y) || MIN_Y >= MAX_Y) return null;
+
     if (dimension === 2) {
         const MAX_SLOPE = 1e6;
-        const lowerX = x[0], upperX = x[1]; 
-        const lowerY = y[0], upperY = y[1];
-        if (!isNum(lowerX) || !isNum(upperX) || lowerX >= upperX) return null;
-        if (!isNum(lowerY) || !isNum(upperY) || lowerY >= upperY) return null;
-
         const MAX_STEP = defaultStep / 10;
         const DEFAULT_STEP = defaultStep / 20;
         const MIN_STEP = defaultStep / 100;
@@ -178,7 +178,7 @@ function calculatePoints(expression, dimension, x, y, defaultStep) {
         let prevInvalid = true;
         let step = DEFAULT_STEP;
 
-        for (let xVal = lowerX; xVal <= upperX + step/2; xVal += step) {
+        for (let xVal = MIN_X; xVal <= MAX_X + step/2; xVal += step) {
             const postfixWithValues = processedExpr.map(tok => {
                 if (tok === 'x' || tok === 'X') return xVal;
                 else return tok;
@@ -203,22 +203,17 @@ function calculatePoints(expression, dimension, x, y, defaultStep) {
                 step = DEFAULT_STEP;
             }
         }
-        return {xrange: x, yrange: y, zrange: [0,0], points: points};
+        return {xrange: xrange, yrange: yrange, zrange: [0,0], points: points};
     } 
-    else {
-        const lowerX = x[0], upperX = x[1];
-        const lowerY = y[0], upperY = y[1];
-        if (!isNum(lowerX) || !isNum(upperX) || lowerX >= upperX) return null;
-        if (!isNum(lowerY) || !isNum(upperY) || lowerY >= upperY) return null;
-
+    else if (dimension === 3) {
         let step = defaultStep;
 
         let sampleIndex = 0;
         const SAMPLE_COUNT = 10000;
         let reservoir = new Array(SAMPLE_COUNT);
 
-        for (let xVal = lowerX; xVal <= upperX + step/2; xVal += step) {
-            for (let yVal = lowerY; yVal <= upperY + step/2;) {
+        for (let xVal = MIN_X; xVal <= MAX_X + step/2; xVal += step) {
+            for (let yVal = MIN_Y; yVal <= MAX_Y + step/2;) {
                 const postfixWithValues = processedExpr.map(tok => {
                     if (tok === 'x' || tok === 'X') return xVal;
                     else if (tok === 'y' || tok === 'Y') return yVal;
@@ -244,16 +239,16 @@ function calculatePoints(expression, dimension, x, y, defaultStep) {
         zmax = reservoir[Math.round(reservoir.length * 0.95)];
         zmin = reservoir[Math.round(reservoir.length * 0.05)]
 
-        console.log(points)
-        return {xrange: x, yrange: y, zrange: [zmin, zmax], points: points};
+        return {xrange: xrange, yrange: yrange, zrange: [zmin, zmax], points: points};
     }
+    else return null;
 }
 
-function plot(graph, overlay, plotter, expression, dimension, xmin, xmax, ymin, ymax, colorMap) {
-    const MIN_X = parseFloat(xmin);
-    const MAX_X = parseFloat(xmax);
-    const MIN_Y = parseFloat(ymin);
-    const MAX_Y = parseFloat(ymax);
+function plot(graph, overlay, plotter, expression, dimension, xrange, yrange, colorMap) {
+    const MIN_X = parseFloat(xrange[0]);
+    const MAX_X = parseFloat(xrange[1]);
+    const MIN_Y = parseFloat(yrange[0]);
+    const MAX_Y = parseFloat(yrange[1]);
     
     const gl = graph.getContext("webgl");
     const ctx = overlay.getContext("2d");
@@ -274,7 +269,7 @@ function plot(graph, overlay, plotter, expression, dimension, xmin, xmax, ymin, 
         ctx.stroke();
     }
 
-    function XYaxis(lineWidth = 1, color = "#aaa") {
+    function XYaxis(lineWidth = 1, color = "#999") {
         function tickStep(range, desiredTickCount) { return range / desiredTickCount; }
 
         const tickStepX = tickStep(MAX_X - MIN_X, 10);
@@ -303,10 +298,10 @@ function plot(graph, overlay, plotter, expression, dimension, xmin, xmax, ymin, 
                 for (let y = canvasY(0); y <= CANVAS_YEND + tickStepY * scaleY / 2; y += tickStepY * scaleY) {
                     line(canvasX(0)- tickLen/2, y, canvasX(0)+ tickLen/2, y, lineWidth, color);
                     let val = realY(y);
-                    if (Math.abs(Math.round(val) - val) < 1e-3) val = Math.round(val).toString();
+                    if (Math.abs(Math.round(val) - val) < 1e-6) val = Math.round(val).toString();
                     else val = val.toFixed(2);
                     if (Math.abs(val) > 1e-6) ctx.fillText(val, canvasX(0) - tickFontDeviate, y)
-                    else if (!existedZero) { ctx.fillText(val, canvasX(0) - tickFontDeviate, y + tickFontDeviate); existedZero = true; }
+                    else if (!existedZero) { ctx.fillText('0', canvasX(0) - tickFontDeviate, y + tickFontDeviate); existedZero = true; }
                     else continue;
                 }
             }
@@ -314,10 +309,10 @@ function plot(graph, overlay, plotter, expression, dimension, xmin, xmax, ymin, 
                 for (let y = canvasY(0); y >= CANVAS_YSTART - tickStepY * scaleY / 2; y -= tickStepY * scaleY) {
                     line(canvasX(0)- tickLen/2, y, canvasX(0)+ tickLen/2, y, lineWidth, color);
                     let val = realY(y);
-                    if (Math.abs(Math.round(val) - val) < 1e-3) val = Math.round(val).toString();
+                    if (Math.abs(Math.round(val) - val) < 1e-6) val = Math.round(val).toString();
                     else val = val.toFixed(2);
                     if (Math.abs(val) > 1e-6) ctx.fillText(val, canvasX(0) - tickFontDeviate, y)
-                    else if (!existedZero) { ctx.fillText(val, canvasX(0) - tickFontDeviate, y + tickFontDeviate); existedZero = true; }
+                    else if (!existedZero) { ctx.fillText('0', canvasX(0) - tickFontDeviate, y + tickFontDeviate); existedZero = true; }
                     else continue;
                 }
             }
@@ -336,10 +331,10 @@ function plot(graph, overlay, plotter, expression, dimension, xmin, xmax, ymin, 
                 for (let x = canvasX(0); x <= CANVAS_XEND + tickStepX * scaleX / 2; x += tickStepX * scaleX) {
                     line(x, canvasY(0)- tickLen/2, x, canvasY(0)+ tickLen/2, lineWidth, color);
                     let val = realX(x);
-                    if (Math.abs(Math.round(val) - val) < 1e-3) val = Math.round(val).toString();
+                    if (Math.abs(Math.round(val) - val) < 1e-6) val = Math.round(val).toString();
                     else val = val.toFixed(2);
                     if (Math.abs(val) > 1e-6) ctx.fillText(val, x, canvasY(0) + tickFontDeviate);
-                    else if (!existedZero) ctx.fillText(val, x - tickFontDeviate, canvasY(0) + tickFontDeviate);
+                    else if (!existedZero) { ctx.fillText('0', x - tickFontDeviate, canvasY(0) + tickFontDeviate); xistedZero = true; }
                     else continue;
                 }
             }
@@ -347,10 +342,10 @@ function plot(graph, overlay, plotter, expression, dimension, xmin, xmax, ymin, 
                 for (let x = canvasX(0); x >= CANVAS_XSTART - tickStepX * scaleX / 2; x -= tickStepX * scaleX) {
                     line(x, canvasY(0)- tickLen/2, x, canvasY(0)+ tickLen/2, lineWidth, color);
                     let val = realX(x);
-                    if (Math.abs(Math.round(val) - val) < 1e-3) val = Math.round(val).toString();
+                    if (Math.abs(Math.round(val) - val) < 1e-6) val = Math.round(val).toString();
                     else val = val.toFixed(2);
-                    if (Math.abs(val) > 1e-6) ctx.fillText(val, x, canvasY(0) + tickFontDeviate);
-                    else if (!existedZero) ctx.fillText(val, x - tickFontDeviate, canvasY(0) + tickFontDeviate);
+                    if (Math.abs(val) > 0) ctx.fillText(val, x, canvasY(0) + tickFontDeviate);
+                    else if (!existedZero) { ctx.fillText('0', x - tickFontDeviate, canvasY(0) + tickFontDeviate); xistedZero = true; }
                     else continue;
                 }
             }
@@ -776,7 +771,7 @@ function openPlotterWindow(outputLoc) {
 
     graphSection.append(graph, overlay2D);
 
-    function VShader() {return `
+    const VSHADER_CODE = `
         uniform vec2 u_xrange;
         uniform vec2 u_yrange;
         uniform vec2 u_canvadim;
@@ -793,9 +788,9 @@ function openPlotterWindow(outputLoc) {
             gl_Position = vec4(vec2(ncdX, ncdY), 0.0, 1.0);
             gl_PointSize = 2.0;
         }
-    `}
+    `;
 
-    function FShader() {return `
+    const FSHADER_CODE = `
         precision mediump float;
         varying float v_z;
         uniform sampler2D u_colorMap;
@@ -809,7 +804,7 @@ function openPlotterWindow(outputLoc) {
             t = clamp(t, 0.0, 1.0);
             gl_FragColor = texture2D(u_colorMap, vec2(t, 0.5));
         }
-    `}
+    `;
 
     // Compile a shader from source string
     function compileShader(gl, source, type) {
@@ -823,22 +818,18 @@ function openPlotterWindow(outputLoc) {
         return shader;
     }
 
-    const vertexShader = compileShader(gl, VShader(), gl.VERTEX_SHADER);
-    const fragmentShader = compileShader(gl, FShader(), gl.FRAGMENT_SHADER);
+    const PLOTTER = gl.createProgram();
+    gl.attachShader(PLOTTER, compileShader(gl, VSHADER_CODE, gl.VERTEX_SHADER));
+    gl.attachShader(PLOTTER, compileShader(gl, FSHADER_CODE, gl.FRAGMENT_SHADER));
+    gl.linkProgram(PLOTTER);
+    gl.useProgram(PLOTTER);
 
-    const plotter = gl.createProgram();
-    gl.attachShader(plotter, vertexShader);
-    gl.attachShader(plotter, fragmentShader);
-    gl.linkProgram(plotter);
-    if (!gl.getProgramParameter(plotter, gl.LINK_STATUS)) console.error(gl.getProgramInfoLog(plotter));
-    else gl.useProgram(plotter);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    const VIRIDIS_GLTEXTURE = (new viridisPlot()).createGLTexture(gl);
 
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    const viridis = new viridisPlot();
-    const viridisTexture = viridis.createGLTexture(gl);
-
-    inputConfirm.addEventListener('click', ()=>{plot(graph, overlay2D, plotter, expression.value, dimension.value, xmin.value, xmax.value, ymin.value, ymax.value, viridisTexture)});
+    inputConfirm.addEventListener('click', ()=>{ 
+        plot(graph, overlay2D, PLOTTER, expression.value, dimension.value, [xmin.value, xmax.value], [ymin.value, ymax.value], VIRIDIS_GLTEXTURE);
+    });
 
     let isDragging = false;
     let dragStart = { x: 0, y: 0 };
@@ -851,10 +842,12 @@ function openPlotterWindow(outputLoc) {
         dragStart.x = e.clientX;
         dragStart.y = e.clientY;
 
-        startRanges.xmin = parseFloat(xmin.value);
-        startRanges.xmax = parseFloat(xmax.value);
-        startRanges.ymin = parseFloat(ymin.value);
-        startRanges.ymax = parseFloat(ymax.value);
+        startRanges = {
+            xmin: parseFloat(xmin.value), 
+            xmax: parseFloat(xmax.value),  
+            ymin: parseFloat(ymin.value), 
+            ymax: parseFloat(ymax.value)
+        };
         e.preventDefault();
     });
 
@@ -862,7 +855,7 @@ function openPlotterWindow(outputLoc) {
     document.addEventListener('mouseup', ()=> { isDragging = false; });
     graphSection.addEventListener('mouseup', () => { 
         isDragging = false; 
-        plot(graph, overlay2D, plotter, expression.value, dimension.value, xmin.value, xmax.value, ymin.value, ymax.value, viridisTexture); 
+        plot(graph, overlay2D, PLOTTER, expression.value, dimension.value, [xmin.value, xmax.value], [ymin.value, ymax.value], VIRIDIS_GLTEXTURE);
         lastPlot = performance.now();
     });
 
@@ -871,25 +864,25 @@ function openPlotterWindow(outputLoc) {
     document.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
 
-        const dx = e.clientX - dragStart.x;
-        const dy = e.clientY - dragStart.y;
+        let dx = e.clientX - dragStart.x;
+        let dy = e.clientY - dragStart.y;
         
-        const canvasRect = graphSection.getBoundingClientRect();
+        const CANVAS_RECT = graphSection.getBoundingClientRect();
         
-        const xRange = startRanges.xmax - startRanges.xmin;
-        const yRange = startRanges.ymax - startRanges.ymin;
+        let xrange = startRanges.xmax - startRanges.xmin;
+        let yrange = startRanges.ymax - startRanges.ymin;
         
-        const xDelta = (dx / canvasRect.width) * xRange;
-        const yDelta = (dy / canvasRect.height) * yRange;
+        dx = (dx / CANVAS_RECT.width) * xrange;
+        dy = (dy / CANVAS_RECT.height) * yrange;
 
-        xmin.value = Math.round((startRanges.xmin - xDelta) * 1000)/ 1000;
-        xmax.value = Math.round((startRanges.xmax - xDelta) * 1000) / 1000;
-        ymin.value = Math.round((startRanges.ymin + yDelta) * 1000) / 1000;
-        ymax.value = Math.round((startRanges.ymax + yDelta) * 1000) / 1000;
+        xmin.value = startRanges.xmin - dx;
+        xmax.value = startRanges.xmax - dx;
+        ymin.value = startRanges.ymin + dy;
+        ymax.value = startRanges.ymax + dy;
         
         const now = performance.now();
         if (now - lastPlot > FRAME_INTERVAL) { 
-            plot(graph, overlay2D, plotter, expression.value, dimension.value, xmin.value, xmax.value, ymin.value, ymax.value, viridisTexture); 
+            plot(graph, overlay2D, PLOTTER, expression.value, dimension.value, [xmin.value, xmax.value], [ymin.value, ymax.value], VIRIDIS_GLTEXTURE);
             lastPlot = performance.now();
         }
     });
@@ -898,28 +891,22 @@ function openPlotterWindow(outputLoc) {
     graphSection.addEventListener('wheel', (e) => {
         e.preventDefault();
         const factor = e.deltaY > 0 ? 1.1 : 0.9;
+
+        let xCenter = (parseFloat(xmin.value) + parseFloat(xmax.value)) / 2;
+        let yCenter = (parseFloat(ymin.value) + parseFloat(ymax.value)) / 2;
+        let xRange = (parseFloat(xmax.value) - parseFloat(xmin.value)) * factor;
+        let yRange = (parseFloat(ymax.value) - parseFloat(ymin.value)) * factor;
         
-        const xminVal = parseFloat(xmin.value);
-        const xmaxVal = parseFloat(xmax.value);
-        const yminVal = parseFloat(ymin.value);
-        const ymaxVal = parseFloat(ymax.value);
-        
-        const xCenter = (xminVal + xmaxVal) / 2;
-        const yCenter = (yminVal + ymaxVal) / 2;
-        const xRange = (xmaxVal - xminVal) * factor;
-        const yRange = (ymaxVal - yminVal) * factor;
-        
-        xmin.value = Math.round((xCenter - xRange / 2) * 1000)/ 1000;
-        xmax.value = Math.round((xCenter + xRange / 2) * 1000)/ 1000;
-        ymin.value = Math.round((yCenter - yRange / 2) * 1000)/ 1000;
-        ymax.value = Math.round((yCenter + yRange / 2) * 1000)/ 1000;
+        xmin.value = xCenter - xRange / 2;
+        xmax.value = xCenter + xRange / 2;
+        ymin.value = yCenter - yRange / 2;
+        ymax.value = yCenter + yRange / 2;
         
         const now = performance.now();
         if (now - lastPlot > FRAME_INTERVAL) { 
-            plot(graph, overlay2D, plotter, expression.value, dimension.value, xmin.value, xmax.value, ymin.value, ymax.value, viridisTexture); 
+            plot(graph, overlay2D, PLOTTER, expression.value, dimension.value, [xmin.value, xmax.value], [ymin.value, ymax.value], VIRIDIS_GLTEXTURE); 
             lastPlot = performance.now();
         }
-        rafIdscroll = null;
     }, { passive: false });
 
     plotWindow.append(header, inputSection, graphSection);
