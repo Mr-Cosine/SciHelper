@@ -172,7 +172,7 @@ function calculatePoints(expression, dimension, x, y, defaultStep) {
 
         const MAX_STEP = defaultStep / 10;
         const DEFAULT_STEP = defaultStep / 20;
-        const MIN_STEP = defaultStep / 50;
+        const MIN_STEP = defaultStep / 100;
 
         let prevPoint = null;
         let prevInvalid = true;
