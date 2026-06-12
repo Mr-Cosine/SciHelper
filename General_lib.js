@@ -173,33 +173,40 @@ function calculatePoints(expression, dimension, xrange, yrange, defaultStep) {
         const MAX_STEP = defaultStep / 10;
         const DEFAULT_STEP = defaultStep / 20;
         const MIN_STEP = defaultStep / 100;
-
-        let prevPoint = null;
-        let prevInvalid = true;
+        
+        let prevValid = false;
+        let prevX, prevY;
+        let prevSlope = null;
         let step = DEFAULT_STEP;
 
-        for (let xVal = MIN_X; xVal <= MAX_X + step/2; xVal += step) {
-            const postfixWithValues = processedExpr.map(tok => {
-                if (tok === 'x' || tok === 'X') return xVal;
-                else return tok;
-            });
+        for (let xVal = MIN_X; xVal <= MAX_X + step / 2; xVal += step) {
+            const postfixWithValues = processedExpr.map(tok =>
+                (tok === 'x' || tok === 'X') ? xVal : tok
+            );
             let yVal = evaluate(postfixWithValues);
 
-            let slopeMag = 0;
-            if (!prevInvalid) { slopeMag = Math.abs((yVal - prevPoint.y)/(xVal - prevPoint.x)); }
+            let currSlope = null;
+            if (prevValid) currSlope = Math.abs((yVal - prevY) / (xVal - prevX));
 
             if (isNum(yVal)) {
-                if (slopeMag != 0 && !prevInvalid) step = Math.min(MAX_STEP, Math.max(1/slopeMag * 0.1, MIN_STEP));
+                if (currSlope !== null && currSlope !== 0) { step = Math.min(MAX_STEP, Math.max(1 / currSlope * 0.1, MIN_STEP)); } 
                 else step = DEFAULT_STEP;
 
-                if (slopeMag > MAX_SLOPE) { points.push({x: NaN, y: NaN}); prevInvalid = true; }
-                points.push({x: xVal, y: yVal, z: NaN});
-                prevPoint = {x: xVal, y: yVal, z: NaN};
-                prevInvalid = false;
-            }
+                if (currSlope !== null && prevSlope !== null && currSlope > MAX_SLOPE && Math.abs(currSlope - prevSlope) > MAX_SLOPE) {
+                    points.push({ x: NaN, y: NaN, z: NaN });
+                    prevValid = false;
+                    prevSlope = null;
+                } 
+                else prevSlope = currSlope;
+
+                points.push({ x: xVal, y: yVal, z: NaN });
+                prevX = xVal; prevY = yVal;
+                prevValid = true;
+            } 
             else {
-                if (!prevInvalid) { points.push({x: NaN, y: NaN}); prevInvalid = true; }
-                prevPoint = {x: NaN, y: NaN, z: NaN};
+                if (prevValid) points.push({ x: NaN, y: NaN, z: NaN });
+                prevValid = false;
+                prevSlope = null;
                 step = DEFAULT_STEP;
             }
         }
