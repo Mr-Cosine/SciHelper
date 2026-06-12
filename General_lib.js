@@ -170,11 +170,13 @@ function calculatePoints(expression, dimension, x, y, defaultStep) {
         if (!isNum(lowerX) || !isNum(upperX) || lowerX >= upperX) return null;
         if (!isNum(lowerY) || !isNum(upperY) || lowerY >= upperY) return null;
 
-        const minStep = defaultStep / 50;
+        const MAX_STEP = defaultStep / 10;
+        const DEFAULT_STEP = defaultStep / 20;
+        const MIN_STEP = defaultStep / 50;
 
         let prevPoint = null;
         let prevInvalid = true;
-        let step = defaultStep;
+        let step = DEFAULT_STEP;
 
         for (let xVal = lowerX; xVal <= upperX + step/2; xVal += step) {
             const postfixWithValues = processedExpr.map(tok => {
@@ -187,8 +189,8 @@ function calculatePoints(expression, dimension, x, y, defaultStep) {
             if (!prevInvalid) { slopeMag = Math.abs((yVal - prevPoint.y)/(xVal - prevPoint.x)); }
 
             if (isNum(yVal)) {
-                if (slopeMag != 0 && !prevInvalid) step = Math.min(defaultStep, Math.max(1/slopeMag * 0.1, minStep));
-                else step = defaultStep;
+                if (slopeMag != 0 && !prevInvalid) step = Math.min(MAX_STEP, Math.max(1/slopeMag * 0.1, MIN_STEP));
+                else step = DEFAULT_STEP;
 
                 if (slopeMag > MAX_SLOPE) { points.push({x: NaN, y: NaN}); prevInvalid = true; }
                 points.push({x: xVal, y: yVal, z: NaN});
@@ -198,7 +200,7 @@ function calculatePoints(expression, dimension, x, y, defaultStep) {
             else {
                 if (!prevInvalid) { points.push({x: NaN, y: NaN}); prevInvalid = true; }
                 prevPoint = {x: NaN, y: NaN, z: NaN};
-                step = defaultStep
+                step = DEFAULT_STEP;
             }
         }
         return {xrange: x, yrange: y, zrange: [0,0], points: points};
@@ -242,6 +244,7 @@ function calculatePoints(expression, dimension, x, y, defaultStep) {
         zmax = reservoir[Math.round(reservoir.length * 0.95)];
         zmin = reservoir[Math.round(reservoir.length * 0.05)]
 
+        console.log(points)
         return {xrange: x, yrange: y, zrange: [zmin, zmax], points: points};
     }
 }
@@ -369,7 +372,7 @@ function plot(graph, overlay, plotter, expression, dimension, xmin, xmax, ymin, 
     ctx.clearRect(CANVAS_XSTART, CANVAS_YSTART, CANVAS_XEND, CANVAS_YEND);
 
     if (expression && dimension && isNum(MIN_X) && isNum(MAX_X) && isNum(MIN_Y) && isNum(MAX_Y)) {
-        const DESIRED_SAMPLE = 2000;
+        const DESIRED_SAMPLE = Math.max(graph.width, graph.height);
         let xspan = [null, null]; let yspan = [null, null];
 
         xspan = [MIN_X, MAX_X];
@@ -379,8 +382,7 @@ function plot(graph, overlay, plotter, expression, dimension, xmin, xmax, ymin, 
         
         const POINTS = (result.points)? result.points: [];
 
-        if (POINTS.filter(p => isFinite(p.x) && isFinite(p.y)).length <= 1) { XYaxis(); warning(); }
-        else {
+        if (POINTS.filter(p => isFinite(p.x) && isFinite(p.y)).length > 1) {
             const xrange = result.xrange;
             const yrange = result.yrange;
             const zrange = result.zrange;
@@ -411,6 +413,10 @@ function plot(graph, overlay, plotter, expression, dimension, xmin, xmax, ymin, 
             else gl.drawArrays(gl.POINTS, 0, POINTS.length);
 
             XYaxis();
+        }
+        else { 
+            XYaxis();
+            warning(); 
         }
     }
     else {
@@ -837,51 +843,58 @@ function openPlotterWindow(outputLoc) {
     let isDragging = false;
     let dragStart = { x: 0, y: 0 };
     let startRanges = { xmin: 0, xmax: 0, ymin: 0, ymax: 0 };
+    let lastPlot = 0;
 
     // Panning: start drag on mousedown
     graphSection.addEventListener('mousedown', (e) => {
         isDragging = true;
         dragStart.x = e.clientX;
         dragStart.y = e.clientY;
-        // Store current ranges at drag start
+
         startRanges.xmin = parseFloat(xmin.value);
         startRanges.xmax = parseFloat(xmax.value);
         startRanges.ymin = parseFloat(ymin.value);
         startRanges.ymax = parseFloat(ymax.value);
-        e.preventDefault(); // prevent text selection
+        e.preventDefault();
     });
 
-    // Panning: update ranges while dragging
+    // End dragging on mouseup
+    document.addEventListener('mouseup', ()=> { isDragging = false; });
+    graphSection.addEventListener('mouseup', () => { 
+        isDragging = false; 
+        plot(graph, overlay2D, plotter, expression.value, dimension.value, xmin.value, xmax.value, ymin.value, ymax.value, viridisTexture); 
+        lastPlot = performance.now();
+    });
+
+    // Panning
+    const FRAME_INTERVAL = 33;
     document.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
-        
+
         const dx = e.clientX - dragStart.x;
         const dy = e.clientY - dragStart.y;
         
-        // Convert pixel movement to data units
         const canvasRect = graphSection.getBoundingClientRect();
-        const width = canvasRect.width;
-        const height = canvasRect.height;
         
         const xRange = startRanges.xmax - startRanges.xmin;
         const yRange = startRanges.ymax - startRanges.ymin;
         
-        const xDelta = (dx / width) * xRange;
-        const yDelta = (dy / height) * yRange;
-        
-        // Update input fields (note: y axis is inverted because canvas Y goes down)
+        const xDelta = (dx / canvasRect.width) * xRange;
+        const yDelta = (dy / canvasRect.height) * yRange;
+
         xmin.value = Math.round((startRanges.xmin - xDelta) * 1000)/ 1000;
         xmax.value = Math.round((startRanges.xmax - xDelta) * 1000) / 1000;
         ymin.value = Math.round((startRanges.ymin + yDelta) * 1000) / 1000;
         ymax.value = Math.round((startRanges.ymax + yDelta) * 1000) / 1000;
         
-        plot(graph, overlay2D, plotter, expression.value, dimension.value, xmin.value, xmax.value, ymin.value, ymax.value, viridisTexture);
+        const now = performance.now();
+        if (now - lastPlot > FRAME_INTERVAL) { 
+            plot(graph, overlay2D, plotter, expression.value, dimension.value, xmin.value, xmax.value, ymin.value, ymax.value, viridisTexture); 
+            lastPlot = performance.now();
+        }
     });
 
-    // End dragging on mouseup
-    document.addEventListener('mouseup', () => { isDragging = false; });
-
-    // Zoom with wheel (centered)
+    // Zoom with wheel
     graphSection.addEventListener('wheel', (e) => {
         e.preventDefault();
         const factor = e.deltaY > 0 ? 1.1 : 0.9;
@@ -901,7 +914,12 @@ function openPlotterWindow(outputLoc) {
         ymin.value = Math.round((yCenter - yRange / 2) * 1000)/ 1000;
         ymax.value = Math.round((yCenter + yRange / 2) * 1000)/ 1000;
         
-        plot(graph, overlay2D, plotter, expression.value, dimension.value, xmin.value, xmax.value, ymin.value, ymax.value, viridisTexture);
+        const now = performance.now();
+        if (now - lastPlot > FRAME_INTERVAL) { 
+            plot(graph, overlay2D, plotter, expression.value, dimension.value, xmin.value, xmax.value, ymin.value, ymax.value, viridisTexture); 
+            lastPlot = performance.now();
+        }
+        rafIdscroll = null;
     }, { passive: false });
 
     plotWindow.append(header, inputSection, graphSection);
