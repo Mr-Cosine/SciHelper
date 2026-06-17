@@ -131,7 +131,7 @@ function getRoot(lo, hi, epsi, polynomials) {
 
 function calculatePoints(expression, dimension, xrange, yrange, defaultStep) {
     function processExpr() {
-        const regex = /(\d+(?:\.\d+)?)|([a-zA-Z]+)|([+\-*/^()])|(\s+)/g;
+        const regex = /([a-zA-Z]+[a-zA-Z0-9]*)|(\d+(?:\.\d+)?)|([+\-*/^()])|(\s+)/g;
         const tokens = [];
         let match;
         while ((match = regex.exec(expression)) !== null) {

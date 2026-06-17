@@ -1429,67 +1429,162 @@ const physFormulas = [
 ];
 
 class operators {
-    #precedence
-    #binary
-    #unary
+    #operatorList
+    #operators
+
     constructor() {
-        this.#precedence = {
-            '(': 1, ')': 1, 
-            '+': 2, '-': 2, 
-            '*': 3, '/': 3, 
-            '^': 4, 
-            'log10': 5, 'ln': 5, 'sin': 5, 'cos': 5, 'tan': 5, 'sec': 5, 'csc': 5, 'cot': 5, 'asin': 5, 'acos': 5, 'atan': 5, 'sqrt': 5, 'abs': 5
-        }   
-        this.#unary = ['log10', 'ln', 'sin', 'cos', 'tan', 'sec', 'csc', 'cot', 'asin', 'acos', 'atan', 'sqrt', 'abs'];
-        this.#binary = ['+', '-', '*', '/', '^'];
+        const createOp = (name, precedence, operandCount, isArithOperator, JSmethod, GLSLmethod) => {
+            let operator = {
+                name: name, 
+                precedence: precedence, 
+                operandCount: operandCount,
+                isArithOperator: isArithOperator, 
+                JSmap: JSmethod,
+                GLSLmap: GLSLmethod
+            }; 
+            Object.freeze(operator);
+            return operator
+        }
+
+        this.#operators = {
+            '(': createOp('(', 1, null, false,
+                null, 
+                null
+            ), 
+            ')': createOp(')', 1, null, false,
+                null, 
+                null
+            ), 
+
+            '+': createOp('+', 2, 2, true,
+                (left, right) => {return left + right}, 
+                (left, right) => `(${left} + ${right})`
+            ), 
+            '-': createOp('-', 2, 2, true,
+                (left, right) => {return left - right}, 
+                (left, right) => `(${left} - ${right})`
+            ), 
+
+            '*': createOp('*', 3, 2, true,
+                (left, right) => {return left * right}, 
+                (left, right) => `(${left} * ${right})`
+            ), 
+            '/': createOp('/', 3, 2, true,
+                (left, right) => {return left / right}, 
+                (left, right) => `(${left} / ${right})`
+            ), 
+
+            '^': createOp('^', 4, 2, true,
+                (left, right) => {return Math.pow(left, right)}, 
+                (left, right) => `pow(${left}, ${right})`
+            ), 
+            
+            'log10': createOp('log10', 5, 1, true,
+                (arg) => {return Math.log10(arg)}, 
+                (arg) => `log(${arg})/log(10.0)`
+            ),  
+            'ln': createOp('ln', 5, 1, true,
+                (arg) => {return Math.log(arg)}, 
+                (arg) => `log(${arg})`
+            ), 
+            'sin': createOp('sin', 5, 1, true,
+                (arg) => {return Math.sin(arg)}, 
+                (arg) => `sin(${arg})`
+            ),
+            'cos': createOp('cos', 5, 1, true,
+                (arg) => {return Math.cos(arg)}, 
+                (arg) => `cos(${arg})`
+            ), 
+            'tan': createOp('tan', 5, 1, true,
+                (arg) => {return Math.tan(arg)}, 
+                (arg) => `tan(${arg})`
+            ), 
+            'sec': createOp('sec', 5, 1, true,
+                (arg) => {return 1/Math.cos(arg)}, 
+                (arg) => `1.0/cos(${arg})`
+            ), 
+            'csc': createOp('csc', 5, 1, true,
+                (arg) => {return 1/Math.sin(arg)}, 
+                (arg) => `1.0/sin(${arg})`
+            ), 
+            'cot': createOp('cot', 5, 1, true,
+                (arg) => {return 1/Math.tan(arg)}, 
+                (arg) => `1.0/tan(${arg})`
+            ), 
+            'asin': createOp('asin', 5, 1, true,
+                (arg) => {return Math.asin(arg)}, 
+                (arg) => `asin(${arg})`
+            ), 
+            'acos': createOp('acos', 5, 1, true,
+                (arg) => {return Math.acos(arg)}, 
+                (arg) => `acos(${arg})`
+            ),
+            'atan': createOp('atan', 5, 1, true,
+                (arg) => {return Math.atan(arg)}, 
+                (arg) => `atan(${arg})`
+            ), 
+            'sqrt': createOp('sqrt', 5, 1, true,
+                (arg) => {return Math.sqrt(arg)}, 
+                (arg) => `pow(${arg}, 0.5)`
+            ),
+            'abs': createOp('abs', 5, 1, true,
+                (arg) => {return Math.abs(arg)}, 
+                (arg) => `abs(${arg})`
+            ),
+        }
+
+        this.#operatorList = Object.keys(this.#operators);
+
+        Object.freeze(this.#operators);
+        Object.freeze(this.#operatorList);
     }
 
-    precedence(operator) { return this.#precedence[operator];}
-    isOperator(operator) { return this.#precedence.hasOwnProperty(operator); }
-    isBinary(operator) { return this.#binary.includes(operator); }
-    isUnary(operator) { return this.#unary.includes(operator); }
-    eval(a, operator, b = undefined) {
-        if (!this.isOperator(operator)) return null;
-
-        if (this.isBinary(operator)) {
-            if (a === undefined || b === undefined || operator === undefined) return null;
-
-            let result = null;
-            switch (operator) {
-                case '+': result = a + b; break;
-                case '-': result = a - b; break;
-                case '*': result = a * b; break;
-                case '/': result = a / b; break;
-                case '^': result = Math.pow(a, b); break;
-                default: break;
-            }
-            if (!isNum(result) || !isFinite(result) || result === null) return null;
-            else return result;
-        }
-        else if (this.isUnary(operator)) {
-            if (a === undefined || operator === undefined) return null;
-
-            let result = null;
-            switch (operator) {
-                case 'log10':   result = Math.log10(a); break;
-                case 'ln':      result = Math.log(a); break;
-                case 'sin':     result = Math.sin(a); break;
-                case 'cos':     result = Math.cos(a); break;
-                case 'tan':     result = Math.tan(a); break;
-                case 'sec':     result = 1/Math.cos(a); break;
-                case 'csc':     result = 1/Math.sin(a); break;
-                case 'cot':     result = 1/Math.tan(a); break;
-                case 'asin':    result = Math.asin(a); break;
-                case 'acos':    result = Math.acos(a); break;
-                case 'atan':    result = Math.atan(a); break;
-                case 'sqrt':    result = Math.sqrt(a); break;
-                case 'abs':     result = Math.abs(a); break;
-                default: break;
-            }
-            if (!isNum(result) || !isFinite(result) || result === null) return null;
-            else return result
-        }
+    isOperator(operator) { 
+        return this.#operatorList.includes(operator); 
+    }
+    isArithOperator(operator) {
+        return this.#operatorList.includes(operator) && this.#operators[operator].isArithOperator;
+    }
+    isBinary(operator) { 
+        if (this.isOperator(operator)) return (this.#operators[operator].operandCount === 2);
+        else return false;
+    }
+    isUnary(operator) { 
+        if (this.isOperator(operator)) return (this.#operators[operator].operandCount === 1);
+        else return false; 
+    }
+    precedence(operator) { 
+        if (this.isOperator(operator)) return this.#operators[operator].precedence; 
         else return null;
+    }
+
+    eval(a, operator, b = null) {
+        if (!this.isArithOperator(operator)) return null;
+
+        if (a === null || operator === null) return null;
+        if (!this.isUnary(operator) && !this.isBinary(operator)) return null;
+        if (this.isBinary(operator) &&  b === null) return null;
+        
+        const calculation = this.#operators[operator].JSmap;
+        let result = this.isBinary(operator)? 
+            calculation(a, b):
+            calculation(a);
+            
+        if (!isNum(result) || !isFinite(result) || result === null) return null;
+        else return result
+    }
+    toGLSL(a, operator, b = null) {
+        if (!this.isArithOperator(operator)) return null;
+
+        if (a === null || operator === null) return null;
+        if (!this.isUnary(operator) && !this.isBinary(operator)) return null;
+        if (this.isBinary(operator) &&  b === null) return null;
+        if (!this.#operators[operator]) return null;
+        
+        const glslExpr = this.#operators[operator].GLSLmap;
+        return this.isBinary(operator)? 
+            glslExpr(a, b):
+            glslExpr(a);
     }
 }
 
@@ -1758,6 +1853,9 @@ class viridisPlot {
         ];
         
         this.#samplesNumber = this.#colors.length;
+        
+        Object.freeze(this.#colors);
+        Object.freeze(this.#samplesNumber);
     } 
     
     getRGB(index) {
