@@ -1481,7 +1481,7 @@ class operators {
             
             'log10': createOp('log10', 5, 1, true,
                 (arg) => {return Math.log10(arg)}, 
-                (arg) => `log(${arg})/log(10.0)`
+                (arg) => `(log(${arg})/log(10.0))`
             ),  
             'ln': createOp('ln', 5, 1, true,
                 (arg) => {return Math.log(arg)}, 
@@ -1501,15 +1501,15 @@ class operators {
             ), 
             'sec': createOp('sec', 5, 1, true,
                 (arg) => {return 1/Math.cos(arg)}, 
-                (arg) => `1.0/cos(${arg})`
+                (arg) => `(1.0/cos(${arg}))`
             ), 
             'csc': createOp('csc', 5, 1, true,
                 (arg) => {return 1/Math.sin(arg)}, 
-                (arg) => `1.0/sin(${arg})`
+                (arg) => `(1.0/sin(${arg}))`
             ), 
             'cot': createOp('cot', 5, 1, true,
                 (arg) => {return 1/Math.tan(arg)}, 
-                (arg) => `1.0/tan(${arg})`
+                (arg) => `(1.0/tan(${arg}))`
             ), 
             'asin': createOp('asin', 5, 1, true,
                 (arg) => {return Math.asin(arg)}, 
