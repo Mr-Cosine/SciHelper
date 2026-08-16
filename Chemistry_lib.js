@@ -2,7 +2,7 @@
 function isLetter(token) {return /[a-zA-Z]/.test(token);}
 function isUpper(token) {return (isLetter(token) && token === token.toUpperCase());}
 function isLower(token) {return (isLetter(token) && token === token.toLowerCase());}
-function isNum(token) {return !isNaN(parseFloat(token));}
+function isNum(token) {return (!(token === null) && !isNaN(parseFloat(token)));}
 
 function sanitizeFormula(input) {
     if (!input) return "";
@@ -264,7 +264,7 @@ function solveEq(variables, expressions) {
 }
 
 function infixToPostfix(tokens) {
-    const ops = new operators();
+    const ops = new Operators();
     let outQueue = [];
     let opStack = [];
 
@@ -300,7 +300,7 @@ function infixToPostfix(tokens) {
 }
 
 function evaluate(postfix) {
-    const ops = new operators();
+    const ops = new Operators();
     let stack = [];
     
     for (let token of postfix) {
