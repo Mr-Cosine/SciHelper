@@ -156,7 +156,6 @@ function processExpression(expression, dimension) {
     if (dimension === 2 && varList.filter(v => (v.length > 1 || !(v.includes("x")))).length > 0) return;
     if (dimension === 3 && varList.filter(v => (v.length > 1 || (!v.includes("x") && !v.includes("y")))).length > 0) return;
 
-    console.log(rawTokens);
     return infixToPostfix(rawTokens);
 }
 
@@ -171,7 +170,8 @@ function calculatePoints(postfExpression, dimension, xrange, yrange, defaultStep
     if (!isNum(MIN_Y) || !isNum(MAX_Y) || MIN_Y >= MAX_Y) return null;
 
     if (dimension === 2) {
-        const MAX_SLOPE = 1e6;
+        const MAX_SLOPE = 1e4;
+        const MAX_SLOPE_DIFF = 1e2;
         const MAX_STEP = defaultStep / 10;
         const DEFAULT_STEP = defaultStep / 20;
         const MIN_STEP = defaultStep / 100;
@@ -191,7 +191,7 @@ function calculatePoints(postfExpression, dimension, xrange, yrange, defaultStep
                 if (currSlope !== null && currSlope !== 0) { step = Math.min(MAX_STEP, Math.max(1 / currSlope * 0.1, MIN_STEP)); } 
                 else step = DEFAULT_STEP;
 
-                if (currSlope !== null && prevSlope !== null && currSlope > MAX_SLOPE && Math.abs(currSlope - prevSlope) > MAX_SLOPE) {
+                if (currSlope !== null && prevSlope !== null && currSlope > MAX_SLOPE && Math.abs(currSlope - prevSlope) > MAX_SLOPE_DIFF) {
                     points.push({ x: NaN, y: NaN, z: NaN });
                     prevValid = false;
                     prevSlope = null;
@@ -246,7 +246,6 @@ function calculatePoints(postfExpression, dimension, xrange, yrange, defaultStep
 }
 
 function plot(graph, overlay, plotter, postfExpression, dimension, xrange, yrange, colorMap) {
-    console.log(postfExpression)
     const MIN_X = parseFloat(xrange[0]);
     const MAX_X = parseFloat(xrange[1]);
     const MIN_Y = parseFloat(yrange[0]);
@@ -374,7 +373,7 @@ function plot(graph, overlay, plotter, postfExpression, dimension, xrange, yrang
         xspan = [MIN_X, MAX_X];
         yspan = [MIN_Y, MAX_Y];
         let step = Math.min(Math.abs(yspan[1] - yspan[0]), Math.abs(xspan[1] - xspan[0]))/DESIRED_SAMPLE;
-        let result = calculatePoints(postfExpression, parseInt(dimension), xspan, yspan, step);
+        let result = calculatePoints(postfExpression, dimension, xspan, yspan, step);
         
         const POINTS = (result.points)? result.points: [];
 
@@ -385,10 +384,10 @@ function plot(graph, overlay, plotter, postfExpression, dimension, xrange, yrang
 
             let positions = new Float32Array(POINTS.length * 3);
             for (let i = 0; i < POINTS.length; i++) {
-                    positions[i*3]   = POINTS[i].x;
-                    positions[i*3+1] = POINTS[i].y;
-                    positions[i*3+2] = POINTS[i].z;
-            }
+                positions[i*3]   = POINTS[i].x;
+                positions[i*3+1] = POINTS[i].y;
+                positions[i*3+2] = POINTS[i].z;
+            } 
 
             gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
 
@@ -406,7 +405,7 @@ function plot(graph, overlay, plotter, postfExpression, dimension, xrange, yrang
             gl.uniform4f(gl.getUniformLocation(plotter, 'u_nanColor'), 0.25, 0.25, 0.25, 1.0);
 
             if (dimension === 2) gl.drawArrays(gl.LINE_STRIP, 0, POINTS.length);
-            else gl.drawArrays(gl.POINTS, 0, POINTS.length);
+            else if (dimension === 3) gl.drawArrays(gl.POINTS, 0, POINTS.length);
 
             XYaxis();
         }
@@ -830,7 +829,7 @@ function openPlotterWindow(outputLoc) {
     let postfExpression = processExpression(expression.value, dimension.value);
     inputConfirm.addEventListener('click', ()=>{ 
         postfExpression = processExpression(expression.value, dimension.value);
-        plot(graph, overlay2D, PLOTTER, postfExpression, dimension.value, [xmin.value, xmax.value], [ymin.value, ymax.value], VIRIDIS_GLTEXTURE);
+        plot(graph, overlay2D, PLOTTER, postfExpression, parseInt(dimension.value), [xmin.value, xmax.value], [ymin.value, ymax.value], VIRIDIS_GLTEXTURE);
     });
 
     let isDragging = false;
@@ -857,7 +856,7 @@ function openPlotterWindow(outputLoc) {
     document.addEventListener('mouseup', ()=> { isDragging = false; });
     graphSection.addEventListener('mouseup', () => { 
         isDragging = false; 
-        plot(graph, overlay2D, PLOTTER, postfExpression, dimension.value, [xmin.value, xmax.value], [ymin.value, ymax.value], VIRIDIS_GLTEXTURE);
+        plot(graph, overlay2D, PLOTTER, postfExpression, parseInt(dimension.value), [xmin.value, xmax.value], [ymin.value, ymax.value], VIRIDIS_GLTEXTURE);
         lastPlot = performance.now();
     });
 
@@ -884,7 +883,7 @@ function openPlotterWindow(outputLoc) {
         
         const now = performance.now();
         if (now - lastPlot > FRAME_INTERVAL) { 
-            plot(graph, overlay2D, PLOTTER, postfExpression, dimension.value, [xmin.value, xmax.value], [ymin.value, ymax.value], VIRIDIS_GLTEXTURE);
+            plot(graph, overlay2D, PLOTTER, postfExpression, parseInt(dimension.value), [xmin.value, xmax.value], [ymin.value, ymax.value], VIRIDIS_GLTEXTURE);
             lastPlot = performance.now();
         }
     });
@@ -906,7 +905,7 @@ function openPlotterWindow(outputLoc) {
         
         const now = performance.now();
         if (now - lastPlot > FRAME_INTERVAL) { 
-            plot(graph, overlay2D, PLOTTER, postfExpression, dimension.value, [xmin.value, xmax.value], [ymin.value, ymax.value], VIRIDIS_GLTEXTURE); 
+            plot(graph, overlay2D, PLOTTER, postfExpression, parseInt(dimension.value), [xmin.value, xmax.value], [ymin.value, ymax.value], VIRIDIS_GLTEXTURE); 
             lastPlot = performance.now();
         }
     }, { passive: false });
